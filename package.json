@@ -1,7 +1,7 @@
 {
   "name": "soccer-manager-app",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -11,19 +11,26 @@
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-navigation/bottom-tabs": "^7.15.10",
-    "@react-navigation/native": "^7.2.2",
+    "@react-navigation/bottom-tabs": "^7.4.0",
+    "@react-navigation/native": "^7.1.8",
     "@react-navigation/stack": "^7.8.11",
+    "@tanstack/react-query": "^5.100.5",
     "axios": "^1.15.2",
-    "expo": "~54.0.33",
+    "expo": "~54.0.34",
+    "expo-constants": "~18.0.13",
+    "expo-linking": "~8.0.12",
+    "expo-router": "~6.0.23",
+    "expo-secure-store": "~15.0.8",
     "expo-status-bar": "~3.0.9",
-    "react": "19.1.0",
+    "react": "^19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
-    "react-native-vector-icons": "^10.3.0"
+    "react-native-vector-icons": "^10.3.0",
+    "react-native-worklets": "^0.8.1",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",

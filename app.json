@@ -1,29 +1,16 @@
 {
   "expo": {
-    "name": "soccer-manager-app",
+    "name": "Soccer Manager",
     "slug": "soccer-manager-app",
+    "scheme": "soccer-manager",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": false,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#2F68FF"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
+    "plugins": ["expo-router"],
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
+      "softwareKeyboardLayoutMode": "pan"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "androidNavigationBar": {
+      "visible": "leanback",
+      "barStyle": "dark-content"
     }
   }
 }

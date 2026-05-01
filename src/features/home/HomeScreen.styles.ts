@@ -1,0 +1,81 @@
+import { StyleSheet } from 'react-native';
+import { Colors, Radius, Spacing } from '../common/theme';
+
+export const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: Colors.n50 },
+  // ── HEADER ──
+  header: {
+    backgroundColor: Colors.white,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.n200,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  headerLeft: { flex: 1 },
+  greeting: { fontSize: 12, color: Colors.n400, fontWeight: '500' },
+  athleteName: { fontSize: 20, fontWeight: '800', color: Colors.n900, marginTop: 1 },
+  statsRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: 6 },
+  positionText: { fontSize: 12, color: Colors.n500 },
+  headerRight: { alignItems: 'flex-end', gap: Spacing.sm },
+  msgBtn: { position: 'relative', padding: 4 },
+  badge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.error,
+    borderWidth: 2,
+    borderColor: Colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: { fontSize: 8, fontWeight: '700', color: Colors.white },
+  // ── CONTENT ──
+  scroll: { flex: 1 },
+  section: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg },
+  sectionTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: Colors.n400,
+    marginBottom: Spacing.md,
+  },
+  emptyCard: {
+    backgroundColor: Colors.white,
+    borderRadius: Radius.r12,
+    borderWidth: 0.5,
+    borderColor: Colors.n200,
+    alignItems: 'center',
+    paddingVertical: 28,
+    paddingHorizontal: 16,
+    marginBottom: Spacing.sm,
+  },
+  emptyText: { fontSize: 13, color: Colors.n400, marginTop: 6 },
+  // ── TABS ──
+  tabs: {
+    flexDirection: 'row',
+    borderBottomWidth: 1.5,
+    borderBottomColor: Colors.n200,
+    marginBottom: Spacing.md,
+  },
+  tab: {
+    flex: 1,
+    textAlign: 'center',
+    paddingVertical: 8,
+    fontSize: 13,
+    fontWeight: '500',
+    color: Colors.n400,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabActive: { color: Colors.primary, fontWeight: '600', borderBottomColor: Colors.primary },
+});
