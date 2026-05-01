@@ -46,6 +46,7 @@ export interface GroupMember {
   isAdmin: boolean;
   isInjured: boolean;
   hasDebt: boolean;
+  isBlocked: boolean;
 }
 
 export interface GroupUpcomingMatch {

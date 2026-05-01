@@ -24,8 +24,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const authName  = useAuthStore((s) => s.name);
-  const authOvr   = useAuthStore((s) => s.overall);
-  const authPos   = useAuthStore((s) => s.position);
 
   const { dashboard, notifications, groupMatches, isLoading, isError, refetch } =
     useHomeDashboard(athleteId);
@@ -35,8 +33,8 @@ export default function HomeScreen() {
 
   // Prefer fresh dashboard data, fall back to auth store values while loading
   const name     = dashboard?.name     ?? authName     ?? '—';
-  const overall  = dashboard?.overall  ?? authOvr      ?? 0;
-  const position = dashboard?.position ?? authPos      ?? '—';
+  const overall  = dashboard?.overall  ?? 0;
+  const position = dashboard?.position ?? '—';
   const status   = dashboard?.status   ?? 'Ativo';
 
   const allMatches = groupMatches.length > 0 ? groupMatches : [];

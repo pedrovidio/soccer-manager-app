@@ -37,4 +37,31 @@ export const groupApi = {
     httpClient
       .post(`/groups/${groupId}/invites`, { adminId, athleteId })
       .then((r) => r.data),
+
+  promoteAdmin: (groupId: string, requesterId: string, targetAthleteId: string) =>
+    httpClient
+      .post(`/groups/${groupId}/admin/delegate`, { requesterId, delegatedTo: targetAthleteId, isPermanent: true })
+      .then((r) => r.data)
+      .catch((e) => { console.error('[promoteAdmin]', e?.response?.status, JSON.stringify(e?.response?.data)); throw e; }),
+
+  demoteAdmin: (groupId: string, requesterId: string, targetAthleteId: string) =>
+    httpClient
+      .delete(`/groups/${groupId}/admin/delegate`, { data: { requesterId, delegatedTo: targetAthleteId } })
+      .then((r) => r.data)
+      .catch((e) => { console.error('[demoteAdmin]', e?.response?.status, JSON.stringify(e?.response?.data)); throw e; }),
+
+  setInjured: (groupId: string, requesterId: string, targetAthleteId: string, isInjured: boolean) =>
+    httpClient
+      .patch(`/groups/${groupId}/members/${targetAthleteId}/injured`, { requesterId, isInjured })
+      .then((r) => r.data),
+
+  setBlocked: (groupId: string, requesterId: string, targetAthleteId: string, isBlocked: boolean) =>
+    httpClient
+      .patch(`/groups/${groupId}/members/${targetAthleteId}/blocked`, { requesterId, isBlocked })
+      .then((r) => r.data),
+
+  removeMember: (groupId: string, requesterId: string, targetAthleteId: string) =>
+    httpClient
+      .delete(`/groups/${groupId}/members/${targetAthleteId}`, { data: { requesterId } })
+      .then((r) => r.data),
 };
