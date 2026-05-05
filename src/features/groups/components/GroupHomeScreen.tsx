@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View, Text, TouchableOpacity, ScrollView, StyleSheet,
-  SafeAreaView, ActivityIndicator, RefreshControl, Alert, Modal, Pressable,
+  SafeAreaView, ActivityIndicator, RefreshControl, Alert, Modal, Pressable, Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
 import { groupApi } from '../services/groupApi';
+import { athleteApi } from '../../athletes/services/athleteApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { GroupMember, GroupUpcomingMatch } from '../groupTypes';
 
@@ -38,10 +39,11 @@ function formatCurrency(value: number) {
 export default function GroupHomeScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
-  const qc = useQueryClient();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
-  const [membersExpanded, setMembersExpanded] = useState(true);
   const [selectedMember, setSelectedMember] = useState<GroupMember | null>(null);
+  const [profileMember, setProfileMember] = useState<GroupMember | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
+  const membersOffsetY = useRef<number>(0);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['group-home', groupId],
@@ -96,29 +98,32 @@ export default function GroupHomeScreen() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
       >
 
         {/* ── QUICK ACTIONS ── */}
         <View style={s.actionsRow}>
-          <QuickAction
-            icon="person-add-outline"
-            label="Convidar"
-            onPress={() => router.push({ pathname: '/invite-athlete', params: { groupId, groupName: group.name } } as any)}
-          />
-          <QuickAction
-            icon="football-outline"
-            label="Nova partida"
-            onPress={() => router.push({ pathname: '/create-match', params: { groupId } } as any)}
-          />
           {isAdmin && (
             <QuickAction
-              icon="people-outline"
-              label="Membros"
-              onPress={() => setMembersExpanded((v) => !v)}
+              icon="person-add-outline"
+              label="Convidar"
+              onPress={() => router.push({ pathname: '/invite-athlete', params: { groupId, groupName: group.name } } as any)}
             />
           )}
+          {isAdmin && (
+            <QuickAction
+              icon="football-outline"
+              label="Nova partida"
+              onPress={() => router.push({ pathname: '/create-match', params: { groupId } } as any)}
+            />
+          )}
+          <QuickAction
+            icon="people-outline"
+            label="Membros"
+            onPress={() => scrollRef.current?.scrollTo({ y: membersOffsetY.current, animated: true })}
+          />
           {isAdmin && (
             <QuickAction
               icon="wallet-outline"
@@ -129,21 +134,21 @@ export default function GroupHomeScreen() {
         </View>
 
         {/* ── BALANCE CARD (admin only) ── */}
-        {isAdmin && balance && (
+        {balance && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Caixa do grupo</Text>
             <View style={s.balanceCard}>
               <View style={s.balanceItem}>
                 <Text style={s.balanceLabel}>Em caixa</Text>
                 <Text style={[s.balanceValue, { color: Colors.success }]}>
-                  {formatCurrency(balance.cashInHand)}
+                  {isAdmin ? formatCurrency(balance.cashInHand) : '—'}
                 </Text>
               </View>
               <View style={s.balanceDivider} />
               <View style={s.balanceItem}>
                 <Text style={s.balanceLabel}>Pendente</Text>
                 <Text style={[s.balanceValue, { color: Colors.warning }]}>
-                  {formatCurrency(balance.totalPending)}
+                  {isAdmin ? formatCurrency(balance.totalPending) : '—'}
                 </Text>
               </View>
               <View style={s.balanceDivider} />
@@ -181,65 +186,70 @@ export default function GroupHomeScreen() {
             </View>
           ) : (
             upcomingMatches.map((match) => (
-              <MatchCard key={match.id} match={match} onPress={() => {}} />
+              <MatchCard
+                key={match.id}
+                match={match}
+                onPress={() => router.push({ pathname: '/match-home', params: { matchId: match.id, groupId, isAdmin: isAdmin ? '1' : '0' } } as any)}
+              />
             ))
           )}
         </View>
 
-        {/* ── MEMBER OPTIONS MODAL ── */}
-        <MemberOptionsModal
-          member={selectedMember}
-          groupId={groupId!}
-          currentAthleteId={athleteId}
-          onClose={() => setSelectedMember(null)}
-          onRefresh={refetch}
-        />
-
         {/* ── MEMBERS ── */}
-        <View style={s.section}>
-          <TouchableOpacity
-            style={s.sectionHeader}
-            onPress={() => setMembersExpanded((v) => !v)}
-            activeOpacity={0.7}
-          >
+        <View
+          style={s.section}
+          onLayout={(e) => { membersOffsetY.current = e.nativeEvent.layout.y; }}
+        >
+          <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>Membros ({members.length})</Text>
-            <View style={s.sectionHeaderRight}>
-              {isAdmin && (
-                <TouchableOpacity
-                  style={s.inviteBtn}
-                  onPress={() => router.push({ pathname: '/invite-athlete', params: { groupId, groupName: group.name } } as any)}
-                >
-                  <Ionicons name="person-add-outline" size={14} color={Colors.primary} />
-                  <Text style={s.inviteBtnText}>Convidar</Text>
-                </TouchableOpacity>
-              )}
-              <Ionicons
-                name={membersExpanded ? 'chevron-up' : 'chevron-down'}
-                size={18}
-                color={Colors.n500}
-              />
-            </View>
-          </TouchableOpacity>
+            {isAdmin && (
+              <TouchableOpacity
+                style={s.inviteBtn}
+                onPress={() => router.push({ pathname: '/invite-athlete', params: { groupId, groupName: group.name } } as any)}
+              >
+                <Ionicons name="person-add-outline" size={14} color={Colors.primary} />
+                <Text style={s.inviteBtnText}>Convidar</Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
-          {membersExpanded && (
+          {activeMembers.map((m) => (
+            <MemberRow
+              key={m.id} member={m} isAdmin={isAdmin}
+              onPress={() => setProfileMember(m)}
+              onOptions={isAdmin && m.id !== athleteId ? () => setSelectedMember(m) : undefined}
+            />
+          ))}
+          {blockedMembers.length > 0 && (
             <>
-              {activeMembers.map((m) => (
-                <MemberRow key={m.id} member={m} isAdmin={isAdmin} onPress={() => isAdmin && m.id !== athleteId ? setSelectedMember(m) : undefined} />
+              <Text style={s.memberGroupLabel}>Bloqueados</Text>
+              {blockedMembers.map((m) => (
+                <MemberRow
+                  key={m.id} member={m} isAdmin={isAdmin}
+                  onPress={() => setProfileMember(m)}
+                  onOptions={isAdmin && m.id !== athleteId ? () => setSelectedMember(m) : undefined}
+                />
               ))}
-              {blockedMembers.length > 0 && (
-                <>
-                  <Text style={s.memberGroupLabel}>Bloqueados</Text>
-                  {blockedMembers.map((m) => (
-                    <MemberRow key={m.id} member={m} isAdmin={isAdmin} onPress={() => isAdmin && m.id !== athleteId ? setSelectedMember(m) : undefined} />
-                  ))}
-                </>
-              )}
             </>
           )}
         </View>
 
         <View style={{ height: 32 }} />
       </ScrollView>
+
+      {/* ── MODALS (fora do ScrollView para cobrir tela toda) ── */}
+      <MemberProfileModal
+        member={profileMember}
+        onClose={() => setProfileMember(null)}
+      />
+      <MemberOptionsModal
+        member={selectedMember}
+        groupId={groupId!}
+        currentAthleteId={athleteId}
+        onClose={() => setSelectedMember(null)}
+        onRefresh={refetch}
+      />
+
     </SafeAreaView>
   );
 }
@@ -397,21 +407,127 @@ function MemberOptionsModal({
   );
 }
 
+function MemberProfileModal({ member, onClose }: { member: GroupMember | null; onClose: () => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['athlete-dashboard', member?.id],
+    queryFn: () => athleteApi.dashboard(member!.id),
+    enabled: !!member,
+    staleTime: 60_000,
+  });
+
+  if (!member) return null;
+
+  const stats = data?.averageStats;
+  const statItems = stats ? [
+    { label: 'Velocidade', value: stats.pace },
+    { label: 'Finalização', value: stats.shooting },
+    { label: 'Passe',      value: stats.passing },
+    { label: 'Drible',     value: stats.dribbling },
+    { label: 'Defesa',     value: stats.defense },
+    { label: 'Físico',     value: stats.physical },
+  ] : [];
+
+  function statColor(v: number) {
+    if (v >= 75) return Colors.success;
+    if (v >= 50) return Colors.warning;
+    return Colors.error;
+  }
+
+  return (
+    <Modal transparent statusBarTranslucent animationType="slide" visible onRequestClose={onClose}>
+      <Pressable style={s.profileOverlay} onPress={onClose}>
+        <Pressable style={s.profileSheet} onPress={(e) => e.stopPropagation()}>
+          {/* handle */}
+          <View style={s.profileHandle} />
+
+          {/* avatar + nome */}
+          <View style={s.profileHeader}>
+            <View style={[s.profileAvatar, member.isAdmin && s.memberAvatarAdmin]}>
+              <Text style={[s.profileAvatarText, member.isAdmin && s.memberAvatarTextAdmin]}>
+                {member.name.slice(0, 2).toUpperCase()}
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={s.profileName}>{member.name}</Text>
+                {member.isAdmin && (
+                  <View style={s.adminBadge}><Text style={s.adminBadgeText}>Admin</Text></View>
+                )}
+              </View>
+              <View style={[s.posTag, { marginTop: 4, alignSelf: 'flex-start' }]}>
+                <Text style={s.posTagText}>{positionLabel(member.position)}</Text>
+              </View>
+            </View>
+            {/* OVR */}
+            <View style={s.profileOvr}>
+              <Text style={s.profileOvrNum}>{member.overall}</Text>
+              <Text style={s.profileOvrLbl}>OVR</Text>
+            </View>
+          </View>
+
+          {/* status badges */}
+          <View style={s.profileBadges}>
+            <View style={[s.profileBadge, { backgroundColor: member.hasDebt ? Colors.errorLight : Colors.successLight }]}>
+              <Ionicons name={member.hasDebt ? 'alert-circle' : 'checkmark-circle'} size={13}
+                color={member.hasDebt ? Colors.errorDark : Colors.successDark} />
+              <Text style={[s.profileBadgeText, { color: member.hasDebt ? Colors.errorDark : Colors.successDark }]}>
+                {member.hasDebt ? 'Pagamento pendente' : 'Pagamento em dia'}
+              </Text>
+            </View>
+            <View style={[s.profileBadge, { backgroundColor: member.isInjured ? Colors.warningLight : Colors.successLight }]}>
+              <Ionicons name={member.isInjured ? 'bandage' : 'fitness'} size={13}
+                color={member.isInjured ? Colors.warningDark : Colors.successDark} />
+              <Text style={[s.profileBadgeText, { color: member.isInjured ? Colors.warningDark : Colors.successDark }]}>
+                {member.isInjured ? 'Lesionado' : 'Apto'}
+              </Text>
+            </View>
+            {member.isBlocked && (
+              <View style={[s.profileBadge, { backgroundColor: Colors.n200 }]}>
+                <Ionicons name="ban" size={13} color={Colors.n700} />
+                <Text style={[s.profileBadgeText, { color: Colors.n700 }]}>Bloqueado</Text>
+              </View>
+            )}
+          </View>
+
+          {/* stats */}
+          <View style={s.profileStats}>
+            <Text style={s.profileStatsTitle}>Atributos técnicos</Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color={Colors.primary} style={{ marginTop: 12 }} />
+            ) : statItems.length === 0 ? (
+              <Text style={s.profileNoStats}>Sem partidas avaliadas ainda</Text>
+            ) : (
+              statItems.map(({ label, value }) => (
+                <View key={label} style={s.statRow}>
+                  <Text style={s.statLabel}>{label}</Text>
+                  <View style={s.statBarBg}>
+                    <View style={[s.statBarFill, { width: `${value}%` as any, backgroundColor: statColor(value) }]} />
+                  </View>
+                  <Text style={[s.statValue, { color: statColor(value) }]}>{value}</Text>
+                </View>
+              ))
+            )}
+          </View>
+
+          <TouchableOpacity style={s.profileCloseBtn} onPress={onClose} activeOpacity={0.7}>
+            <Text style={s.profileCloseBtnText}>Fechar</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
 function MemberRow({
-  member, isAdmin, onPress,
+  member, isAdmin, onPress, onOptions,
 }: {
   member: GroupMember;
   isAdmin: boolean;
-  onPress?: () => void;
+  onPress: () => void;
+  onOptions?: () => void;
 }) {
-  const canManage = isAdmin && !!onPress;
-
   return (
-    <TouchableOpacity
-      style={s.memberRow}
-      onPress={onPress}
-      activeOpacity={canManage ? 0.7 : 1}
-    >
+    <TouchableOpacity style={s.memberRow} onPress={onPress} activeOpacity={0.7}>
       <View style={[s.memberAvatar, member.isAdmin ? s.memberAvatarAdmin : null]}>
         <Text style={[s.memberAvatarText, member.isAdmin ? s.memberAvatarTextAdmin : null]}>
           {member.name.slice(0, 2).toUpperCase()}
@@ -450,8 +566,10 @@ function MemberRow({
         </View>
       </View>
 
-      {canManage && (
-        <Ionicons name="ellipsis-vertical" size={16} color={Colors.n400} />
+      {onOptions && (
+        <TouchableOpacity onPress={onOptions} hitSlop={12} activeOpacity={0.7}>
+          <Ionicons name="ellipsis-vertical" size={16} color={Colors.n400} />
+        </TouchableOpacity>
       )}
     </TouchableOpacity>
   );
@@ -482,7 +600,6 @@ const s = StyleSheet.create({
   // Section
   section:            { marginTop: Spacing.lg, paddingHorizontal: Spacing.lg },
   sectionHeader:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
-  sectionHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   sectionTitle:       { fontSize: 14, fontWeight: '800', color: Colors.n900 },
   inviteBtn:          { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: Colors.primaryLight, borderRadius: Radius.r999, paddingHorizontal: 10, paddingVertical: 4 },
   inviteBtnText:      { fontSize: 12, fontWeight: '600', color: Colors.primary },
@@ -513,6 +630,7 @@ const s = StyleSheet.create({
 
   // Modal
   modalOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  profileOverlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   modalSheet:         { backgroundColor: Colors.white, borderRadius: Radius.r16, width: '100%', overflow: 'hidden' },
   modalTitle:         { fontSize: 16, fontWeight: '700', color: Colors.n900, textAlign: 'center', paddingTop: 20, paddingHorizontal: 16 },
   modalSub:           { fontSize: 13, color: Colors.n500, textAlign: 'center', paddingBottom: 12, paddingHorizontal: 16 },
@@ -521,6 +639,30 @@ const s = StyleSheet.create({
   modalOptionText:    { fontSize: 14, fontWeight: '600', color: Colors.primary },
   modalOptionDestructive: { color: Colors.error },
   modalCancelText:    { fontSize: 14, fontWeight: '600', color: Colors.n500 },
+
+  // Profile modal
+  profileSheet:       { backgroundColor: Colors.white, borderTopLeftRadius: Radius.r24, borderTopRightRadius: Radius.r24, paddingHorizontal: Spacing.lg, paddingBottom: 32 },
+  profileHandle:      { width: 36, height: 4, borderRadius: 2, backgroundColor: Colors.n300, alignSelf: 'center', marginTop: 10, marginBottom: 16 },
+  profileHeader:      { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 14 },
+  profileAvatar:      { width: 56, height: 56, borderRadius: 28, backgroundColor: Colors.n200, alignItems: 'center', justifyContent: 'center' },
+  profileAvatarText:  { fontSize: 18, fontWeight: '800', color: Colors.n700 },
+  profileName:        { fontSize: 16, fontWeight: '800', color: Colors.n900 },
+  profileOvr:         { alignItems: 'center', backgroundColor: Colors.primary, borderRadius: Radius.r999, paddingHorizontal: 12, paddingVertical: 6 },
+  profileOvrNum:      { fontSize: 18, fontWeight: '800', color: Colors.white, lineHeight: 20 },
+  profileOvrLbl:      { fontSize: 9, fontWeight: '600', color: Colors.white },
+  profileBadges:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 18 },
+  profileBadge:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.r999, paddingHorizontal: 10, paddingVertical: 5 },
+  profileBadgeText:   { fontSize: 12, fontWeight: '600' },
+  profileStats:       { marginBottom: 20 },
+  profileStatsTitle:  { fontSize: 12, fontWeight: '700', color: Colors.n500, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 },
+  profileNoStats:     { fontSize: 13, color: Colors.n400, textAlign: 'center', paddingVertical: 8 },
+  statRow:            { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  statLabel:          { fontSize: 12, color: Colors.n500, width: 80 },
+  statBarBg:          { flex: 1, height: 6, backgroundColor: Colors.n200, borderRadius: Radius.r999, overflow: 'hidden' },
+  statBarFill:        { height: '100%', borderRadius: Radius.r999 },
+  statValue:          { fontSize: 12, fontWeight: '700', width: 24, textAlign: 'right' },
+  profileCloseBtn:    { backgroundColor: Colors.n100, borderRadius: Radius.r12, paddingVertical: 13, alignItems: 'center' },
+  profileCloseBtnText:{ fontSize: 14, fontWeight: '700', color: Colors.n700 },
 
   // Members
   memberGroupLabel:   { fontSize: 11, fontWeight: '700', color: Colors.n500, marginTop: 8, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },

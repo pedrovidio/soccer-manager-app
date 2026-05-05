@@ -60,6 +60,9 @@ export const groupApi = {
       .patch(`/groups/${groupId}/members/${targetAthleteId}/blocked`, { requesterId, isBlocked })
       .then((r) => r.data),
 
+  respondGroupInvite: (inviteId: string, athleteId: string, accept: boolean) =>
+    httpClient.patch(`/invites/${inviteId}/respond`, { athleteId, accept }).then((r) => r.data),
+
   removeMember: (groupId: string, requesterId: string, targetAthleteId: string) =>
     httpClient
       .delete(`/groups/${groupId}/members/${targetAthleteId}`, { data: { requesterId } })
