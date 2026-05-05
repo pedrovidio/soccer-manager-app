@@ -78,4 +78,10 @@ export const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabActive: { color: Colors.primary, fontWeight: '600', borderBottomColor: Colors.primary },
+  // ── FAVORITE GROUP ──
+  favoriteCard:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.white, marginHorizontal: Spacing.lg, marginTop: Spacing.lg, borderRadius: Radius.r12, borderWidth: 1.5, borderColor: Colors.warning, paddingHorizontal: Spacing.md, paddingVertical: 10 },
+  favoriteCardLeft:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  favoriteCardLabel: { fontSize: 11, fontWeight: '600', color: Colors.warning },
+  favoriteCardRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1, justifyContent: 'flex-end' },
+  favoriteCardName:  { fontSize: 13, fontWeight: '700', color: Colors.n900, flexShrink: 1 },
 });

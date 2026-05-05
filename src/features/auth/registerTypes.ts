@@ -37,6 +37,12 @@ export interface AssessmentPayload {
   preferredPosition: string;
 }
 
+export interface AvailabilitySlot {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
+
 export interface RegisterFormData {
   // Step 1 — dados pessoais
   name: string;
@@ -68,4 +74,7 @@ export interface RegisterFormData {
   selfRatedDribbling: number;
   selfRatedDefense: number;
   selfRatedPhysical: number;
+  // Step 4 — disponibilidade
+  wantsAvailability: boolean;
+  availabilitySlots: AvailabilitySlot[];
 }

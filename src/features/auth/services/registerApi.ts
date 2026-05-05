@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { RegisterPayload, AssessmentPayload } from '../registerTypes';
+import { RegisterPayload, AssessmentPayload, AvailabilitySlot } from '../registerTypes';
 
 export interface RegisterResponse {
   id: string;
@@ -14,4 +14,7 @@ export const registerApi = {
 
   submitAssessment: (athleteId: string, payload: AssessmentPayload) =>
     httpClient.post(`/athletes/${athleteId}/assessment`, payload).then((r) => r.data),
+
+  saveAvailability: (athleteId: string, slots: AvailabilitySlot[]) =>
+    httpClient.put(`/athletes/${athleteId}/availability`, { slots }).then((r) => r.data),
 };

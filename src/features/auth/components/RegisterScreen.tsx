@@ -9,12 +9,11 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { AttributeSlider } from '../../common/components/AttributeSlider';
 import { registerApi } from '../services/registerApi';
 import { useAuthStore } from '../useAuthStore';
-import {
-  RegisterFormData, FootballLevel, Gender,
-  YearsPlaying, WeeklyFrequency,
+import { RegisterFormData, FootballLevel, Gender,
+  YearsPlaying, WeeklyFrequency, AvailabilitySlot,
 } from '../registerTypes';
 
-const TOTAL_STEPS = 3;
+const TOTAL_STEPS = 4;
 
 const POSITIONS: { value: string; label: string }[] = [
   { value: 'Goalkeeper', label: 'Goleiro' },
@@ -75,6 +74,8 @@ const INITIAL: RegisterFormData = {
   playedProfessionally: false,
   selfRatedPace: 50, selfRatedShooting: 50, selfRatedPassing: 50,
   selfRatedDribbling: 50, selfRatedDefense: 50, selfRatedPhysical: 50,
+  wantsAvailability: false,
+  availabilitySlots: [],
 };
 
 function parseApiError(e: any): string {
@@ -169,7 +170,7 @@ export default function RegisterScreen() {
       await login(form.email.trim().toLowerCase(), form.password);
       console.log('[RegisterScreen] STEP 2 — login OK');
 
-      // 3. Assessment — token já está em memória
+      // 3. Assessment
       const assessmentPayload = {
         playedProfessionally: form.playedProfessionally,
         highestLevel: form.highestLevel,
@@ -183,16 +184,18 @@ export default function RegisterScreen() {
         selfRatedPhysical: form.selfRatedPhysical,
         preferredPosition: form.preferredPosition,
       };
-      console.log('[RegisterScreen] STEP 3 — POST /athletes/' + athlete.id + '/assessment payload:', JSON.stringify(assessmentPayload));
       await registerApi.submitAssessment(athlete.id, {
         ...assessmentPayload,
         highestLevel: form.highestLevel as FootballLevel,
         yearsPlaying: form.yearsPlaying as YearsPlaying,
         weeklyFrequency: form.weeklyFrequency as WeeklyFrequency,
       });
-      console.log('[RegisterScreen] STEP 3 — assessment OK');
 
-      // 4. Marca assessment completo e navega
+      // 4. Disponibilidade (opcional)
+      if (form.wantsAvailability && form.availabilitySlots.length > 0) {
+        await registerApi.saveAvailability(athlete.id, form.availabilitySlots);
+      }
+
       setAssessmentCompleted();
       router.replace('/');
     } catch (e: any) {
@@ -223,6 +226,7 @@ export default function RegisterScreen() {
           {step === 1 && <Step1 form={form} set={set} />}
           {step === 2 && <Step2 form={form} set={set} />}
           {step === 3 && <Step3 form={form} set={set} />}
+          {step === 4 && <Step4 form={form} set={set} />}
 
           <TouchableOpacity
             style={[s.btn, loading ? s.btnDisabled : null]}
@@ -489,6 +493,144 @@ function Step3({ form, set }: { form: RegisterFormData; set: (f: keyof RegisterF
   );
 }
 
+// ─── Step 4: Disponibilidade ─────────────────────────────────────────────────
+const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const TIME_OPTIONS = Array.from({ length: 29 }, (_, i) => {
+  const h = Math.floor(i / 2) + 6; // 06:00 até 20:00
+  const m = i % 2 === 0 ? '00' : '30';
+  return `${String(h).padStart(2, '0')}:${m}`;
+});
+
+function Step4({ form, set }: { form: RegisterFormData; set: (f: keyof RegisterFormData, v: any) => void }) {
+  const [pickerTarget, setPickerTarget] = useState<{ idx: number; field: 'startTime' | 'endTime' } | null>(null);
+
+  function toggleDay(day: number) {
+    const exists = form.availabilitySlots.some((s) => s.dayOfWeek === day);
+    if (exists) {
+      set('availabilitySlots', form.availabilitySlots.filter((s) => s.dayOfWeek !== day));
+    } else {
+      set('availabilitySlots', [...form.availabilitySlots, { dayOfWeek: day, startTime: '08:00', endTime: '10:00' }]);
+    }
+  }
+
+  function updateSlot(idx: number, field: 'startTime' | 'endTime', value: string) {
+    const updated = form.availabilitySlots.map((s, i) => i === idx ? { ...s, [field]: value } : s);
+    set('availabilitySlots', updated);
+  }
+
+  const sortedSlots = [...form.availabilitySlots].sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+
+  return (
+    <View>
+      <Text style={s.stepTitle}>Disponibilidade</Text>
+      <Text style={s.stepSubtitle}>Informe quando você está disponível para partidas avulsas</Text>
+
+      <View style={s.switchRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={s.switchLabel}>Quero receber convites para partidas avulsas</Text>
+          <Text style={s.switchDesc}>Você aparecerá para admins buscando jogadores</Text>
+        </View>
+        <Switch
+          value={form.wantsAvailability}
+          onValueChange={(v) => {
+            set('wantsAvailability', v);
+            if (!v) set('availabilitySlots', []);
+          }}
+          trackColor={{ false: Colors.n300, true: Colors.primary }}
+          thumbColor={Colors.white}
+        />
+      </View>
+
+      {form.wantsAvailability && (
+        <>
+          <Text style={s.sectionLabel}>Dias disponíveis</Text>
+          <View style={s.daysRow}>
+            {DAYS.map((label, day) => {
+              const active = form.availabilitySlots.some((s) => s.dayOfWeek === day);
+              return (
+                <TouchableOpacity
+                  key={day}
+                  style={[s.dayChip, active && s.dayChipActive]}
+                  onPress={() => toggleDay(day)}
+                >
+                  <Text style={[s.dayChipText, active && s.dayChipTextActive]}>{label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {sortedSlots.length > 0 && (
+            <>
+              <Text style={[s.sectionLabel, { marginTop: 16 }]}>Horários por dia</Text>
+              {sortedSlots.map((slot) => {
+                const idx = form.availabilitySlots.findIndex((s) => s.dayOfWeek === slot.dayOfWeek);
+                return (
+                  <View key={slot.dayOfWeek} style={s.slotRow}>
+                    <Text style={s.slotDay}>{DAYS[slot.dayOfWeek]}</Text>
+                    <TouchableOpacity
+                      style={s.timeBtn}
+                      onPress={() => setPickerTarget({ idx, field: 'startTime' })}
+                    >
+                      <Text style={s.timeBtnText}>{slot.startTime}</Text>
+                    </TouchableOpacity>
+                    <Text style={s.slotSep}>até</Text>
+                    <TouchableOpacity
+                      style={s.timeBtn}
+                      onPress={() => setPickerTarget({ idx, field: 'endTime' })}
+                    >
+                      <Text style={s.timeBtnText}>{slot.endTime}</Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </>
+          )}
+
+          {sortedSlots.length === 0 && (
+            <View style={s.emptySlots}>
+              <Text style={s.emptySlotsText}>Selecione ao menos um dia acima</Text>
+            </View>
+          )}
+        </>
+      )}
+
+      {/* Time picker modal */}
+      <Modal visible={!!pickerTarget} transparent animationType="slide">
+        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setPickerTarget(null)} />
+        <View style={s.modalSheet}>
+          <View style={s.modalHeader}>
+            <Text style={s.modalTitle}>
+              {pickerTarget?.field === 'startTime' ? 'Horário de início' : 'Horário de término'}
+            </Text>
+            <TouchableOpacity onPress={() => setPickerTarget(null)}>
+              <Text style={s.modalClose}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={TIME_OPTIONS}
+            keyExtractor={(t) => t}
+            renderItem={({ item }) => {
+              const current = pickerTarget ? form.availabilitySlots[pickerTarget.idx]?.[pickerTarget.field] : '';
+              return (
+                <TouchableOpacity
+                  style={[s.modalItem, current === item && s.modalItemActive]}
+                  onPress={() => {
+                    if (pickerTarget) updateSlot(pickerTarget.idx, pickerTarget.field, item);
+                    setPickerTarget(null);
+                  }}
+                >
+                  <Text style={[s.modalItemText, current === item && s.modalItemTextActive]}>{item}</Text>
+                  {current === item && <Text style={{ color: Colors.primary }}>✓</Text>}
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
 function UFSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   return (
@@ -595,4 +737,16 @@ const s = StyleSheet.create({
   modalItemActive: { backgroundColor: Colors.primaryLight },
   modalItemText:   { fontSize: 14, color: Colors.n900 },
   modalItemTextActive: { color: Colors.primary, fontWeight: '700' },
+  daysRow:        { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 },
+  dayChip:        { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: Colors.n300, backgroundColor: Colors.white },
+  dayChipActive:  { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
+  dayChipText:    { fontSize: 11, fontWeight: '600', color: Colors.n700 },
+  dayChipTextActive: { color: Colors.primary },
+  slotRow:        { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n200, padding: 12, marginBottom: 8, gap: 8 },
+  slotDay:        { fontSize: 13, fontWeight: '700', color: Colors.n900, width: 32 },
+  slotSep:        { fontSize: 12, color: Colors.n500 },
+  timeBtn:        { flex: 1, backgroundColor: Colors.n50, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n300, paddingVertical: 8, alignItems: 'center' },
+  timeBtnText:    { fontSize: 14, fontWeight: '700', color: Colors.primary },
+  emptySlots:     { alignItems: 'center', paddingVertical: 16 },
+  emptySlotsText: { fontSize: 13, color: Colors.n400 },
 });

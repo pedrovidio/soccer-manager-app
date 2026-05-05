@@ -1,92 +1,72 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Match } from '../../../matchmaking/types';
-import { Badge } from '../../../common/components/Badge';
+import { useRouter } from 'expo-router';
+import { ConfirmedMatch } from '../../../athletes/athleteTypes';
 import { Colors } from '../../../common/theme';
 import { styles } from './MatchCard.styles';
 
-const STATUS_MAP: Record<string, { label: string; variant: 'inf' | 'ok' | 'neutral' | 'err' }> = {
-  SCHEDULED:   { label: 'Agendada',      variant: 'inf' },
-  IN_PROGRESS: { label: 'Em andamento',  variant: 'ok' },
-  FINISHED:    { label: 'Finalizada',    variant: 'neutral' },
-  CANCELLED:   { label: 'Cancelada',     variant: 'err' },
+const TYPE_STYLE: Record<string, object> = {
+  CAMPO:   styles.tagCampo,
+  SOCIETY: styles.tagSociety,
+  FUTSAL:  styles.tagFutsal,
 };
 
-const TYPE_STYLE: Record<string, object> = {
-  Campo:   styles.tagCampo,
-  Society: styles.tagSociety,
-  Futsal:  styles.tagFutsal,
+const TYPE_LABEL: Record<string, string> = {
+  CAMPO: 'Campo', SOCIETY: 'Society', FUTSAL: 'Futsal',
 };
 
 interface MatchCardProps {
-  match: Match;
+  match: ConfirmedMatch;
   confirmed?: boolean;
 }
 
 export function MatchCard({ match, confirmed }: MatchCardProps) {
-  const status = STATUS_MAP[match.status];
+  const router = useRouter();
+  const fillPct = match.totalSlots > 0 ? (match.confirmedSlots / match.totalSlots) * 100 : 0;
   const isFinished = match.status === 'FINISHED';
-  const fillPct = (match.confirmedSlots / match.totalSlots) * 100;
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.8}
+      onPress={() => router.push({ pathname: '/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: '0' } } as any)}
+    >
+      {/* HEADER: data + badge confirmado */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.dateText}>{match.date} · {match.time}</Text>
-          <Text style={styles.locText}>{match.location} · {match.city}</Text>
+        <View style={styles.dateRow}>
+          <Ionicons name="calendar-outline" size={13} color={Colors.n500} />
+          <Text style={styles.dateText}>{match.date}</Text>
+          <View style={styles.dot} />
+          <Ionicons name="time-outline" size={13} color={Colors.n500} />
+          <Text style={styles.dateText}>{match.time}</Text>
         </View>
-        {confirmed && !isFinished ? (
+        {confirmed && !isFinished && (
           <View style={styles.confPill}>
             <Ionicons name="checkmark" size={10} color={Colors.successDark} />
             <Text style={styles.confText}>Confirmado</Text>
           </View>
-        ) : (
-          <Badge label={status.label} variant={status.variant} />
         )}
       </View>
 
+      {/* BODY */}
       <View style={styles.body}>
-        <View style={styles.vsRow}>
-          <View style={styles.teamBlock}>
-            <View style={styles.teamLogo}>
-              <Ionicons name="football-outline" size={20} color={Colors.primary} />
-            </View>
-            <Text style={styles.teamName}>{match.teamA ?? 'Time A'}</Text>
-          </View>
+        {/* tipo de jogo */}
+        <Text style={[styles.typeTag, TYPE_STYLE[match.type]]}>
+          {TYPE_LABEL[match.type] ?? match.type}
+        </Text>
 
-          {isFinished ? (
-            <Text style={styles.scoreBig}>{match.scoreA} × {match.scoreB}</Text>
-          ) : (
-            <Text style={styles.vsBadge}>VS</Text>
-          )}
-
-          <View style={styles.teamBlock}>
-            <View style={styles.teamLogo}>
-              <Ionicons name="football-outline" size={20} color={Colors.successDark} />
-            </View>
-            <Text style={styles.teamName}>{match.teamB ?? 'Time B'}</Text>
-          </View>
+        {/* vagas */}
+        <View style={styles.slotsRow}>
+          <Ionicons name="people-outline" size={14} color={Colors.primary} />
+          <Text style={styles.slotsText}>
+            {match.confirmedSlots}/{match.totalSlots} vagas
+          </Text>
         </View>
-
-        <View style={styles.tagsRow}>
-          <Text style={[styles.tag, TYPE_STYLE[match.type]]}>{match.type}</Text>
-          {match.minOverall && <Badge label={`Overall ${match.minOverall}+`} variant="neutral" />}
-          {match.distanceKm && <Badge label={`${match.distanceKm} km`} variant="neutral" />}
+        <View style={styles.progBg}>
+          <View style={[styles.progFill, { width: `${fillPct}%` as any }]} />
         </View>
-
-        {!isFinished && (
-          <>
-            <View style={styles.progLabel}>
-              <Text style={styles.progLabelText}>Vagas preenchidas</Text>
-              <Text style={styles.progLabelVal}>{match.confirmedSlots}/{match.totalSlots}</Text>
-            </View>
-            <View style={styles.progBg}>
-              <View style={[styles.progFill, { width: `${fillPct}%` as any }]} />
-            </View>
-          </>
-        )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

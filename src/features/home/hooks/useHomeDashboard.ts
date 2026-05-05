@@ -1,16 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { athleteApi } from '../../athletes/services/athleteApi';
-import { matchApi } from '../../matchmaking/services/matchApi';
 import { queryKeys } from '../../../lib/queryKeys';
-import { AthleteDashboard, Invite } from '../../athletes/athleteTypes';
+import { AthleteDashboard, ConfirmedMatch, Invite } from '../../athletes/athleteTypes';
 import { Notification } from '../../notifications/types';
-import { Match } from '../../matchmaking/types';
 
 interface HomeDashboardResult {
   dashboard: AthleteDashboard | undefined;
   notifications: Notification[];
   invites: Invite[];
-  groupMatches: Match[];
+  confirmedMatches: ConfirmedMatch[];
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
@@ -35,37 +33,20 @@ export function useHomeDashboard(athleteId: string): HomeDashboardResult {
     enabled: !!athleteId,
   });
 
-  // Só dispara se o atleta pertencer a pelo menos um grupo
-  const firstGroupId = dashboardQuery.data?.groupIds?.[0];
-
-  const groupMatchesQuery = useQuery({
-    queryKey: queryKeys.groupMatches(firstGroupId ?? ''),
-    queryFn: () => matchApi.listByGroup(firstGroupId!),
-    enabled: !!firstGroupId,
-  });
-
-  const isLoading =
-    dashboardQuery.isLoading ||
-    notificationsQuery.isLoading ||
-    invitesQuery.isLoading;
-
-  const isError =
-    dashboardQuery.isError ||
-    notificationsQuery.isError ||
-    invitesQuery.isError;
+  const isLoading = dashboardQuery.isLoading || notificationsQuery.isLoading || invitesQuery.isLoading;
+  const isError   = dashboardQuery.isError   || notificationsQuery.isError   || invitesQuery.isError;
 
   function refetch() {
     dashboardQuery.refetch();
     notificationsQuery.refetch();
     invitesQuery.refetch();
-    if (firstGroupId) groupMatchesQuery.refetch();
   }
 
   return {
-    dashboard: dashboardQuery.data,
-    notifications: notificationsQuery.data ?? [],
-    invites: invitesQuery.data ?? [],
-    groupMatches: groupMatchesQuery.data ?? [],
+    dashboard:        dashboardQuery.data,
+    notifications:    notificationsQuery.data ?? [],
+    invites:          invitesQuery.data ?? [],
+    confirmedMatches: dashboardQuery.data?.confirmedMatches ?? [],
     isLoading,
     isError,
     refetch,
