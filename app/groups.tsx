@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View, Text, TouchableOpacity, FlatList,
   StyleSheet, SafeAreaView, ActivityIndicator, RefreshControl,
@@ -6,18 +6,18 @@ import {
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../src/features/auth/useAuthStore';
 import { groupApi } from '../src/features/groups/services/groupApi';
+import { useFavoriteGroup } from '../src/features/groups/hooks/useFavoriteGroup';
 import { BottomNav, NavTab } from '../src/features/common/components/BottomNav';
 import { Colors, Radius, Spacing } from '../src/features/common/theme';
 import { GroupResponse } from '../src/features/groups/groupTypes';
 
 export default function GroupsScreen() {
-  const [activeTab, setActiveTab] = useState<NavTab>('groups');
+  const activeTab: NavTab = 'groups';
   const router = useRouter();
-  const { bottom } = useSafeAreaInsets();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
+  const { favoriteId, toggle } = useFavoriteGroup();
 
   const { data: groups = [], isLoading, isError, refetch } = useQuery<GroupResponse[]>({
     queryKey: ['groups', athleteId],
@@ -25,11 +25,7 @@ export default function GroupsScreen() {
     enabled: !!athleteId,
   });
 
-  function handleTabPress(tab: NavTab) {
-    if (tab === 'groups') return;
-    if (tab === 'home') { router.replace('/'); return; }
-    router.push(`/${tab}` as any);
-  }
+
 
   return (
     <SafeAreaView style={s.safe}>
@@ -56,7 +52,9 @@ export default function GroupsScreen() {
         </View>
       ) : (
         <FlatList
-          data={groups}
+          data={[...groups].sort((a, b) =>
+            favoriteId === a.id ? -1 : favoriteId === b.id ? 1 : 0
+          )}
           keyExtractor={(item) => item.id}
           contentContainerStyle={groups.length === 0 ? s.emptyContainer : s.list}
           refreshControl={
@@ -76,6 +74,8 @@ export default function GroupsScreen() {
           renderItem={({ item }) => (
             <GroupCard
               group={item}
+              isFavorite={favoriteId === item.id}
+              onFavorite={() => toggle(item.id)}
               onPress={() => router.push({ pathname: '/group-home', params: { groupId: item.id } } as any)}
             />
           )}
@@ -83,21 +83,29 @@ export default function GroupsScreen() {
       )}
 
       {/* ── BOTTOM NAV ── */}
-      <BottomNav active={activeTab} onPress={handleTabPress} />
+      <BottomNav active={activeTab} />
     </SafeAreaView>
   );
 }
 
-function GroupCard({ group, onPress }: { group: GroupResponse; onPress: () => void }) {
+function GroupCard({ group, isFavorite, onFavorite, onPress }: {
+  group: GroupResponse;
+  isFavorite: boolean;
+  onFavorite: () => void;
+  onPress: () => void;
+}) {
   return (
-    <TouchableOpacity style={s.card} onPress={onPress} activeOpacity={0.7}>
-      <View style={s.cardAvatar}>
-        <Text style={s.cardAvatarText}>
+    <TouchableOpacity style={[s.card, isFavorite && s.cardFavorite]} onPress={onPress} activeOpacity={0.7}>
+      <View style={[s.cardAvatar, isFavorite && s.cardAvatarFavorite]}>
+        <Text style={[s.cardAvatarText, isFavorite && s.cardAvatarTextFavorite]}>
           {group.name.slice(0, 2).toUpperCase()}
         </Text>
       </View>
       <View style={s.cardBody}>
-        <Text style={s.cardName} numberOfLines={1}>{group.name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Text style={s.cardName} numberOfLines={1}>{group.name}</Text>
+          {isFavorite && <Ionicons name="star" size={12} color={Colors.warning} />}
+        </View>
         {group.description ? (
           <Text style={s.cardDesc} numberOfLines={1}>{group.description}</Text>
         ) : null}
@@ -106,7 +114,13 @@ function GroupCard({ group, onPress }: { group: GroupResponse; onPress: () => vo
           <Text style={s.cardMetaText}>{group.memberIds.length} membros</Text>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={Colors.n300} />
+      <TouchableOpacity onPress={onFavorite} hitSlop={12} activeOpacity={0.7}>
+        <Ionicons
+          name={isFavorite ? 'star' : 'star-outline'}
+          size={20}
+          color={isFavorite ? Colors.warning : Colors.n300}
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
@@ -125,9 +139,12 @@ const s = StyleSheet.create({
   retryText:      { color: Colors.white, fontWeight: '600', fontSize: 13 },
   createBtn:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingHorizontal: 20, paddingVertical: 12, backgroundColor: Colors.primary, borderRadius: Radius.r12 },
   createBtnText:  { color: Colors.white, fontWeight: '700', fontSize: 14 },
-  card:           { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, padding: Spacing.md, borderWidth: 1, borderColor: Colors.n200, gap: 12 },
-  cardAvatar:     { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
-  cardAvatarText: { fontSize: 14, fontWeight: '800', color: Colors.primary },
+  card:               { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, padding: Spacing.md, borderWidth: 1, borderColor: Colors.n200, gap: 12 },
+  cardFavorite:       { borderColor: Colors.warning, borderWidth: 1.5 },
+  cardAvatar:         { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
+  cardAvatarFavorite: { backgroundColor: '#FEF3C7' },
+  cardAvatarText:     { fontSize: 14, fontWeight: '800', color: Colors.primary },
+  cardAvatarTextFavorite: { color: Colors.warning },
   cardBody:       { flex: 1, gap: 2 },
   cardName:       { fontSize: 14, fontWeight: '700', color: Colors.n900 },
   cardDesc:       { fontSize: 12, color: Colors.n500 },

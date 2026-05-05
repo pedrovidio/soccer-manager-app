@@ -8,6 +8,9 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '../auth/useAuthStore';
 import { useHomeDashboard } from './hooks/useHomeDashboard';
 import { useNotificationActions } from '../notifications/hooks/useNotifications';
+import { useFavoriteGroup } from '../groups/hooks/useFavoriteGroup';
+import { groupApi } from '../groups/services/groupApi';
+import { useQuery } from '@tanstack/react-query';
 import { OverallBadge } from '../common/components/OverallBadge';
 import { Badge } from '../common/components/Badge';
 import { BottomNav, NavTab } from '../common/components/BottomNav';
@@ -25,11 +28,18 @@ export default function HomeScreen() {
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const authName  = useAuthStore((s) => s.name);
 
-  const { dashboard, notifications, groupMatches, isLoading, isError, refetch } =
+  const { dashboard, notifications, confirmedMatches, isLoading, isError, refetch } =
     useHomeDashboard(athleteId);
 
-  const { unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll } =
+  const { unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll, respondInvite, respondInvitePending } =
     useNotificationActions(athleteId, notifications);
+
+  const { favoriteId } = useFavoriteGroup();
+  const { data: favoriteGroup } = useQuery({
+    queryKey: ['group', favoriteId],
+    queryFn: () => groupApi.findById(favoriteId!),
+    enabled: !!favoriteId,
+  });
 
   // Prefer fresh dashboard data, fall back to auth store values while loading
   const name     = dashboard?.name     ?? authName     ?? '—';
@@ -37,10 +47,10 @@ export default function HomeScreen() {
   const position = dashboard?.position ?? '—';
   const status   = dashboard?.status   ?? 'Ativo';
 
-  const allMatches = groupMatches.length > 0 ? groupMatches : [];
-  const upcoming   = allMatches.filter((m) => m.status === 'SCHEDULED' || m.status === 'IN_PROGRESS');
-  const past       = allMatches.filter((m) => m.status === 'FINISHED'  || m.status === 'CANCELLED');
-  const matches    = matchTab === 'upcoming' ? upcoming : past;
+  const allMatches  = confirmedMatches;
+  const upcoming    = allMatches.filter((m) => m.status === 'SCHEDULED' || m.status === 'IN_PROGRESS');
+  const past        = allMatches.filter((m) => m.status === 'FINISHED'  || m.status === 'CANCELLED');
+  const matches     = matchTab === 'upcoming' ? upcoming : past;
 
   if (isLoading && !dashboard) {
     return (
@@ -84,6 +94,23 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
       >
+        {/* ── FAVORITE GROUP SHORTCUT ── */}
+        {favoriteGroup && (
+          <TouchableOpacity
+            style={styles.favoriteCard}
+            onPress={() => router.push({ pathname: '/group-home', params: { groupId: favoriteGroup.id } } as any)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.favoriteCardLeft}>
+              <Ionicons name="star" size={14} color={Colors.warning} />
+              <Text style={styles.favoriteCardLabel}>Grupo favorito</Text>
+            </View>
+            <View style={styles.favoriteCardRight}>
+              <Text style={styles.favoriteCardName} numberOfLines={1}>{favoriteGroup.name}</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.n400} />
+            </View>
+          </TouchableOpacity>
+        )}
         <View style={styles.section}>
           <View style={styles.tabs}>
             <Text
@@ -121,17 +148,13 @@ export default function HomeScreen() {
           )}
 
           {matches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              confirmed={dashboard?.groupIds?.some((g) => match.id.startsWith(g))}
-            />
+            <MatchCard key={match.id} match={match} confirmed />
           ))}
         </View>
       </ScrollView>
 
       {/* ── BOTTOM NAV ── */}
-      <BottomNav active={activeTab} onPress={(tab) => { if (tab !== 'home') router.push(`/${tab}` as any); }} />
+      <BottomNav active={activeTab} />
 
       {/* ── NOTIFICATIONS SHEET ── */}
       <NotificationsSheet
@@ -142,6 +165,8 @@ export default function HomeScreen() {
         onMarkAllRead={markAllAsRead}
         onDelete={deleteOne}
         onDeleteAll={deleteAll}
+        onRespondInvite={respondInvite}
+        respondInvitePending={respondInvitePending}
       />
     </SafeAreaView>
   );

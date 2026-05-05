@@ -2,9 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Colors } from '../../theme';
 
-export type NavTab = 'home' | 'matches' | 'groups' | 'financial' | 'profile';
+export type NavTab = 'home' | 'groups' | 'financial' | 'profile';
+
+/** Mapeia cada tab para sua rota Expo Router */
+export const NAV_ROUTES: Record<NavTab, string> = {
+  home:      '/',
+  groups:    '/groups',
+  financial: '/profile',  // ainda sem tela dedicada → redireciona para perfil
+  profile:   '/profile',
+};
 
 interface NavItem {
   key: NavTab;
@@ -14,26 +23,34 @@ interface NavItem {
 }
 
 const ITEMS: NavItem[] = [
-  { key: 'home',      label: 'Início',     icon: 'home-outline',          iconActive: 'home' },
-  { key: 'matches',   label: 'Partidas',   icon: 'football-outline',      iconActive: 'football' },
-  { key: 'groups',    label: 'Grupos',     icon: 'people-outline',        iconActive: 'people' },
-  { key: 'financial', label: 'Financeiro', icon: 'wallet-outline',        iconActive: 'wallet' },
-  { key: 'profile',   label: 'Perfil',     icon: 'person-outline',        iconActive: 'person' },
+  { key: 'home',      label: 'Início',     icon: 'home-outline',   iconActive: 'home' },
+  { key: 'groups',    label: 'Grupos',     icon: 'people-outline', iconActive: 'people' },
+  { key: 'financial', label: 'Financeiro', icon: 'wallet-outline', iconActive: 'wallet' },
+  { key: 'profile',   label: 'Perfil',     icon: 'person-outline', iconActive: 'person' },
 ];
 
 interface BottomNavProps {
   active: NavTab;
-  onPress: (tab: NavTab) => void;
+  /** Opcional: sobrescreve o comportamento padrão de navegação */
+  onPress?: (tab: NavTab) => void;
 }
 
 export function BottomNav({ active, onPress }: BottomNavProps) {
   const { bottom } = useSafeAreaInsets();
+  const router = useRouter();
+
+  function handlePress(tab: NavTab) {
+    if (onPress) { onPress(tab); return; }
+    if (tab === active) return;
+    router.push(NAV_ROUTES[tab] as any);
+  }
+
   return (
     <View style={[styles.container, { paddingBottom: Math.max(bottom, 10) }]}>
       {ITEMS.map((item) => {
         const isActive = item.key === active;
         return (
-          <TouchableOpacity key={item.key} style={styles.btn} onPress={() => onPress(item.key)}>
+          <TouchableOpacity key={item.key} style={styles.btn} onPress={() => handlePress(item.key)}>
             <Ionicons
               name={isActive ? item.iconActive : item.icon}
               size={22}
