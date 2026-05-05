@@ -26,26 +26,65 @@ export interface RecentMatch {
 }
 
 export interface AthleteDashboard {
-  // fields used directly by HomeScreen (from auth store fallback)
   name?: string;
+  cpf?: string;
+  gender?: 'M' | 'F';
   overall?: number;
   position?: string;
   status?: string;
   groupIds?: string[];
   isInjured?: boolean;
   paymentStatus?: 'PAID' | 'PENDING' | 'DECLINED';
-  // fields from server dashboard endpoint
-  totalMatches: number;
-  averageStats: AthleteStats;
-  overallEvolution: OverallSnapshot[];
-  recentMatches: RecentMatch[];
+  photoUrl?: string;
+  phone?: string;
+  age?: number;
+  isGoalkeeperForHire?: boolean;
+  pixKey?: string | null;
+  address?: {
+    cep: string;
+    street: string;
+    number: number;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+  };
+  confirmedMatches: ConfirmedMatch[];
+  // legacy fields (unused but kept for compat)
+  totalMatches?: number;
+  averageStats?: AthleteStats;
+  overallEvolution?: OverallSnapshot[];
+  recentMatches?: RecentMatch[];
+}
+
+export interface ConfirmedMatch {
+  id: string;
+  groupId: string;
+  type: string;
+  date: string;
+  time: string;
+  isoDate: string;
+  location: string;
+  status: string;
+  totalSlots: number;
+  confirmedSlots: number;
+  minOverall?: number;
 }
 
 export interface Invite {
   id: string;
-  groupId: string;
-  groupName: string;
-  invitedBy: string;
+  type: 'GROUP' | 'MATCH';
+  // group invite
+  groupId?: string;
+  groupName?: string;
+  invitedBy?: string;
+  // match invite
+  matchId?: string;
+  matchDate?: string;
+  matchLocation?: string;
+  matchGroupName?: string;
+  // common
   status: string;
   createdAt: string;
+  respondUrl: string;
 }
