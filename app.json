@@ -4,9 +4,19 @@
     "slug": "soccer-manager-app",
     "scheme": "soccer-manager",
     "version": "1.0.0",
-    "plugins": ["expo-router"],
+    "updates": {
+      "enabled": false
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-community/datetimepicker"
+    ],
     "android": {
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.anonymous.soccermanagerapp"
     },
     "androidNavigationBar": {
       "visible": "leanback",
