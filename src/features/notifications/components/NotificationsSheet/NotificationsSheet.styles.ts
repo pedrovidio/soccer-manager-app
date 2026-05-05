@@ -2,73 +2,188 @@ import { StyleSheet } from 'react-native';
 import { Colors, Radius, Spacing } from '../../../common/theme';
 
 export const styles = StyleSheet.create({
-  overlay: {
+  // ── Screen ──────────────────────────────────────────────────────────
+  screen: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'flex-end',
+    backgroundColor: Colors.n900,
   },
-  sheet: {
-    backgroundColor: Colors.white,
-    borderTopLeftRadius: Radius.r24,
-    borderTopRightRadius: Radius.r24,
-    maxHeight: '80%',
+
+  // ── Header ──────────────────────────────────────────────────────────
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: 14,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
-  handle: {
+  backBtn: {
     width: 36,
-    height: 4,
-    backgroundColor: Colors.n300,
-    borderRadius: Radius.r999,
-    alignSelf: 'center',
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.md,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
-  sheetHeader: {
+  headerTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.white,
+    marginLeft: 12,
+  },
+  clearBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Radius.r8,
+    backgroundColor: 'rgba(239,68,68,0.15)',
+  },
+  clearBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FCA5A5',
+  },
+
+  // ── Hint ────────────────────────────────────────────────────────────
+  hint: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.3)',
+    textAlign: 'center',
+    paddingVertical: 8,
+  },
+
+  // ── List ────────────────────────────────────────────────────────────
+  list: {
+    padding: Spacing.md,
+    paddingBottom: 80,
+  },
+  separator: {
+    height: 6,
+  },
+
+  // ── Card ────────────────────────────────────────────────────────────
+  card: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderRadius: Radius.r12,
+    padding: 12,
+    gap: 12,
+  },
+  cardUnread: {
+    backgroundColor: 'rgba(47,104,255,0.12)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(47,104,255,0.3)',
+  },
+  iconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.n200,
+    marginBottom: 3,
   },
-  sheetTitle: { fontSize: 16, fontWeight: '700', color: Colors.n900 },
-  headerActions: { flexDirection: 'row', gap: Spacing.md, alignItems: 'center' },
-  actionText: { fontSize: 12, fontWeight: '600', color: Colors.primary },
-  deleteAllText: { fontSize: 12, fontWeight: '600', color: Colors.errorDark },
-  list: { paddingHorizontal: Spacing.lg },
-  emptyWrap: { alignItems: 'center', paddingVertical: 40 },
-  emptyText: { fontSize: 14, color: Colors.n400, marginTop: 8 },
-  // swipeable row
-  notifRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.n200,
-    backgroundColor: Colors.white,
+  cardTitle: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.white,
+    marginRight: 8,
   },
-  dot: {
+  cardTime: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.4)',
+    flexShrink: 0,
+  },
+  cardBody: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.6)',
+    lineHeight: 17,
+  },
+  unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: Colors.primary,
-    marginTop: 5,
+    marginTop: 4,
     flexShrink: 0,
   },
-  dotRead: { backgroundColor: Colors.n300 },
-  notifContent: { flex: 1 },
-  notifTitle: { fontSize: 13, fontWeight: '600', color: Colors.n900 },
-  notifTitleRead: { color: Colors.n500, fontWeight: '400' },
-  notifBody: { fontSize: 12, color: Colors.n500, marginTop: 1, lineHeight: 16 },
-  notifTime: { fontSize: 10, color: Colors.n400, marginTop: 3 },
-  swipeDelete: {
-    backgroundColor: Colors.error,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 72,
-    borderRadius: Radius.r8,
-    marginVertical: 4,
+
+  // ── Invite actions ───────────────────────────────────────────────────
+  actions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
   },
-  swipeDeleteText: { color: Colors.white, fontSize: 11, fontWeight: '700', marginTop: 2 },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: Radius.r999,
+    borderWidth: 1,
+  },
+  actionBtnAccept: {
+    backgroundColor: Colors.successLight,
+    borderColor: Colors.success,
+  },
+  actionBtnDecline: {
+    backgroundColor: Colors.errorLight,
+    borderColor: Colors.error,
+  },
+  actionBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  // ── Empty ────────────────────────────────────────────────────────────
+  emptyWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.6)',
+    marginTop: 8,
+  },
+  emptyBody: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.3)',
+  },
+
+  // ── Mark all read ────────────────────────────────────────────────────
+  markAllBtn: {
+    position: 'absolute',
+    bottom: 24,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: Radius.r999,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  markAllText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
 });
