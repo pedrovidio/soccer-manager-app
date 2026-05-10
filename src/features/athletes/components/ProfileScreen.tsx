@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, Image,
-  StyleSheet, SafeAreaView, ActivityIndicator, Alert,
+  StyleSheet, ActivityIndicator, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -9,6 +9,7 @@ import { useAuthStore } from '../../auth/useAuthStore';
 import { useHomeDashboard } from '../../home/hooks/useHomeDashboard';
 import { BottomNav, NavTab } from '../../common/components/BottomNav';
 import { Colors, Radius, Spacing } from '../../common/theme';
+import { getFullImageUrl } from '../../../lib/imageUrl';
 
 const POSITION_LABEL: Record<string, string> = {
   Goalkeeper: 'Goleiro',
@@ -49,7 +50,7 @@ export default function ProfileScreen() {
   const initials     = name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
   const overallColor = overall >= 70 ? Colors.success : overall >= 50 ? Colors.warning : Colors.error;
   const statusStyle  = STATUS_STYLE[status] ?? STATUS_STYLE['Ativo'];
-  const photoUrl     = dashboard?.photoUrl ?? null;
+  const photoUrl     = getFullImageUrl(dashboard?.photoUrl);
 
   function confirmLogout() {
     Alert.alert('Sair', 'Deseja encerrar sua sessão?', [
@@ -63,14 +64,14 @@ export default function ProfileScreen() {
 
   if (isLoading && !dashboard) {
     return (
-      <SafeAreaView style={[s.safe, s.center]}>
+      <View style={[s.safe, s.center]}>
         <ActivityIndicator size="large" color={Colors.primary} />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={s.safe}>
+    <View style={s.safe}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
 
         {/* HERO */}
@@ -137,7 +138,7 @@ export default function ProfileScreen() {
       </ScrollView>
 
       <BottomNav active={'profile' as NavTab} />
-    </SafeAreaView>
+    </View>
   );
 }
 
