@@ -10,6 +10,7 @@ interface AuthStore extends AuthState {
   logout: () => Promise<void>;
   hydrate: () => Promise<void>;
   setAssessmentCompleted: () => void;
+  isHydrated: boolean;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -18,23 +19,32 @@ export const useAuthStore = create<AuthStore>((set) => ({
   name: null,
   hasCompletedAssessment: false,
   isAuthenticated: false,
+  isHydrated: false,
 
   hydrate: async () => {
-    const [token, athleteId, name, assessment] = await Promise.all([
-      SecureStore.getItemAsync(TOKEN_KEY),
-      SecureStore.getItemAsync('athlete_id'),
-      SecureStore.getItemAsync('athlete_name'),
-      SecureStore.getItemAsync('has_assessment'),
-    ]);
-    if (!token) return;
-    setMemoryToken(token);
-    set({
-      token,
-      athleteId,
-      name,
-      hasCompletedAssessment: assessment === 'true',
-      isAuthenticated: true,
-    });
+    try {
+      const [token, athleteId, name, assessment] = await Promise.all([
+        SecureStore.getItemAsync(TOKEN_KEY),
+        SecureStore.getItemAsync('athlete_id'),
+        SecureStore.getItemAsync('athlete_name'),
+        SecureStore.getItemAsync('has_assessment'),
+      ]);
+      if (!token) {
+        set({ isHydrated: true });
+        return;
+      }
+      setMemoryToken(token);
+      set({
+        token,
+        athleteId,
+        name,
+        hasCompletedAssessment: assessment === 'true',
+        isAuthenticated: true,
+        isHydrated: true,
+      });
+    } catch (e) {
+      set({ isHydrated: true });
+    }
   },
 
   login: async (email, password) => {
