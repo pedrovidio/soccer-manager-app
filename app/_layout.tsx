@@ -1,43 +1,53 @@
-import 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Slot, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { queryClient } from '../src/lib/queryClient';
 import { useAuthStore } from '../src/features/auth/useAuthStore';
 
-function RouteGuard({ children }: { children: React.ReactNode }) {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const hasCompletedAssessment = useAuthStore((s) => s.hasCompletedAssessment);
-  const hydrate = useAuthStore((s) => s.hydrate);
-  const [hydrated, setHydrated] = useState(false);
-  const router = useRouter();
-  const segments = useSegments();
+export default function RootLayout() {
+  const hydrate = useAuthStore((state) => state.hydrate);
 
   useEffect(() => {
-    hydrate().finally(() => setHydrated(true));
-  }, []);
+    hydrate();
+  }, [hydrate]);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    const inAuth = segments[0] === 'login' || segments[0] === 'register';
-    if (!isAuthenticated && !inAuth) { router.replace('/login'); return; }
-    // Só redireciona de volta para home se já completou o assessment
-    if (isAuthenticated && hasCompletedAssessment && inAuth) router.replace('/');
-  }, [hydrated, isAuthenticated, hasCompletedAssessment, segments]);
-
-  if (!hydrated) return null;
-  return <>{children}</>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthGuard />
+    </QueryClientProvider>
+  );
 }
 
-export default function RootLayout() {
+function AuthGuard() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const segments = useSegments();
+  const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
+
+  useEffect(() => {
+    if (!isHydrated || !rootNavigationState?.key) return;
+
+    // Se segments for vazio [], significa que estamos na rota raiz '/'
+    const currentRoute = segments.length > 0 ? segments[0] : '';
+    const inAuthRoute = currentRoute === 'login' || currentRoute === 'register';
+
+    // Delay the navigation slightly to ensure Expo Router has fully mounted its internal navigation tree
+    const timeout = setTimeout(() => {
+      if (!isAuthenticated && !inAuthRoute) {
+        router.replace('/login');
+      } else if (isAuthenticated && inAuthRoute) {
+        router.replace('/'); // Redireciona para o Home/Dashboard se já estiver logado
+      }
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [isAuthenticated, isHydrated, segments, rootNavigationState]);
+
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <RouteGuard>
-          <Stack screenOptions={{ headerShown: false }} />
-        </RouteGuard>
-      </QueryClientProvider>
-    </SafeAreaProvider>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+      <Slot />
+    </SafeAreaView>
   );
 }

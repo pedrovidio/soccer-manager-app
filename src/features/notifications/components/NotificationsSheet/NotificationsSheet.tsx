@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import {
   Modal, View, Text, TouchableOpacity, FlatList,
-  Animated, PanResponder, StatusBar, SafeAreaView,
+  Animated, PanResponder, StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Notification } from '../../types';
 import { Colors } from '../../../common/theme';

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, ScrollView,
-  SafeAreaView, ActivityIndicator, RefreshControl,
+  ActivityIndicator, RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../auth/useAuthStore';
 import { useHomeDashboard } from './hooks/useHomeDashboard';
 import { useNotificationActions } from '../notifications/hooks/useNotifications';
@@ -34,11 +35,22 @@ export default function HomeScreen() {
   const { unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll, respondInvite, respondInvitePending } =
     useNotificationActions(athleteId, notifications);
 
-  const { favoriteId } = useFavoriteGroup();
-  const { data: favoriteGroup } = useQuery({
+  const { favoriteId, toggle } = useFavoriteGroup();
+  const { data: favoriteGroup, isError: favoriteError } = useQuery({
     queryKey: ['group', favoriteId],
-    queryFn: () => groupApi.findById(favoriteId!),
+    queryFn: async () => {
+      try {
+        return await groupApi.findById(favoriteId!);
+      } catch (e: any) {
+        if (e.response?.status === 404) {
+          await AsyncStorage.removeItem('favorite_group_id');
+          toggle(favoriteId!); // Update local state too
+        }
+        throw e;
+      }
+    },
     enabled: !!favoriteId,
+    retry: false,
   });
 
   // Prefer fresh dashboard data, fall back to auth store values while loading
@@ -54,14 +66,14 @@ export default function HomeScreen() {
 
   if (isLoading && !dashboard) {
     return (
-      <SafeAreaView style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color={Colors.primary} />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
       {/* ── HEADER ── */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
@@ -168,6 +180,6 @@ export default function HomeScreen() {
         onRespondInvite={respondInvite}
         respondInvitePending={respondInvitePending}
       />
-    </SafeAreaView>
+    </View>
   );
 }
