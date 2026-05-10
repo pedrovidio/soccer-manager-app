@@ -7,6 +7,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
+import { maskCurrency } from '../../common/masks';
 import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { CreateGroupFormData, GoalkeeperPaymentMode, AthleteSearchResult } from '../groupTypes';
@@ -14,14 +15,13 @@ import { CreateGroupFormData, GoalkeeperPaymentMode, AthleteSearchResult } from 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const GK_MODES: { value: GoalkeeperPaymentMode; label: string; desc: string; icon: string }[] = [
-  { value: 'SPLIT',   label: 'Rateio',     desc: 'Goleiro divide o custo com os demais',      icon: '🤝' },
   { value: 'MONTHLY', label: 'Mensalista', desc: 'Goleiro paga mensalidade normalmente',       icon: '📅' },
   { value: 'FREE',    label: 'Isento',     desc: 'Goleiro não paga nada (benefício do grupo)', icon: '🎁' },
 ];
 
 const INITIAL: CreateGroupFormData = {
   name: '', description: '', pixKey: '', monthlyFee: '',
-  goalkeeperPaymentMode: 'SPLIT',
+  goalkeeperPaymentMode: 'MONTHLY',
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -260,14 +260,14 @@ function Step1({
 
       <View style={s.row}>
         <View style={{ flex: 1, marginRight: 8 }}>
-          <Field label="Mensalidade (R$)">
+          <Field label="Valor Mensal">
             <TextInput
               style={s.input}
               placeholder="0,00"
               placeholderTextColor={Colors.n400}
               keyboardType="decimal-pad"
               value={form.monthlyFee}
-              onChangeText={(v) => set('monthlyFee', v)}
+              onChangeText={(v) => set('monthlyFee', maskCurrency(v))}
             />
           </Field>
         </View>

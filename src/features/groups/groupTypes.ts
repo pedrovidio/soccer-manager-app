@@ -1,4 +1,4 @@
-export type GoalkeeperPaymentMode = 'SPLIT' | 'MONTHLY' | 'FREE';
+export type GoalkeeperPaymentMode = 'MONTHLY' | 'FREE';
 
 export interface CreateGroupPayload {
   adminId: string;
