@@ -10,6 +10,7 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { matchApi } from '../services/matchApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender } from '../types';
+import { BackButton } from '../../common/components/BackButton';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -153,10 +154,8 @@ export default function MatchHomeScreen() {
 
       {/* HEADER */}
       <View style={s.header}>
-        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color={Colors.n900} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
+        <BackButton />
+        <View style={{ flex: 1, minWidth: 0 }}>
           <Text style={s.headerTitle} numberOfLines={1}>{data.location}</Text>
           <Text style={s.headerSub}>{date}</Text>
         </View>
@@ -170,7 +169,7 @@ export default function MatchHomeScreen() {
         )}
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scrollContent}>
 
         {/* ── INFO CARD ── */}
         <View style={s.infoCard}>
@@ -371,7 +370,6 @@ export default function MatchHomeScreen() {
           </View>
         )}
 
-        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -416,12 +414,13 @@ function PresenceRow({ item }: { item: MatchPresence }) {
 
 const s = StyleSheet.create({
   safe:        { flex: 1, backgroundColor: Colors.n50 },
+  scrollContent: { flexGrow: 1, paddingBottom: 20 },
   center:      { justifyContent: 'center', alignItems: 'center', gap: 8 },
   errorText:   { fontSize: 14, color: Colors.n700 },
   retryBtn:    { marginTop: 8, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: Colors.primary, borderRadius: Radius.r8 },
   retryText:   { color: Colors.white, fontWeight: '600' },
 
-  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.n200, gap: 12 },
+  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.n200, gap: 12, minHeight: 56 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 15, fontWeight: '800', color: Colors.n900 },
   headerSub:   { fontSize: 11, color: Colors.n500, textTransform: 'capitalize' },

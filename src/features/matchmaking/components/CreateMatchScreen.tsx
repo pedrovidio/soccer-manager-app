@@ -12,6 +12,7 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { PlacesAutocomplete, PlaceResult } from '../../common/PlacesAutocomplete';
 import { matchApi } from '../services/matchApi';
 import { useAuthStore } from '../../auth/useAuthStore';
+import { BackButton } from '../../common/components/BackButton';
 
 type MatchType = 'CAMPO' | 'SOCIETY' | 'FUTSAL';
 
@@ -144,9 +145,7 @@ export default function CreateMatchScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.header}>
-        <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color={Colors.n900} />
-        </TouchableOpacity>
+        <BackButton />
         <Text style={s.headerTitle}>{isEditing ? 'Editar partida' : 'Marcar partida'}</Text>
         <View style={{ width: 36 }} />
       </View>

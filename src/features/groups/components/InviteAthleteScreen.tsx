@@ -9,6 +9,7 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { AthleteSearchResult, GroupInviteItem } from '../groupTypes';
+import { BackButton } from '../../common/components/BackButton';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -136,9 +137,7 @@ export default function InviteAthleteScreen() {
 
       {/* ── HEADER ── */}
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={Colors.n900} />
-        </TouchableOpacity>
+        <BackButton />
         <View style={{ flex: 1 }}>
           <Text style={s.headerTitle}>Convidar atleta</Text>
           {groupName ? <Text style={s.headerSub} numberOfLines={1}>{groupName}</Text> : null}

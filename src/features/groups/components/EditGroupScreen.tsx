@@ -6,12 +6,13 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Radius, Spacing } from '../../common/theme';
+import { maskCurrency } from '../../common/masks';
 import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { CreateGroupFormData, GoalkeeperPaymentMode, GroupResponse } from '../groupTypes';
+import { BackButton } from '../../common/components/BackButton';
 
 const GK_MODES: { value: GoalkeeperPaymentMode; label: string; desc: string; icon: string }[] = [
-  { value: 'SPLIT',   label: 'Rateio',     desc: 'Goleiro divide o custo com os demais',      icon: '🤝' },
   { value: 'MONTHLY', label: 'Mensalista', desc: 'Goleiro paga mensalidade normalmente',       icon: '📅' },
   { value: 'FREE',    label: 'Isento',     desc: 'Goleiro não paga nada (benefício do grupo)', icon: '🎁' },
 ];
@@ -41,7 +42,7 @@ export default function EditGroupScreen() {
   const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>({
     name: '', description: '', pixKey: '', monthlyFee: '',
-    goalkeeperPaymentMode: 'SPLIT',
+    goalkeeperPaymentMode: 'MONTHLY',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -118,9 +119,7 @@ export default function EditGroupScreen() {
 
         {/* ── HEADER ── */}
         <View style={s.header}>
-          <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-            <Text style={s.backIcon}>←</Text>
-          </TouchableOpacity>
+          <BackButton />
           <View style={{ flex: 1 }}>
             <Text style={s.headerTitle}>Editar grupo</Text>
             <Text style={s.headerSub} numberOfLines={1}>{group?.name}</Text>
@@ -172,14 +171,14 @@ export default function EditGroupScreen() {
 
           <View style={s.row}>
             <View style={{ flex: 1, marginRight: 8 }}>
-              <Field label="Mensalidade (R$)">
+              <Field label="Valor Mensal">
                 <TextInput
                   style={[s.input, !isAdmin ? s.inputDisabled : null]}
                   placeholder="0,00"
                   placeholderTextColor={Colors.n400}
                   keyboardType="decimal-pad"
                   value={form.monthlyFee}
-                  onChangeText={(v) => set('monthlyFee', v)}
+                  onChangeText={(v) => set('monthlyFee', maskCurrency(v))}
                   editable={isAdmin}
                 />
               </Field>

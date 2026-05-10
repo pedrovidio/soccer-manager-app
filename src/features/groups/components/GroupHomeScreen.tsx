@@ -11,6 +11,7 @@ import { groupApi } from '../services/groupApi';
 import { athleteApi } from '../../athletes/services/athleteApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { GroupMember, GroupUpcomingMatch } from '../groupTypes';
+import { BackButton } from '../../common/components/BackButton';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -80,9 +81,7 @@ export default function GroupHomeScreen() {
 
       {/* ── HEADER ── */}
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={Colors.n900} />
-        </TouchableOpacity>
+        <BackButton />
         <View style={{ flex: 1 }}>
           <Text style={s.headerTitle} numberOfLines={1}>{group.name}</Text>
           <Text style={s.headerSub}>{members.length} membros</Text>
