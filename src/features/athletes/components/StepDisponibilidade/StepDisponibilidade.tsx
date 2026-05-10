@@ -1,189 +1,143 @@
-import React, { useState } from 'react';
-import {
-  View, Text, TouchableOpacity, ScrollView, Switch, StyleSheet, Modal, Platform,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius, Spacing } from '../../../common/theme';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors, Radius } from '../../../common/theme';
 import type { useEditProfileForm } from '../../hooks/useEditProfileForm';
-import type { AvailabilitySlot } from '../../../auth/registerTypes';
+import { SwitchRow, TimeSelect } from '../../../common/components/form/FormElements';
 
 type Props = Pick<
   ReturnType<typeof useEditProfileForm>,
-  'wantsAvailability' | 'setWantsAvailability' | 'slots' | 'setSlots'
+  | 'wantsAvailability' | 'setWantsAvailability'
+  | 'slots' | 'setSlots'
 >;
 
 const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-function timeToDate(time: string): Date {
-  const [h, m] = time.split(':').map(Number);
-  const d = new Date();
-  d.setHours(h, m, 0, 0);
-  return d;
-}
+export default function StepDisponibilidade(props: Props) {
+  const { wantsAvailability, setWantsAvailability, slots: availabilitySlots, setSlots: setAvailabilitySlots } = props;
 
-function dateToTime(date: Date): string {
-  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-}
-
-export default function StepDisponibilidade({ wantsAvailability, setWantsAvailability, slots, setSlots }: Props) {
-  const [pickerTarget, setPickerTarget] = useState<{ index: number; field: 'startTime' | 'endTime' } | null>(null);
-
-  function addSlot() {
-    setSlots([...slots, { dayOfWeek: 1, startTime: '08:00', endTime: '10:00' }]);
+  function pad2(n: string | number) { return String(n).padStart(2, '0'); }
+  function addOneHour(time: string) {
+    const [h, m] = time.split(':').map(Number);
+    let nh = (h + 1) % 24;
+    return pad2(nh) + ':' + pad2(m);
   }
 
-  function removeSlot(index: number) {
-    setSlots(slots.filter((_, i) => i !== index));
+  function toggleDay(day: number) {
+    const exists = availabilitySlots.some((s) => s.dayOfWeek === day);
+    if (exists) {
+      setAvailabilitySlots(availabilitySlots.filter((s) => s.dayOfWeek !== day));
+    } else {
+      setAvailabilitySlots([...availabilitySlots, { dayOfWeek: day, startTime: '18:00', endTime: '20:00' }]);
+    }
   }
 
-  function updateSlot(index: number, patch: Partial<AvailabilitySlot>) {
-    setSlots(slots.map((s, i) => (i === index ? { ...s, ...patch } : s)));
+  function handleStartTimeChange(idx: number, timeStr: string) {
+    const endTime = addOneHour(timeStr);
+    const updated = availabilitySlots.map((s, i) => i === idx ? { ...s, startTime: timeStr, endTime } : s);
+    setAvailabilitySlots(updated);
   }
 
-  function onTimeChange(_: any, date?: Date) {
-    if (!pickerTarget || !date) { setPickerTarget(null); return; }
-    updateSlot(pickerTarget.index, { [pickerTarget.field]: dateToTime(date) });
-    setPickerTarget(null);
+  function handleEndTimeChange(idx: number, timeStr: string) {
+    const updated = availabilitySlots.map((s, i) => i === idx ? { ...s, endTime: timeStr } : s);
+    setAvailabilitySlots(updated);
   }
 
-  const pickerValue = pickerTarget
-    ? timeToDate(slots[pickerTarget.index]?.[pickerTarget.field] ?? '08:00')
-    : new Date();
+  const sortedSlots = [...availabilitySlots].sort((a, b) => a.dayOfWeek - b.dayOfWeek);
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
+    <View>
+      <Text style={s.stepTitle}>Disponibilidade</Text>
+      <Text style={s.stepSubtitle}>Informe quando você está disponível para partidas avulsas</Text>
 
-      {/* Toggle principal */}
-      <View style={s.card}>
-        <View style={s.switchRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={s.switchLabel}>Quero jogar como avulso</Text>
-            <Text style={s.switchDesc}>Defina seus horários disponíveis para partidas</Text>
-          </View>
-          <Switch
-            value={wantsAvailability} onValueChange={setWantsAvailability}
-            trackColor={{ false: Colors.n300, true: Colors.primary }}
-            thumbColor={Colors.white}
-          />
-        </View>
-      </View>
+      <SwitchRow
+        label="Quero receber convites para partidas"
+        desc="Você aparecerá para times buscando jogadores avulsos"
+        value={wantsAvailability}
+        onValueChange={(v) => {
+          setWantsAvailability(v);
+          if (!v) setAvailabilitySlots([]);
+        }}
+      />
 
       {wantsAvailability && (
         <>
-          {slots.map((slot, index) => (
-            <View key={index} style={s.slotCard}>
-              <View style={s.slotHeader}>
-                <Text style={s.slotTitle}>Horário {index + 1}</Text>
-                <TouchableOpacity onPress={() => removeSlot(index)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Ionicons name="trash-outline" size={18} color={Colors.error} />
+          <Text style={s.sectionLabel}>Dias disponíveis</Text>
+          <View style={s.daysRow}>
+            {DAYS.map((label, day) => {
+              const active = availabilitySlots.some((s) => s.dayOfWeek === day);
+              return (
+                <TouchableOpacity
+                  key={day}
+                  style={[s.dayChip, active && s.dayChipActive]}
+                  onPress={() => toggleDay(day)}
+                >
+                  <Text style={[s.dayChipText, active && s.dayChipTextActive]}>{label}</Text>
                 </TouchableOpacity>
-              </View>
+              );
+            })}
+          </View>
 
-              {/* Dia da semana */}
-              <Text style={s.fieldLabel}>Dia da semana</Text>
-              <View style={s.daysRow}>
-                {DAYS.map((day, di) => (
-                  <TouchableOpacity
-                    key={di}
-                    style={[s.dayChip, slot.dayOfWeek === di && s.dayChipActive]}
-                    onPress={() => updateSlot(index, { dayOfWeek: di })}
-                  >
-                    <Text style={[s.dayChipText, slot.dayOfWeek === di && s.dayChipTextActive]}>{day}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              {/* Horários */}
-              <View style={s.timeRow}>
-                <View style={s.timeBlock}>
-                  <Text style={s.fieldLabel}>Início</Text>
-                  <TouchableOpacity
-                    style={s.timeBtn}
-                    onPress={() => setPickerTarget({ index, field: 'startTime' })}
-                  >
-                    <Ionicons name="time-outline" size={16} color={Colors.primary} />
-                    <Text style={s.timeBtnText}>{slot.startTime}</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={s.timeBlock}>
-                  <Text style={s.fieldLabel}>Fim</Text>
-                  <TouchableOpacity
-                    style={s.timeBtn}
-                    onPress={() => setPickerTarget({ index, field: 'endTime' })}
-                  >
-                    <Ionicons name="time-outline" size={16} color={Colors.primary} />
-                    <Text style={s.timeBtnText}>{slot.endTime}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+          {sortedSlots.length > 0 && (
+            <View style={{ marginTop: 16 }}>
+              <Text style={s.sectionLabel}>Defina os horários</Text>
+              {sortedSlots.map((slot) => {
+                const idx = availabilitySlots.findIndex((s) => s.dayOfWeek === slot.dayOfWeek);
+                return (
+                  <View key={slot.dayOfWeek} style={s.slotCard}>
+                    <View style={s.slotCardHeader}>
+                      <Text style={s.slotDayLabel}>{DAYS[slot.dayOfWeek]}</Text>
+                      <TouchableOpacity onPress={() => toggleDay(slot.dayOfWeek)}>
+                        <Text style={s.slotRemove}>Remover</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={s.slotTimeRow}>
+                      <View style={s.timeBlock}>
+                        <Text style={s.timeLabel}>Início</Text>
+                        <TimeSelect value={slot.startTime} onChange={(v) => handleStartTimeChange(idx, v)} />
+                      </View>
+                      <View style={s.timeDiv}>
+                         <Text style={s.timeDivText}>até</Text>
+                      </View>
+                      <View style={s.timeBlock}>
+                        <Text style={s.timeLabel}>Fim</Text>
+                        <TimeSelect value={slot.endTime} onChange={(v) => handleEndTimeChange(idx, v)} />
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
             </View>
-          ))}
+          )}
 
-          <TouchableOpacity style={s.addBtn} onPress={addSlot}>
-            <Ionicons name="add-circle-outline" size={20} color={Colors.primary} />
-            <Text style={s.addBtnText}>Adicionar horário</Text>
-          </TouchableOpacity>
+          {sortedSlots.length === 0 && (
+            <View style={s.emptySlots}>
+              <Text style={s.emptySlotsText}>Selecione ao menos um dia acima</Text>
+            </View>
+          )}
         </>
       )}
-
-      {/* Time picker */}
-      {pickerTarget !== null && (
-        Platform.OS === 'ios' ? (
-          <Modal transparent animationType="slide">
-            <View style={s.modalOverlay}>
-              <View style={s.modalSheet}>
-                <View style={s.modalHeader}>
-                  <Text style={s.modalTitle}>
-                    {pickerTarget.field === 'startTime' ? 'Horário de início' : 'Horário de fim'}
-                  </Text>
-                  <TouchableOpacity onPress={() => setPickerTarget(null)}>
-                    <Text style={s.modalDone}>Feito</Text>
-                  </TouchableOpacity>
-                </View>
-                <DateTimePicker
-                  value={pickerValue} mode="time" display="spinner"
-                  onChange={onTimeChange} locale="pt-BR"
-                />
-              </View>
-            </View>
-          </Modal>
-        ) : (
-          <DateTimePicker
-            value={pickerValue} mode="time" display="default"
-            onChange={onTimeChange}
-          />
-        )
-      )}
-
-    </ScrollView>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  scroll:           { padding: Spacing.lg, paddingBottom: 24, gap: 12 },
-  card:             { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 0.5, borderColor: Colors.n200, padding: Spacing.lg },
-  switchRow:        { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  switchLabel:      { fontSize: 13, fontWeight: '600', color: Colors.n800 },
-  switchDesc:       { fontSize: 11, color: Colors.n500, marginTop: 2 },
-  slotCard:         { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 0.5, borderColor: Colors.n200, padding: Spacing.lg, gap: 10 },
-  slotHeader:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  slotTitle:        { fontSize: 13, fontWeight: '700', color: Colors.n900 },
-  fieldLabel:       { fontSize: 12, fontWeight: '600', color: Colors.n700, marginBottom: 6 },
-  daysRow:          { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
-  dayChip:          { width: 38, height: 38, borderRadius: Radius.r8, borderWidth: 1.5, borderColor: Colors.n300, alignItems: 'center', justifyContent: 'center' },
-  dayChipActive:    { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
-  dayChipText:      { fontSize: 11, fontWeight: '600', color: Colors.n500 },
-  dayChipTextActive:{ color: Colors.primary },
-  timeRow:          { flexDirection: 'row', gap: 12 },
-  timeBlock:        { flex: 1 },
-  timeBtn:          { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: Colors.primaryLight, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
-  timeBtnText:      { fontSize: 14, fontWeight: '700', color: Colors.primary },
-  addBtn:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: Radius.r12, borderWidth: 1.5, borderColor: Colors.primary, borderStyle: 'dashed' },
-  addBtnText:       { fontSize: 14, fontWeight: '600', color: Colors.primary },
-  modalOverlay:     { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
-  modalSheet:       { backgroundColor: Colors.white, borderTopLeftRadius: Radius.r24, borderTopRightRadius: Radius.r24, paddingBottom: 32 },
-  modalHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: Spacing.lg, borderBottomWidth: 0.5, borderBottomColor: Colors.n200 },
-  modalTitle:       { fontSize: 15, fontWeight: '700', color: Colors.n900 },
-  modalDone:        { fontSize: 15, fontWeight: '700', color: Colors.primary },
+  stepTitle:       { fontSize: 22, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
+  stepSubtitle:    { fontSize: 13, color: Colors.n500, marginBottom: 20 },
+  sectionLabel:    { fontSize: 13, fontWeight: '700', color: Colors.n700, marginBottom: 10 },
+  daysRow:        { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 },
+  dayChip:        { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: Colors.n300, backgroundColor: Colors.white },
+  dayChipActive:  { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
+  dayChipText:    { fontSize: 11, fontWeight: '600', color: Colors.n700 },
+  dayChipTextActive: { color: Colors.primary },
+  slotCard:       { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: 16, marginBottom: 12 },
+  slotCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  slotDayLabel:   { fontSize: 15, fontWeight: '700', color: Colors.n900 },
+  slotRemove:     { fontSize: 13, fontWeight: '600', color: Colors.error },
+  slotTimeRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  timeBlock:      { flex: 1 },
+  timeLabel:      { fontSize: 12, fontWeight: '600', color: Colors.n500, marginBottom: 6 },
+  timeDiv:        { paddingHorizontal: 12, justifyContent: 'flex-end', paddingBottom: 10 },
+  timeDivText:    { fontSize: 13, color: Colors.n500 },
+  emptySlots:     { alignItems: 'center', paddingVertical: 16 },
+  emptySlotsText: { fontSize: 13, color: Colors.n400 },
 });

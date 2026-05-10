@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, Switch,
-  ScrollView, Image, ActivityIndicator, Alert, StyleSheet,
+  View, Text, TextInput, TouchableOpacity,
+  Image, ActivityIndicator, Alert, StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,6 +11,8 @@ import { queryKeys } from '../../../../lib/queryKeys';
 import { Colors, Radius, Spacing } from '../../../common/theme';
 import { maskCpf, maskPhone } from '../../../common/masks';
 import type { useEditProfileForm } from '../../hooks/useEditProfileForm';
+import { FormField, ChipRow, SwitchRow, UFSelect } from '../../../common/components/form/FormElements';
+import { getFullImageUrl } from '../../../../lib/imageUrl';
 
 type Props = Pick<
   ReturnType<typeof useEditProfileForm>,
@@ -29,6 +31,11 @@ const POSITIONS = [
   { value: 'Defender',   label: 'Zagueiro' },
   { value: 'Midfielder', label: 'Meia' },
   { value: 'Forward',    label: 'Atacante' },
+];
+
+const GENDERS = [
+  { value: 'M', label: 'Masculino' },
+  { value: 'F', label: 'Feminino' },
 ];
 
 export default function StepCadastro(props: Props) {
@@ -68,11 +75,13 @@ export default function StepCadastro(props: Props) {
     }
   }
 
-  const currentPhoto = photoUri ?? dashboard?.photoUrl ?? null;
+  const currentPhoto = photoUri ?? getFullImageUrl(dashboard?.photoUrl) ?? null;
   const initials = (dashboard?.name ?? '').split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
+    <View>
+      <Text style={s.stepTitle}>Dados pessoais</Text>
+      <Text style={s.stepSubtitle}>Informações básicas e endereço</Text>
 
       {/* Foto */}
       <View style={s.photoSection}>
@@ -92,163 +101,138 @@ export default function StepCadastro(props: Props) {
       </View>
 
       {/* Dados pessoais */}
-      <View style={s.card}>
-        <Field label="Nome completo">
-          <TextInput style={s.input} value={name} onChangeText={setName} autoCapitalize="words" />
-        </Field>
-        <Field label="CPF">
-          <TextInput
-            style={s.input} value={cpf} keyboardType="numeric"
-            onChangeText={(v) => setCpf(maskCpf(v))}
-            placeholder="000.000.000-00" placeholderTextColor={Colors.n400}
-          />
-        </Field>
-        <Field label="Sexo">
-          <View style={s.chipRow}>
-            {([{ value: 'M', label: 'Masculino' }, { value: 'F', label: 'Feminino' }] as const).map((g) => (
-              <TouchableOpacity
-                key={g.value}
-                style={[s.chip, gender === g.value && s.chipActive]}
-                onPress={() => setGender(g.value)}
-              >
-                <Text style={[s.chipText, gender === g.value && s.chipTextActive]}>{g.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </Field>
-        <Field label="Telefone">
-          <TextInput
-            style={s.input} value={phone} keyboardType="phone-pad"
-            onChangeText={(v) => setPhone(maskPhone(v))}
-            placeholder="(00) 00000-0000" placeholderTextColor={Colors.n400}
-          />
-        </Field>
-        <Field label="Idade">
-          <TextInput style={s.input} value={age} keyboardType="numeric" onChangeText={(v) => setAge(v.replace(/\D/g, ''))} />
-        </Field>
-        <Field label="Posição">
-          <View style={s.chipRow}>
-            {POSITIONS.map((p) => (
-              <TouchableOpacity
-                key={p.value}
-                style={[s.chip, position === p.value && s.chipActive]}
-                onPress={() => setPosition(p.value)}
-              >
-                <Text style={[s.chipText, position === p.value && s.chipTextActive]}>{p.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </Field>
-      </View>
+      <FormField label="Nome completo">
+        <TextInput style={s.input} value={name} onChangeText={setName} autoCapitalize="words" />
+      </FormField>
+      <FormField label="CPF">
+        <TextInput
+          style={s.input} value={cpf} keyboardType="numeric"
+          onChangeText={(v) => setCpf(maskCpf(v))}
+          placeholder="000.000.000-00" placeholderTextColor={Colors.n400}
+        />
+      </FormField>
+      <FormField label="Sexo">
+        <ChipRow
+          options={GENDERS}
+          selectedValue={gender}
+          onSelect={setGender}
+        />
+      </FormField>
 
-      {/* Goleiro de aluguel */}
-      <View style={s.card}>
-        <View style={s.switchRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={s.switchLabel}>Disponível como goleiro de aluguel</Text>
-            <Text style={s.switchDesc}>Aparecer para partidas que precisam de goleiro</Text>
-          </View>
-          <Switch
-            value={isGK} onValueChange={setIsGK}
-            trackColor={{ false: Colors.n300, true: Colors.primary }}
-            thumbColor={Colors.white}
-          />
+      <View style={s.row}>
+        <View style={s.flex1}>
+          <FormField label="Telefone">
+            <TextInput
+              style={s.input} value={phone} keyboardType="phone-pad"
+              onChangeText={(v) => setPhone(maskPhone(v))}
+              placeholder="(00) 00000-0000" placeholderTextColor={Colors.n400}
+            />
+          </FormField>
+        </View>
+        <View style={s.flex1}>
+          <FormField label="Idade">
+            <TextInput style={s.input} value={age} keyboardType="numeric" onChangeText={(v) => setAge(v.replace(/\D/g, ''))} />
+          </FormField>
         </View>
       </View>
+
+      <FormField label="Posição">
+        <ChipRow
+          options={POSITIONS}
+          selectedValue={position}
+          onSelect={setPosition}
+        />
+      </FormField>
 
       {/* PIX */}
-      <View style={s.card}>
-        <Field label="Chave PIX">
-          <TextInput
-            style={s.input} value={pixKey} onChangeText={setPixKey}
-            placeholder="CPF, e-mail, telefone ou chave aleatória"
-            placeholderTextColor={Colors.n400} autoCapitalize="none"
-          />
-        </Field>
-      </View>
+      <FormField label="Chave PIX">
+        <TextInput
+          style={s.input} value={pixKey} onChangeText={setPixKey}
+          placeholder="CPF, e-mail, telefone ou chave aleatória"
+          placeholderTextColor={Colors.n400} autoCapitalize="none"
+        />
+      </FormField>
 
       {/* Endereço */}
-      <View style={s.card}>
-        <Field label="CEP">
-          <View style={s.inputWrap}>
-            <TextInput
-              style={[s.input, s.inputFlex]} value={cep} keyboardType="numeric"
-              onChangeText={setCep}
-              placeholder="00000-000" placeholderTextColor={Colors.n400}
-            />
-            {cepLoading && <ActivityIndicator size="small" color={Colors.primary} style={s.inputIcon} />}
-          </View>
-        </Field>
-        <Field label="Rua">
-          <TextInput style={s.input} value={street} onChangeText={setStreet} autoCapitalize="words" editable={!cepLoading} />
-        </Field>
-        <View style={s.row}>
-          <View style={s.flex1}>
-            <Field label="Número">
-              <TextInput style={s.input} value={addrNum} onChangeText={setAddrNum} keyboardType="numeric" />
-            </Field>
-          </View>
-          <View style={s.flex1}>
-            <Field label="Complemento">
-              <TextInput style={s.input} value={complement} onChangeText={setComplement} />
-            </Field>
-          </View>
+      <View style={s.divider} />
+      <Text style={s.sectionLabel}>Endereço</Text>
+
+      <View style={s.row}>
+        <View style={s.flex1}>
+          <FormField label="CEP">
+            <View style={s.inputWrap}>
+              <TextInput
+                style={[s.input, s.inputFlex]} value={cep} keyboardType="numeric"
+                onChangeText={setCep}
+                placeholder="00000-000" placeholderTextColor={Colors.n400}
+              />
+              {cepLoading && <ActivityIndicator size="small" color={Colors.primary} style={s.inputIcon} />}
+            </View>
+          </FormField>
         </View>
-        <Field label="Bairro">
-          <TextInput style={s.input} value={neighborhood} onChangeText={setNeighborhood} autoCapitalize="words" editable={!cepLoading} />
-        </Field>
-        <View style={s.row}>
-          <View style={s.flex2}>
-            <Field label="Cidade">
-              <TextInput style={s.input} value={city} onChangeText={setCity} autoCapitalize="words" editable={!cepLoading} />
-            </Field>
-          </View>
-          <View style={s.flex1}>
-            <Field label="UF">
-              <TextInput style={s.input} value={addrState} onChangeText={(v) => setAddrState(v.toUpperCase())} maxLength={2} autoCapitalize="characters" editable={!cepLoading} />
-            </Field>
-          </View>
+        <View style={s.flex2}>
+          <FormField label="Rua">
+            <TextInput style={s.input} value={street} onChangeText={setStreet} autoCapitalize="words" editable={!cepLoading} />
+          </FormField>
         </View>
       </View>
 
-    </ScrollView>
-  );
-}
+      <View style={s.row}>
+        <View style={s.flex1}>
+          <FormField label="Número">
+            <TextInput style={s.input} value={addrNum} onChangeText={setAddrNum} keyboardType="numeric" />
+          </FormField>
+        </View>
+        <View style={s.flex2}>
+          <FormField label="Complemento">
+            <TextInput style={s.input} value={complement} onChangeText={setComplement} />
+          </FormField>
+        </View>
+      </View>
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <View style={s.field}>
-      <Text style={s.fieldLabel}>{label}</Text>
-      {children}
+      <FormField label="Bairro">
+        <TextInput style={s.input} value={neighborhood} onChangeText={setNeighborhood} autoCapitalize="words" editable={!cepLoading} />
+      </FormField>
+
+      <View style={s.row}>
+        <View style={s.flex2}>
+          <FormField label="Cidade">
+            <TextInput style={s.input} value={city} onChangeText={setCity} autoCapitalize="words" editable={!cepLoading} />
+          </FormField>
+        </View>
+      </View>
+
+      <FormField label="UF">
+        <UFSelect value={addrState} onChange={setAddrState} />
+      </FormField>
+
+      <SwitchRow
+        label="Disponível como goleiro de aluguel?"
+        desc="Você poderá ser contratado para partidas"
+        value={isGK}
+        onValueChange={setIsGK}
+      />
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  scroll:          { padding: Spacing.lg, paddingBottom: 24, gap: 12 },
-  photoSection:    { alignItems: 'center', paddingVertical: 8, gap: 8 },
+  stepTitle:       { fontSize: 22, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
+  stepSubtitle:    { fontSize: 13, color: Colors.n500, marginBottom: 20 },
+  photoSection:    { alignItems: 'center', paddingVertical: 12, marginBottom: 20, gap: 8 },
   avatarWrap:      { position: 'relative' },
   avatarImg:       { width: 88, height: 88, borderRadius: 44 },
   avatarFallback:  { width: 88, height: 88, borderRadius: 44, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
   avatarInitials:  { fontSize: 30, fontWeight: '800', color: Colors.primary },
   cameraOverlay:   { position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: Colors.white },
   photoHint:       { fontSize: 12, color: Colors.n400 },
-  card:            { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 0.5, borderColor: Colors.n200, padding: Spacing.lg, gap: 4 },
-  field:           { marginBottom: 12 },
-  fieldLabel:      { fontSize: 12, fontWeight: '600', color: Colors.n700, marginBottom: 5 },
-  input:           { backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: Colors.n900 },
+  input:           { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: Colors.n900 },
   inputWrap:       { flexDirection: 'row', alignItems: 'center' },
   inputFlex:       { flex: 1 },
-  inputIcon:       { position: 'absolute', right: 10 },
-  chipRow:         { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip:            { paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.r8, borderWidth: 1.5, borderColor: Colors.n300, backgroundColor: Colors.white },
-  chipActive:      { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
-  chipText:        { fontSize: 12, fontWeight: '500', color: Colors.n700 },
-  chipTextActive:  { color: Colors.primary, fontWeight: '700' },
-  switchRow:       { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  switchLabel:     { fontSize: 13, fontWeight: '600', color: Colors.n800 },
-  switchDesc:      { fontSize: 11, color: Colors.n500, marginTop: 2 },
-  row:             { flexDirection: 'row', gap: 10 },
-  flex1:           { flex: 1 },
-  flex2:           { flex: 2 },
+  inputIcon:       { marginLeft: 8 },
+  divider:         { height: 1, backgroundColor: Colors.n200, marginVertical: 16 },
+  sectionLabel:    { fontSize: 13, fontWeight: '700', color: Colors.n700, marginBottom: 10 },
+  row:             { flexDirection: 'row', alignItems: 'flex-start' },
+  flex1:           { flex: 1, marginRight: 8 },
+  flex2:           { flex: 2, marginRight: 8 },
 });
