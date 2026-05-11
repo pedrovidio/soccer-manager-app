@@ -10,13 +10,7 @@ import { useHomeDashboard } from '../../home/hooks/useHomeDashboard';
 import { BottomNav, NavTab } from '../../common/components/BottomNav';
 import { Colors, Radius, Spacing } from '../../common/theme';
 import { getFullImageUrl } from '../../../lib/imageUrl';
-
-const POSITION_LABEL: Record<string, string> = {
-  Goalkeeper: 'Goleiro',
-  Defender:   'Zagueiro',
-  Midfielder: 'Meia',
-  Forward:    'Atacante',
-};
+import { formatPositionLabel } from '../utils/positionLabel';
 
 const ATTRS: { key: string; label: string }[] = [
   { key: 'pace',      label: 'Velocidade' },
@@ -89,7 +83,7 @@ export default function ProfileScreen() {
             </View>
           )}
           <Text style={s.name}>{name}</Text>
-          <Text style={s.positionText}>{POSITION_LABEL[position] ?? position}</Text>
+          <Text style={s.positionText}>{formatPositionLabel(position)}</Text>
           <View style={s.heroRow}>
             <View style={[s.ovrBadge, { backgroundColor: overallColor }]}>
               <Text style={s.ovrNum}>{overall}</Text>

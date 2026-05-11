@@ -19,6 +19,7 @@ import { MatchCard } from './components/MatchCard';
 import { NotificationsSheet } from '../notifications/components/NotificationsSheet';
 import { Colors } from '../common/theme';
 import { styles } from './HomeScreen.styles';
+import { formatPositionLabel } from '../athletes/utils/positionLabel';
 
 export default function HomeScreen() {
   const [activeTab] = useState<NavTab>('home');
@@ -56,7 +57,7 @@ export default function HomeScreen() {
   // Prefer fresh dashboard data, fall back to auth store values while loading
   const name     = dashboard?.name     ?? authName     ?? '—';
   const overall  = dashboard?.overall  ?? 0;
-  const position = dashboard?.position ?? '—';
+  const position = formatPositionLabel(dashboard?.position);
   const status   = dashboard?.status   ?? 'Ativo';
 
   const allMatches  = confirmedMatches;
