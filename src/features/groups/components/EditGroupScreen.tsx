@@ -62,7 +62,7 @@ export default function EditGroupScreen() {
           name:                  g.name,
           description:           g.description ?? '',
           pixKey:                g.pixKey ?? '',
-          monthlyFee:            g.monthlyFee > 0 ? String(g.monthlyFee) : '',
+          monthlyFee:            g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
           goalkeeperPaymentMode: g.goalkeeperPaymentMode,
         });
       })
@@ -75,7 +75,7 @@ export default function EditGroupScreen() {
   function validate(): string | null {
     if (!form.name.trim())           return 'Informe o nome do grupo.';
     if (form.name.trim().length < 3) return 'O nome deve ter ao menos 3 caracteres.';
-    if (form.monthlyFee && isNaN(Number(form.monthlyFee.replace(',', '.')))) {
+    if (form.monthlyFee && !form.monthlyFee.replace(/\D/g, '')) {
       return 'Mensalidade deve ser um valor numérico.';
     }
     return null;
@@ -92,7 +92,7 @@ export default function EditGroupScreen() {
         name:                  form.name.trim(),
         description:           form.description.trim() || undefined,
         pixKey:                form.pixKey.trim()       || undefined,
-        monthlyFee:            form.monthlyFee ? Number(form.monthlyFee.replace(',', '.')) : 0,
+        monthlyFee:            form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
         goalkeeperPaymentMode: form.goalkeeperPaymentMode,
       });
       Alert.alert('Salvo!', 'As alterações foram salvas com sucesso.', [

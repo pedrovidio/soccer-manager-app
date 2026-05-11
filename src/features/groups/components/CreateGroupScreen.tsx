@@ -119,7 +119,7 @@ export default function CreateGroupScreen() {
     setSubmitting(true);
     try {
       const monthlyFeeNum = form.monthlyFee
-        ? Number(form.monthlyFee.replace(',', '.'))
+        ? Number(form.monthlyFee.replace(/\D/g, '')) / 100
         : undefined;
 
       const group = await groupApi.create({

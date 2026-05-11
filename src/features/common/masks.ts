@@ -28,10 +28,11 @@ export function digitsOnly(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-/** Aplica máscara de moeda: 0.000,00 */
+/** Aplica máscara de moeda: R$ 0.000,00 */
 export function maskCurrency(value: string): string {
   const digits = value.replace(/\D/g, '');
   if (!digits) return '';
-  const numValue = parseInt(digits, 10);
-  return (numValue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const numValue = (parseInt(digits, 10) / 100).toFixed(2);
+  const formatted = numValue.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `R$ ${formatted}`;
 }

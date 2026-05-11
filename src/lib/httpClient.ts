@@ -13,9 +13,15 @@ export const httpClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/social', '/athletes'];
+
 httpClient.interceptors.request.use(async (config) => {
-  const token = _memoryToken ?? await SecureStore.getItemAsync(TOKEN_KEY);
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  const path = config.url ?? '';
+  const isPublicAuthRequest = PUBLIC_AUTH_PATHS.some((publicPath) => path === publicPath);
+  if (!isPublicAuthRequest) {
+    const token = _memoryToken ?? await SecureStore.getItemAsync(TOKEN_KEY);
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+  }
   console.log(`[httpClient] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`, JSON.stringify(config.data));
   return config;
 });
