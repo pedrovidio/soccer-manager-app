@@ -47,8 +47,8 @@ export function useNotificationActions(athleteId: string, notifications: Notific
         ? groupApi.respondGroupInvite(inviteId, athleteId, accept)
         : matchApi.respondInvite(inviteId, athleteId, accept);
     },
-    onSuccess: (_data, { notificationId }) => {
-      setLocal((prev) => prev.filter((n) => n.id !== notificationId));
+    onSuccess: (_data, { notificationId, inviteId }) => {
+      setLocal((prev) => prev.filter((n) => n.id !== notificationId && n.referenceId !== inviteId));
       athleteApi.deleteNotification(athleteId, notificationId).catch(() => null);
     },
     onError: invalidate,
