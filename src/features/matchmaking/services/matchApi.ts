@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete } from '../types';
+import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment } from '../types';
 
 export interface CreateMatchPayload {
   adminId: string;
@@ -28,17 +28,19 @@ export const matchApi = {
   update: (matchId: string, payload: Partial<CreateMatchPayload> & { adminId: string }) =>
     httpClient.patch(`/matches/${matchId}`, payload).then((r) => r.data),
 
-  getDetail: (matchId: string) =>
-    httpClient.get<MatchDetail>(`/matches/${matchId}`).then((r) => r.data),
+  getDetail: (matchId: string, requesterId?: string) =>
+    httpClient.get<MatchDetail>(`/matches/${matchId}`, { params: requesterId ? { requesterId } : undefined }).then((r) => r.data),
 
   updatePresence: (matchId: string, athleteId: string, status: 'CONFIRMED' | 'DECLINED') =>
-    httpClient.patch(`/matches/${matchId}/presence/${athleteId}`, { status }).then((r) => r.data),
+    status === 'CONFIRMED'
+      ? httpClient.post(`/matches/${matchId}/confirm-presence`, { athleteId }).then((r) => r.data)
+      : Promise.reject(new Error('Decline presence requires a match invite id; use respondInvite instead.')),
 
   openGuestSlots: (matchId: string, adminId: string, config: GuestSlotConfig) =>
     httpClient.post(`/matches/${matchId}/open-vacancies`, { adminId, ...config }).then((r) => r.data),
 
   closeGuestSlots: (matchId: string, adminId: string) =>
-    httpClient.delete(`/matches/${matchId}/guest-slots`, { data: { adminId } }).then((r) => r.data),
+    httpClient.delete(`/matches/${matchId}/open-vacancies`, { data: { adminId } }).then((r) => r.data),
 
   nearbyAthletes: (matchId: string, config: Partial<GuestSlotConfig>) =>
     httpClient.get<NearbyAthlete[]>(`/matches/${matchId}/nearby-athletes`, { params: config }).then((r) => r.data),
@@ -51,4 +53,13 @@ export const matchApi = {
 
   finishMatch: (matchId: string, adminId: string, comment?: string) =>
     httpClient.patch(`/matches/${matchId}/finish`, { adminId, comment }).then((r) => r.data),
+
+  reportSpotPayment: (matchId: string, athleteId: string) =>
+    httpClient.post(`/matches/${matchId}/spot-payment/report`, { athleteId }).then((r) => r.data),
+
+  listSpotPayments: (groupId: string, requesterId: string) =>
+    httpClient.get<SpotPayment[]>(`/groups/${groupId}/spot-payments`, { params: { requesterId } }).then((r) => r.data),
+
+  confirmSpotPayment: (transactionId: string, adminId: string) =>
+    httpClient.patch(`/spot-payments/${transactionId}/confirm`, { adminId }).then((r) => r.data),
 };

@@ -8,9 +8,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
 import { groupApi } from '../services/groupApi';
+import { matchApi } from '../../matchmaking/services/matchApi';
 import { athleteApi } from '../../athletes/services/athleteApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { FavoriteSpotAthlete, GroupMember, GroupUpcomingMatch } from '../groupTypes';
+import { SpotPayment } from '../../matchmaking/types';
 import { BackButton } from '../../common/components/BackButton';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -59,6 +61,12 @@ export default function GroupHomeScreen() {
     enabled: !!groupId && !!athleteId && data?.isAdmin === true,
   });
 
+  const { data: spotPayments = [] } = useQuery({
+    queryKey: ['spot-payments', groupId],
+    queryFn: () => matchApi.listSpotPayments(groupId!, athleteId),
+    enabled: !!groupId && !!athleteId && data?.isAdmin === true,
+  });
+
   const removeFavoriteMutation = useMutation({
     mutationFn: (targetAthleteId: string) => groupApi.unfavoriteSpotAthlete(groupId!, athleteId, targetAthleteId),
     onSuccess: () => {
@@ -66,6 +74,12 @@ export default function GroupHomeScreen() {
       qc.invalidateQueries({ queryKey: ['nearby-athletes-all'] });
     },
     onError: () => Alert.alert('Erro', 'NÃ£o foi possÃ­vel remover o favorito.'),
+  });
+
+  const confirmSpotPaymentMutation = useMutation({
+    mutationFn: (transactionId: string) => matchApi.confirmSpotPayment(transactionId, athleteId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['spot-payments', groupId] }),
+    onError: () => Alert.alert('Erro', 'Não foi possível confirmar o pagamento.'),
   });
 
   if (isLoading) {
@@ -171,7 +185,26 @@ export default function GroupHomeScreen() {
                 <Text style={s.balanceLabel}>Mensalidade</Text>
                 <Text style={s.balanceValue}>{formatCurrency(group.monthlyFee)}</Text>
               </View>
+              <View style={s.balanceDivider} />
+              <View style={s.balanceItem}>
+                <Text style={s.balanceLabel}>Avulso</Text>
+                <Text style={s.balanceValue}>{formatCurrency(group.spotFee)}</Text>
+              </View>
             </View>
+          </View>
+        )}
+
+        {isAdmin && spotPayments.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Pagamentos de avulsos</Text>
+            {spotPayments.map((payment) => (
+              <SpotPaymentRow
+                key={payment.id}
+                payment={payment}
+                onConfirm={() => confirmSpotPaymentMutation.mutate(payment.id)}
+                disabled={confirmSpotPaymentMutation.isPending}
+              />
+            ))}
           </View>
         )}
 
@@ -332,6 +365,36 @@ function FavoriteSpotAthleteRow({
         activeOpacity={0.7}
       >
         <Ionicons name="star" size={18} color={Colors.warningDark} />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function SpotPaymentRow({
+  payment, onConfirm, disabled,
+}: {
+  payment: SpotPayment;
+  onConfirm: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <View style={s.paymentRow}>
+      <View style={{ flex: 1 }}>
+        <Text style={s.paymentName} numberOfLines={1}>{payment.athleteName}</Text>
+        <Text style={s.paymentMeta} numberOfLines={1}>
+          {payment.matchLocation} · {formatCurrency(payment.amount)}
+        </Text>
+        {payment.paymentReportedAt && (
+          <Text style={s.paymentReported}>Pagamento informado</Text>
+        )}
+      </View>
+      <TouchableOpacity
+        style={s.paymentConfirmBtn}
+        onPress={onConfirm}
+        disabled={disabled}
+        activeOpacity={0.7}
+      >
+        <Text style={s.paymentConfirmText}>Confirmar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -705,6 +768,13 @@ const s = StyleSheet.create({
   favoriteName:       { fontSize: 13, fontWeight: '700', color: Colors.n900 },
   favoriteMeta:       { fontSize: 11, color: Colors.n500, marginTop: 2 },
   favoriteRemoveBtn:  { width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.warningLight, alignItems: 'center', justifyContent: 'center' },
+
+  paymentRow:         { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
+  paymentName:        { fontSize: 13, fontWeight: '700', color: Colors.n900 },
+  paymentMeta:        { fontSize: 11, color: Colors.n500, marginTop: 2 },
+  paymentReported:    { fontSize: 11, fontWeight: '700', color: Colors.warningDark, marginTop: 3 },
+  paymentConfirmBtn:  { backgroundColor: Colors.successLight, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 7 },
+  paymentConfirmText: { fontSize: 12, fontWeight: '700', color: Colors.successDark },
 
   // Modal
   modalOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', padding: 24 },

@@ -7,13 +7,19 @@ export type Gender = 'M' | 'F' | 'ANY';
 export interface Match {
   id: string;
   date: string;
-  time: string;
+  time?: string;
+  isoDate?: string;
+  groupId?: string;
   location: string;
-  city: string;
+  city?: string;
   type: MatchType;
   status: MatchStatus;
-  totalSlots: number;
-  confirmedSlots: number;
+  totalSlots?: number;
+  confirmedSlots?: number;
+  totalVacancies?: number;
+  reserveVacancies?: number;
+  confirmedCount?: number;
+  checkedInCount?: number;
   minOverall?: number;
   distanceKm?: number;
   teamA?: string;
@@ -54,7 +60,26 @@ export interface MatchDetail {
   confirmedCount: number;
   isRecurring: boolean;
   guestConfig: GuestSlotConfig | null;
+  mySpotPayment?: {
+    id: string;
+    amount: number;
+    status: 'PENDING' | 'PAID' | 'CANCELLED';
+    dueDate?: string | null;
+    paymentReportedAt?: string | null;
+  } | null;
   presence: MatchPresence[];
+}
+
+export interface SpotPayment {
+  id: string;
+  athleteId: string;
+  athleteName: string;
+  matchId: string;
+  matchLocation: string;
+  matchDate: string | null;
+  amount: number;
+  dueDate: string | null;
+  paymentReportedAt: string | null;
 }
 
 export interface NearbyAthlete {

@@ -16,7 +16,7 @@ import { CreateGroupFormData, AthleteSearchResult } from '../groupTypes';
 
 
 const INITIAL: CreateGroupFormData = {
-  name: '', description: '', pixKey: '', monthlyFee: '',
+  name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '',
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -70,6 +70,9 @@ export default function CreateGroupScreen() {
     if (form.monthlyFee && parseCurrency(form.monthlyFee) === undefined) {
       return 'Mensalidade deve ser um valor numérico.';
     }
+    if (form.spotFee && parseCurrency(form.spotFee) === undefined) {
+      return 'Valor do avulso deve ser um valor numérico.';
+    }
     return null;
   }
 
@@ -114,6 +117,7 @@ export default function CreateGroupScreen() {
     setSubmitting(true);
     try {
       const monthlyFeeNum = parseCurrency(form.monthlyFee);
+      const spotFeeNum = parseCurrency(form.spotFee);
 
       const group = await groupApi.create({
         adminId:               athleteId,
@@ -121,6 +125,7 @@ export default function CreateGroupScreen() {
         description:           form.description.trim() || undefined,
         pixKey:                form.pixKey.trim()       || undefined,
         monthlyFee:            monthlyFeeNum,
+        spotFee:               spotFeeNum,
       });
 
       // Send invites in parallel — ignore individual failures
@@ -263,6 +268,20 @@ function Step1({
             />
           </Field>
         </View>
+        <View style={{ flex: 1 }}>
+          <Field label="Valor Avulso">
+            <TextInput
+              style={s.input}
+              placeholder="0,00"
+              placeholderTextColor={Colors.n400}
+              keyboardType="decimal-pad"
+              value={form.spotFee}
+              onChangeText={(v) => set('spotFee', maskCurrency(v))}
+            />
+          </Field>
+        </View>
+      </View>
+      <View style={s.row}>
         <View style={{ flex: 1 }}>
           <Field label="Chave PIX">
             <TextInput

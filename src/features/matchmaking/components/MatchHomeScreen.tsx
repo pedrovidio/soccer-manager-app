@@ -66,7 +66,7 @@ export default function MatchHomeScreen() {
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['match-detail', matchId],
-    queryFn: () => matchApi.getDetail(matchId!),
+    queryFn: () => matchApi.getDetail(matchId!, athleteId),
     enabled: !!matchId,
   });
 
@@ -171,6 +171,17 @@ export default function MatchHomeScreen() {
     },
     onError: (error: any) => {
       Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível finalizar o jogo');
+    },
+  });
+
+  const reportSpotPaymentMutation = useMutation({
+    mutationFn: () => matchApi.reportSpotPayment(matchId!, athleteId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      Alert.alert('Pagamento informado', 'O administrador foi avisado para conferir o Pix.');
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível informar o pagamento.');
     },
   });
 
@@ -306,6 +317,32 @@ export default function MatchHomeScreen() {
           </View>
           <Text style={s.progressLabel}>{confirmed} de {data.totalVacancies} vagas preenchidas</Text>
         </View>
+
+        {!isAdmin && data.status === 'FINISHED' && data.mySpotPayment?.status === 'PENDING' && (
+          <View style={s.section}>
+            <View style={s.paymentCard}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.paymentTitle}>Pagamento do avulso</Text>
+                <Text style={s.paymentText}>
+                  {`Valor: R$ ${data.mySpotPayment.amount.toFixed(2).replace('.', ',')}`}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={[s.paymentBtn, reportSpotPaymentMutation.isPending && s.inviteBtnDisabled]}
+                onPress={() => reportSpotPaymentMutation.mutate()}
+                disabled={reportSpotPaymentMutation.isPending}
+                activeOpacity={0.7}
+              >
+                {reportSpotPaymentMutation.isPending
+                  ? <ActivityIndicator color={Colors.white} size="small" />
+                  : <Text style={s.paymentBtnText}>
+                      {data.mySpotPayment.paymentReportedAt ? 'Reenviar aviso' : 'Informar pagamento'}
+                    </Text>
+                }
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* ── LISTA DE PRESENÇA ── */}
         <View style={s.section}>
@@ -692,6 +729,12 @@ const s = StyleSheet.create({
   ovrText:         { fontSize: 12, fontWeight: '800', color: Colors.n900 },
   favoriteBtn:     { width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
   favoriteBtnActive: { backgroundColor: Colors.warningLight },
+
+  paymentCard:     { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, gap: 10 },
+  paymentTitle:    { fontSize: 13, fontWeight: '800', color: Colors.n900 },
+  paymentText:     { fontSize: 12, color: Colors.n500, marginTop: 2 },
+  paymentBtn:      { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 9 },
+  paymentBtnText:  { color: Colors.white, fontSize: 12, fontWeight: '700' },
 
   inviteBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: Radius.r12, paddingVertical: 13 },
   inviteBtnDisabled: { opacity: 0.6 },

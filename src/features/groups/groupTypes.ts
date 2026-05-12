@@ -4,6 +4,7 @@ export interface CreateGroupPayload {
   description?: string;
   pixKey?: string;
   monthlyFee?: number;
+  spotFee?: number;
 }
 
 export interface GroupResponse {
@@ -14,6 +15,7 @@ export interface GroupResponse {
   memberIds: string[];
   pixKey?: string;
   monthlyFee: number;
+  spotFee: number;
   status: string;
 }
 
@@ -22,6 +24,7 @@ export interface CreateGroupFormData {
   description: string;
   pixKey: string;
   monthlyFee: string;
+  spotFee: string;
 }
 
 export interface UpdateGroupPayload {
@@ -30,6 +33,7 @@ export interface UpdateGroupPayload {
   description?: string;
   pixKey?: string;
   monthlyFee?: number;
+  spotFee?: number;
 }
 
 export interface GroupMember {
@@ -63,6 +67,7 @@ export interface GroupHomeData {
     name: string;
     description?: string;
     monthlyFee: number;
+    spotFee: number;
     pixKey?: string;
     status: string;
   };

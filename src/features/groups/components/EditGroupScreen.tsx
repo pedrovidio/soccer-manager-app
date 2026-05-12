@@ -36,7 +36,7 @@ export default function EditGroupScreen() {
 
   const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>({
-    name: '', description: '', pixKey: '', monthlyFee: '',
+    name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -57,6 +57,7 @@ export default function EditGroupScreen() {
           description: g.description ?? '',
           pixKey:      g.pixKey ?? '',
           monthlyFee:  g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
+          spotFee:     g.spotFee > 0 ? maskCurrency(g.spotFee.toFixed(2).replace('.', '')) : '',
         });
       })
       .catch(() => Alert.alert('Erro', 'Não foi possível carregar o grupo.', [
@@ -70,6 +71,9 @@ export default function EditGroupScreen() {
     if (form.name.trim().length < 3) return 'O nome deve ter ao menos 3 caracteres.';
     if (form.monthlyFee && !form.monthlyFee.replace(/\D/g, '')) {
       return 'Mensalidade deve ser um valor numérico.';
+    }
+    if (form.spotFee && !form.spotFee.replace(/\D/g, '')) {
+      return 'Valor do avulso deve ser um valor numérico.';
     }
     return null;
   }
@@ -86,6 +90,7 @@ export default function EditGroupScreen() {
         description: form.description.trim() || undefined,
         pixKey:      form.pixKey.trim()       || undefined,
         monthlyFee:  form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
+        spotFee:     form.spotFee ? Number(form.spotFee.replace(/\D/g, '')) / 100 : 0,
       });
       Alert.alert('Salvo!', 'As alterações foram salvas com sucesso.', [
         { text: 'OK', onPress: () => router.back() },
@@ -175,6 +180,21 @@ export default function EditGroupScreen() {
                 />
               </Field>
             </View>
+            <View style={{ flex: 1 }}>
+              <Field label="Valor Avulso">
+                <TextInput
+                  style={[s.input, !isAdmin ? s.inputDisabled : null]}
+                  placeholder="0,00"
+                  placeholderTextColor={Colors.n400}
+                  keyboardType="decimal-pad"
+                  value={form.spotFee}
+                  onChangeText={(v) => set('spotFee', maskCurrency(v))}
+                  editable={isAdmin}
+                />
+              </Field>
+            </View>
+          </View>
+          <View style={s.row}>
             <View style={{ flex: 1 }}>
               <Field label="Chave PIX">
                 <TextInput
