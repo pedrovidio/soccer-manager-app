@@ -18,19 +18,25 @@ const TYPE_LABEL: Record<string, string> = {
 
 interface MatchCardProps {
   match: ConfirmedMatch;
+  athleteId?: string;
   confirmed?: boolean;
 }
 
-export function MatchCard({ match, confirmed }: MatchCardProps) {
+export function MatchCard({ match, athleteId, confirmed }: MatchCardProps) {
   const router = useRouter();
   const fillPct = match.totalSlots > 0 ? (match.confirmedSlots / match.totalSlots) * 100 : 0;
   const isFinished = match.status === 'FINISHED';
+  const isAdmin = match.isGroupAdmin === true;
+  const hasMatchmaking = match.hasMatchmaking === true && !!match.matchmakingResult;
+  const myTeam = hasMatchmaking
+    ? match.matchmakingResult!.teams.find((team) => team.athletes.some((athlete) => athlete.id === athleteId))
+    : null;
 
   return (
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.8}
-      onPress={() => router.push({ pathname: '/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: '0' } } as any)}
+      onPress={() => router.push({ pathname: '/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: isAdmin ? '1' : '0' } } as any)}
     >
       {/* HEADER: data + badge confirmado */}
       <View style={styles.header}>
@@ -66,6 +72,33 @@ export function MatchCard({ match, confirmed }: MatchCardProps) {
         <View style={styles.progBg}>
           <View style={[styles.progFill, { width: `${fillPct}%` as any }]} />
         </View>
+
+        {!isFinished && !hasMatchmaking && (
+          <View style={isAdmin ? styles.drawShortcut : styles.waitingBox}>
+            <Ionicons name={isAdmin ? 'shuffle-outline' : 'hourglass-outline'} size={15} color={isAdmin ? Colors.primary : Colors.warningDark} />
+            <Text style={isAdmin ? styles.drawShortcutText : styles.waitingText}>
+              {isAdmin ? 'Ir para sorteio dos times' : 'Aguardando o sorteio'}
+            </Text>
+          </View>
+        )}
+
+        {!isFinished && hasMatchmaking && (
+          <View style={styles.teamsBox}>
+            <Text style={styles.teamsTitle}>
+              {myTeam ? `Voce esta no Time ${myTeam.teamNumber}` : 'Times sorteados'}
+            </Text>
+            {match.matchmakingResult!.teams.map((team) => (
+              <View key={team.teamNumber} style={[styles.teamLine, myTeam?.teamNumber === team.teamNumber && styles.myTeamLine]}>
+                <Text style={[styles.teamName, myTeam?.teamNumber === team.teamNumber && styles.myTeamName]}>
+                  Time {team.teamNumber}
+                </Text>
+                <Text style={styles.teamPlayers} numberOfLines={2}>
+                  {team.athletes.map((athlete) => athlete.id === athleteId ? `${athlete.name} (voce)` : athlete.name).join(', ')}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );

@@ -161,7 +161,7 @@ export default function HomeScreen() {
           )}
 
           {matches.map((match) => (
-            <MatchCard key={match.id} match={match} confirmed />
+            <MatchCard key={match.id} match={match} athleteId={athleteId} confirmed />
           ))}
         </View>
       </ScrollView>

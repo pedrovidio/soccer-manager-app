@@ -38,4 +38,16 @@ export const styles = StyleSheet.create({
 
   confPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: Colors.successLight, borderRadius: Radius.r999, paddingHorizontal: 10, paddingVertical: 3 },
   confText: { fontSize: 11, fontWeight: '600', color: Colors.successDark },
+
+  drawShortcut:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.primaryLight, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 2 },
+  drawShortcutText: { fontSize: 12, fontWeight: '800', color: Colors.primary },
+  waitingBox:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.warningLight, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 2 },
+  waitingText:      { fontSize: 12, fontWeight: '800', color: Colors.warningDark },
+  teamsBox:         { borderTopWidth: 1, borderTopColor: Colors.n200, paddingTop: 10, marginTop: 2, gap: 6 },
+  teamsTitle:       { fontSize: 12, fontWeight: '900', color: Colors.n900 },
+  teamLine:         { borderRadius: Radius.r8, backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n200, padding: 8 },
+  myTeamLine:       { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
+  teamName:         { fontSize: 11, fontWeight: '900', color: Colors.n700, marginBottom: 2 },
+  myTeamName:       { color: Colors.primary },
+  teamPlayers:      { fontSize: 11, fontWeight: '600', color: Colors.n600, lineHeight: 16 },
 });
