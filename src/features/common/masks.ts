@@ -36,3 +36,10 @@ export function maskCurrency(value: string): string {
   const formatted = numValue.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   return `R$ ${formatted}`;
 }
+
+/** Converte moeda mascarada em numero decimal para API. Ex: "R$ 1.234,56" -> 1234.56 */
+export function parseCurrency(value: string): number | undefined {
+  const digits = value.replace(/\D/g, '');
+  if (!digits) return undefined;
+  return Number(digits) / 100;
+}

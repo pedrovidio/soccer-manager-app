@@ -7,7 +7,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
-import { maskCurrency } from '../../common/masks';
+import { maskCurrency, parseCurrency } from '../../common/masks';
 import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { CreateGroupFormData, AthleteSearchResult } from '../groupTypes';
@@ -67,7 +67,7 @@ export default function CreateGroupScreen() {
   function validateStep1(): string | null {
     if (!form.name.trim())           return 'Informe o nome do grupo.';
     if (form.name.trim().length < 3) return 'O nome deve ter ao menos 3 caracteres.';
-    if (form.monthlyFee && isNaN(Number(form.monthlyFee.replace(',', '.')))) {
+    if (form.monthlyFee && parseCurrency(form.monthlyFee) === undefined) {
       return 'Mensalidade deve ser um valor numérico.';
     }
     return null;
@@ -113,9 +113,7 @@ export default function CreateGroupScreen() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const monthlyFeeNum = form.monthlyFee
-        ? Number(form.monthlyFee.replace(/\D/g, '')) / 100
-        : undefined;
+      const monthlyFeeNum = parseCurrency(form.monthlyFee);
 
       const group = await groupApi.create({
         adminId:               athleteId,
