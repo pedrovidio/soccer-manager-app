@@ -38,7 +38,6 @@ export interface AthleteDashboard {
   photoUrl?: string;
   phone?: string;
   age?: number;
-  isGoalkeeperForHire?: boolean;
   pixKey?: string | null;
   address?: {
     cep: string;

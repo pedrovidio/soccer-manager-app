@@ -47,7 +47,6 @@ export const athleteApi = {
     phone?: string;
     age?: number;
     position?: string;
-    isGoalkeeperForHire?: boolean;
     pixKey?: string | null;
     address?: {
       cep: string; street: string; number: number;

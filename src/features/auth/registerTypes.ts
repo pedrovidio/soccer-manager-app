@@ -20,7 +20,6 @@ export interface RegisterPayload {
     state: string;
   };
   password: string;
-  isGoalkeeperForHire: boolean;
 }
 
 export interface AssessmentPayload {
@@ -52,7 +51,7 @@ export interface RegisterFormData {
   cpf: string;
   phone: string;
   age: string;
-  gender: Gender | '';  isGoalkeeperForHire: boolean;
+  gender: Gender | '';
   // Step 1b — endereço
   cep: string;
   street: string;

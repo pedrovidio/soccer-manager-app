@@ -45,4 +45,10 @@ export const matchApi = {
 
   respondInvite: (inviteId: string, athleteId: string, accept: boolean) =>
     httpClient.patch(`/match-invites/${inviteId}/respond`, { athleteId, accept }).then((r) => r.data),
+
+  cancelMatch: (matchId: string, adminId: string, reason: string) =>
+    httpClient.patch(`/matches/${matchId}/cancel`, { adminId, reason }).then((r) => r.data),
+
+  finishMatch: (matchId: string, adminId: string, comment?: string) =>
+    httpClient.patch(`/matches/${matchId}/finish`, { adminId, comment }).then((r) => r.data),
 };

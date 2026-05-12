@@ -57,6 +57,12 @@ export default function MatchHomeScreen() {
   const [minOverall, setMinOverall]           = useState('0');
   const [nameSearch, setNameSearch]           = useState('');
 
+  // Modal states for cancel/finish
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [finishModalVisible, setFinishModalVisible] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [finishComment, setFinishComment] = useState('');
+
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['match-detail', matchId],
     queryFn: () => matchApi.getDetail(matchId!),
@@ -119,6 +125,34 @@ export default function MatchHomeScreen() {
     mutationFn: () => matchApi.closeGuestSlots(matchId!, athleteId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['match-detail', matchId] }),
     onError: () => Alert.alert('Erro', 'Não foi possível fechar as vagas.'),
+  });
+
+  const cancelMatchMutation = useMutation({
+    mutationFn: () => matchApi.cancelMatch(matchId!, athleteId, cancelReason),
+    onSuccess: () => {
+      setCancelModalVisible(false);
+      setCancelReason('');
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      Alert.alert('Sucesso', 'Jogo cancelado com sucesso');
+      refetch();
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível cancelar o jogo');
+    },
+  });
+
+  const finishMatchMutation = useMutation({
+    mutationFn: () => matchApi.finishMatch(matchId!, athleteId, finishComment || undefined),
+    onSuccess: () => {
+      setFinishModalVisible(false);
+      setFinishComment('');
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      Alert.alert('Sucesso', 'Jogo finalizado com sucesso');
+      refetch();
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível finalizar o jogo');
+    },
   });
 
   if (isLoading) {
@@ -199,6 +233,43 @@ export default function MatchHomeScreen() {
               {data.status === 'SCHEDULED' ? 'Agendada' : data.status === 'IN_PROGRESS' ? 'Em andamento' : data.status === 'FINISHED' ? 'Finalizada' : 'Cancelada'}
             </Text>
           </View>
+
+          {/* ADMIN ACTIONS */}
+          {isAdmin && data.status !== 'FINISHED' && data.status !== 'CANCELLED' && (
+            <View style={s.adminActionsRow}>
+              <TouchableOpacity
+                style={[s.actionBtn, s.actionBtnCancel]}
+                onPress={() => setCancelModalVisible(true)}
+                disabled={cancelMatchMutation.isPending}
+                activeOpacity={0.7}
+              >
+                {cancelMatchMutation.isPending ? (
+                  <ActivityIndicator color={Colors.errorDark} size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="close-circle" size={16} color={Colors.errorDark} />
+                    <Text style={s.actionBtnTextCancel}>Cancelar</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[s.actionBtn, s.actionBtnFinish]}
+                onPress={() => setFinishModalVisible(true)}
+                disabled={finishMatchMutation.isPending}
+                activeOpacity={0.7}
+              >
+                {finishMatchMutation.isPending ? (
+                  <ActivityIndicator color={Colors.successDark} size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="checkmark-circle" size={16} color={Colors.successDark} />
+                    <Text style={s.actionBtnTextFinish}>Finalizar</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* ── CONTADOR DE CONFIRMAÇÕES ── */}
@@ -371,6 +442,100 @@ export default function MatchHomeScreen() {
         )}
 
       </ScrollView>
+
+      {/* MODAL CANCELAR JOGO */}
+      {cancelModalVisible && (
+        <View style={s.modalOverlay}>
+          <View style={s.modal}>
+            <Text style={s.modalTitle}>Cancelar Jogo</Text>
+            <Text style={s.modalSubtitle}>Por favor, informe o motivo do cancelamento</Text>
+
+            <TextInput
+              style={s.modalInput}
+              placeholder="Motivo (mín. 10 caracteres)"
+              placeholderTextColor={Colors.n400}
+              value={cancelReason}
+              onChangeText={setCancelReason}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+
+            <View style={s.modalButtonRow}>
+              <TouchableOpacity
+                style={[s.modalBtn, s.modalBtnSecondary]}
+                onPress={() => {
+                  setCancelModalVisible(false);
+                  setCancelReason('');
+                }}
+                disabled={cancelMatchMutation.isPending}
+              >
+                <Text style={s.modalBtnTextSecondary}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[s.modalBtn, s.modalBtnPrimary, cancelReason.length < 10 && s.modalBtnDisabled]}
+                onPress={() => cancelMatchMutation.mutate()}
+                disabled={cancelReason.length < 10 || cancelMatchMutation.isPending}
+              >
+                {cancelMatchMutation.isPending ? (
+                  <ActivityIndicator color={Colors.white} size="small" />
+                ) : (
+                  <Text style={s.modalBtnTextPrimary}>Confirmar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* MODAL FINALIZAR JOGO */}
+      {finishModalVisible && (
+        <View style={s.modalOverlay}>
+          <View style={s.modal}>
+            <Text style={s.modalTitle}>Finalizar Jogo</Text>
+            <Text style={s.modalSubtitle}>Você pode adicionar uma observação (opcional)</Text>
+
+            <TextInput
+              style={s.modalInput}
+              placeholder="Observação (máx. 500 caracteres)"
+              placeholderTextColor={Colors.n400}
+              value={finishComment}
+              onChangeText={setFinishComment}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+
+            <Text style={s.modalCharCount}>{finishComment.length}/500</Text>
+
+            <View style={s.modalButtonRow}>
+              <TouchableOpacity
+                style={[s.modalBtn, s.modalBtnSecondary]}
+                onPress={() => {
+                  setFinishModalVisible(false);
+                  setFinishComment('');
+                }}
+                disabled={finishMatchMutation.isPending}
+              >
+                <Text style={s.modalBtnTextSecondary}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[s.modalBtn, s.modalBtnPrimary]}
+                onPress={() => finishMatchMutation.mutate()}
+                disabled={finishComment.length > 500 || finishMatchMutation.isPending}
+              >
+                {finishMatchMutation.isPending ? (
+                  <ActivityIndicator color={Colors.white} size="small" />
+                ) : (
+                  <Text style={s.modalBtnTextPrimary}>Finalizar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -498,4 +663,25 @@ const s = StyleSheet.create({
   inviteBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: Radius.r12, paddingVertical: 13 },
   inviteBtnDisabled: { opacity: 0.6 },
   inviteBtnText:     { color: Colors.white, fontSize: 14, fontWeight: '700' },
+
+  adminActionsRow:   { flexDirection: 'row', gap: 10, marginTop: 12 },
+  actionBtn:         { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: Radius.r8, paddingVertical: 10 },
+  actionBtnCancel:   { backgroundColor: Colors.errorLight, borderWidth: 1, borderColor: Colors.error },
+  actionBtnFinish:   { backgroundColor: Colors.successLight, borderWidth: 1, borderColor: Colors.success },
+  actionBtnTextCancel: { fontSize: 12, fontWeight: '700', color: Colors.errorDark },
+  actionBtnTextFinish: { fontSize: 12, fontWeight: '700', color: Colors.successDark },
+
+  modalOverlay:      { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', alignItems: 'center' },
+  modal:             { backgroundColor: Colors.white, borderTopLeftRadius: Radius.r16, borderTopRightRadius: Radius.r16, padding: Spacing.lg, width: '100%', maxHeight: '80%' },
+  modalTitle:        { fontSize: 16, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
+  modalSubtitle:     { fontSize: 13, color: Colors.n500, marginBottom: 16 },
+  modalInput:        { backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 12, fontSize: 14, color: Colors.n900, marginBottom: 8, maxHeight: 120 },
+  modalCharCount:    { fontSize: 11, color: Colors.n500, marginBottom: 16, textAlign: 'right' },
+  modalButtonRow:    { flexDirection: 'row', gap: 10 },
+  modalBtn:          { flex: 1, paddingVertical: 12, borderRadius: Radius.r8, alignItems: 'center', justifyContent: 'center' },
+  modalBtnPrimary:   { backgroundColor: Colors.primary },
+  modalBtnSecondary: { backgroundColor: Colors.n100, borderWidth: 1, borderColor: Colors.n300 },
+  modalBtnTextPrimary: { color: Colors.white, fontSize: 14, fontWeight: '700' },
+  modalBtnTextSecondary: { color: Colors.n700, fontSize: 14, fontWeight: '700' },
+  modalBtnDisabled:  { opacity: 0.5 },
 });

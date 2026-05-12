@@ -18,7 +18,7 @@ type Props = Pick<
   ReturnType<typeof useEditProfileForm>,
   | 'name' | 'setName' | 'cpf' | 'setCpf' | 'gender' | 'setGender'
   | 'phone' | 'setPhone' | 'age' | 'setAge'
-  | 'position' | 'setPosition' | 'isGK' | 'setIsGK' | 'pixKey' | 'setPixKey'
+  | 'position' | 'setPosition' | 'pixKey' | 'setPixKey'
   | 'photoUri' | 'setPhotoUri'
   | 'cep' | 'setCep' | 'cepLoading' | 'street' | 'setStreet' | 'addrNum' | 'setAddrNum'
   | 'complement' | 'setComplement' | 'neighborhood' | 'setNeighborhood'
@@ -42,7 +42,7 @@ export default function StepCadastro(props: Props) {
   const {
     name, setName, cpf, setCpf, gender, setGender,
     phone, setPhone, age, setAge,
-    position, setPosition, isGK, setIsGK, pixKey, setPixKey,
+    position, setPosition, pixKey, setPixKey,
     photoUri, setPhotoUri,
     cep, setCep, cepLoading, street, setStreet, addrNum, setAddrNum,
     complement, setComplement, neighborhood, setNeighborhood,
@@ -205,13 +205,6 @@ export default function StepCadastro(props: Props) {
       <FormField label="UF">
         <UFSelect value={addrState} onChange={setAddrState} />
       </FormField>
-
-      <SwitchRow
-        label="Disponível como goleiro de aluguel?"
-        desc="Você poderá ser contratado para partidas"
-        value={isGK}
-        onValueChange={setIsGK}
-      />
     </View>
   );
 }

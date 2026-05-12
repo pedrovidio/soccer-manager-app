@@ -1,12 +1,9 @@
-export type GoalkeeperPaymentMode = 'MONTHLY' | 'FREE';
-
 export interface CreateGroupPayload {
   adminId: string;
   name: string;
   description?: string;
   pixKey?: string;
   monthlyFee?: number;
-  goalkeeperPaymentMode?: GoalkeeperPaymentMode;
 }
 
 export interface GroupResponse {
@@ -17,7 +14,6 @@ export interface GroupResponse {
   memberIds: string[];
   pixKey?: string;
   monthlyFee: number;
-  goalkeeperPaymentMode: GoalkeeperPaymentMode;
   status: string;
 }
 
@@ -26,7 +22,6 @@ export interface CreateGroupFormData {
   description: string;
   pixKey: string;
   monthlyFee: string;
-  goalkeeperPaymentMode: GoalkeeperPaymentMode;
 }
 
 export interface UpdateGroupPayload {
@@ -35,7 +30,6 @@ export interface UpdateGroupPayload {
   description?: string;
   pixKey?: string;
   monthlyFee?: number;
-  goalkeeperPaymentMode?: GoalkeeperPaymentMode;
 }
 
 export interface GroupMember {
@@ -70,7 +64,6 @@ export interface GroupHomeData {
     description?: string;
     monthlyFee: number;
     pixKey?: string;
-    goalkeeperPaymentMode: GoalkeeperPaymentMode;
     status: string;
   };
   isAdmin: boolean;

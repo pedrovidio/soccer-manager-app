@@ -24,7 +24,7 @@ src/
   ├── features/         # Domínios de Negócio (Onde a mágica acontece)
   │   ├── matchmaking/  # Algoritmo de sorteio, quadras e times
   │   ├── athletes/     # Perfil, Atributos e Overall
-  │   ├── financeiro/   # Fluxo de PIX, mensalidades e Goleiro de Aluguel
+  │   ├── financeiro/   # Fluxo de PIX e mensalidades
   │   └── marketplace/  # Geofencing e vagas avulsas
   ├── hooks/            # Hooks globais (auth, location, theme)
   ├── store/            # Zustand stores
@@ -58,8 +58,6 @@ Geofencing: Filtrar atletas via Raio KM (Google Maps API / Expo Location).
 Prioridade de Vagas: Mensalista tem prioridade até 30min antes do jogo. Após, o sistema dispara abertura automática para Avulsos (First-come, first-served).
 
 3. Monetização e Bloqueios
-Goleiro de Aluguel: Calcular retenção de taxa de intermediação na camada de serviço.
-
 Inadimplência: Bloqueio automático de UI para atletas com paymentStatus === 'PENDING'. Impedir confirmação de presença e acesso ao Marketplace.
 
 🎨 Protocolo de UI & Performance

@@ -61,7 +61,6 @@ const ATTRIBUTES: { key: keyof Pick<RegisterFormData,
 const INITIAL: RegisterFormData = {
   name: '', email: '', password: '', confirmPassword: '',
   cpf: '', phone: '', age: '', gender: '',
-  isGoalkeeperForHire: false,
   cep: '', street: '', number: '', complement: '',
   neighborhood: '', city: '', state: '',
   preferredPosition: '', highestLevel: '',
@@ -151,7 +150,6 @@ export default function RegisterScreen() {
           state: form.state.trim().toUpperCase(),
         },
         password: form.password,
-        isGoalkeeperForHire: form.isGoalkeeperForHire,
       };
       console.log('[RegisterScreen] STEP 1 — POST /athletes payload:', JSON.stringify(registerPayload));
       const athlete = await registerApi.register({
@@ -372,13 +370,6 @@ function Step1({ form, set }: { form: RegisterFormData; set: (f: keyof RegisterF
       <FormField label="UF">
         <UFSelect value={form.state} onChange={(v) => set('state', v)} />
       </FormField>
-
-      <SwitchRow
-        label="Disponível como goleiro de aluguel?"
-        desc="Você poderá ser contratado para partidas"
-        value={form.isGoalkeeperForHire}
-        onValueChange={(val) => set('isGoalkeeperForHire', val)}
-      />
     </View>
   );
 }

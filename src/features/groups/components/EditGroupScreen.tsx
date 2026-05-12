@@ -9,13 +9,8 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { maskCurrency } from '../../common/masks';
 import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
-import { CreateGroupFormData, GoalkeeperPaymentMode, GroupResponse } from '../groupTypes';
+import { CreateGroupFormData, GroupResponse } from '../groupTypes';
 import { BackButton } from '../../common/components/BackButton';
-
-const GK_MODES: { value: GoalkeeperPaymentMode; label: string; desc: string; icon: string }[] = [
-  { value: 'MONTHLY', label: 'Mensalista', desc: 'Goleiro paga mensalidade normalmente',       icon: '📅' },
-  { value: 'FREE',    label: 'Isento',     desc: 'Goleiro não paga nada (benefício do grupo)', icon: '🎁' },
-];
 
 function parseApiError(e: any): string {
   const data = e?.response?.data;
@@ -42,7 +37,6 @@ export default function EditGroupScreen() {
   const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>({
     name: '', description: '', pixKey: '', monthlyFee: '',
-    goalkeeperPaymentMode: 'MONTHLY',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -59,11 +53,10 @@ export default function EditGroupScreen() {
         setGroup(g);
         setIsAdmin(g.adminIds.includes(athleteId));
         setForm({
-          name:                  g.name,
-          description:           g.description ?? '',
-          pixKey:                g.pixKey ?? '',
-          monthlyFee:            g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
-          goalkeeperPaymentMode: g.goalkeeperPaymentMode,
+          name:        g.name,
+          description: g.description ?? '',
+          pixKey:      g.pixKey ?? '',
+          monthlyFee:  g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
         });
       })
       .catch(() => Alert.alert('Erro', 'Não foi possível carregar o grupo.', [
@@ -88,12 +81,11 @@ export default function EditGroupScreen() {
     setSaving(true);
     try {
       await groupApi.update(groupId!, {
-        requesterId:           athleteId,
-        name:                  form.name.trim(),
-        description:           form.description.trim() || undefined,
-        pixKey:                form.pixKey.trim()       || undefined,
-        monthlyFee:            form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
-        goalkeeperPaymentMode: form.goalkeeperPaymentMode,
+        requesterId: athleteId,
+        name:        form.name.trim(),
+        description: form.description.trim() || undefined,
+        pixKey:      form.pixKey.trim()       || undefined,
+        monthlyFee:  form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
       });
       Alert.alert('Salvo!', 'As alterações foram salvas com sucesso.', [
         { text: 'OK', onPress: () => router.back() },
@@ -198,32 +190,6 @@ export default function EditGroupScreen() {
             </View>
           </View>
 
-          {/* ── GOLEIRO ── */}
-          <View style={s.divider} />
-          <Text style={s.sectionLabel}>Participação do goleiro fixo</Text>
-          <Text style={s.sectionDesc}>Como o goleiro fixo participa financeiramente nas partidas.</Text>
-
-          {GK_MODES.map((mode) => {
-            const active = form.goalkeeperPaymentMode === mode.value;
-            return (
-              <TouchableOpacity
-                key={mode.value}
-                style={[s.modeCard, active ? s.modeCardActive : null, !isAdmin ? s.modeCardDisabled : null]}
-                onPress={() => isAdmin && set('goalkeeperPaymentMode', mode.value)}
-                activeOpacity={isAdmin ? 0.7 : 1}
-              >
-                <Text style={s.modeIcon}>{mode.icon}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={[s.modeLabel, active ? s.modeLabelActive : null]}>{mode.label}</Text>
-                  <Text style={s.modeDesc}>{mode.desc}</Text>
-                </View>
-                <View style={[s.radio, active ? s.radioActive : null]}>
-                  {active && <View style={s.radioDot} />}
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-
           {/* ── INFO MEMBROS ── */}
           {group && (
             <>
@@ -270,7 +236,6 @@ const s = StyleSheet.create({
   readOnlyText:     { fontSize: 11, fontWeight: '600', color: Colors.warningDark },
   scroll:           { padding: Spacing.lg, paddingBottom: 40 },
   sectionLabel:     { fontSize: 13, fontWeight: '700', color: Colors.n700, marginBottom: 4 },
-  sectionDesc:      { fontSize: 12, color: Colors.n500, marginBottom: 12 },
   divider:          { height: 1, backgroundColor: Colors.n200, marginVertical: 16 },
   field:            { marginBottom: 12 },
   fieldLabel:       { fontSize: 12, fontWeight: '600', color: Colors.n700, marginBottom: 5 },
@@ -278,16 +243,6 @@ const s = StyleSheet.create({
   inputMultiline:   { minHeight: 80, textAlignVertical: 'top' },
   inputDisabled:    { backgroundColor: Colors.n100, color: Colors.n500 },
   row:              { flexDirection: 'row', alignItems: 'flex-start' },
-  modeCard:         { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1.5, borderColor: Colors.n200, padding: 14, marginBottom: 8, gap: 12 },
-  modeCardActive:   { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
-  modeCardDisabled: { opacity: 0.6 },
-  modeIcon:         { fontSize: 22 },
-  modeLabel:        { fontSize: 14, fontWeight: '700', color: Colors.n900 },
-  modeLabelActive:  { color: Colors.primary },
-  modeDesc:         { fontSize: 11, color: Colors.n500, marginTop: 2 },
-  radio:            { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: Colors.n300, alignItems: 'center', justifyContent: 'center' },
-  radioActive:      { borderColor: Colors.primary },
-  radioDot:         { width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.primary },
   infoRow:          { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.n100 },
   infoLabel:        { fontSize: 13, color: Colors.n700 },
   infoValue:        { fontSize: 13, fontWeight: '700', color: Colors.n900 },

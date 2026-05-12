@@ -27,7 +27,6 @@ export function useEditProfileForm() {
   const [phone, setPhone] = useState(maskPhone(dashboard?.phone ?? ''));
   const [age, setAge] = useState(String(dashboard?.age ?? ''));
   const [position, setPosition] = useState(dashboard?.position ?? '');
-  const [isGK, setIsGK] = useState(dashboard?.isGoalkeeperForHire ?? false);
   const [pixKey, setPixKey] = useState(dashboard?.pixKey ?? '');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [cep, setCep] = useState(maskCep(dashboard?.address?.cep ?? ''));
@@ -126,7 +125,6 @@ export function useEditProfileForm() {
         phone: phone.replace(/\D/g, ''),
         age: Number(age),
         position,
-        isGoalkeeperForHire: isGK,
         pixKey: pixKey.trim() || null,
         ...(cep.trim() && {
           address: {
@@ -193,7 +191,7 @@ export function useEditProfileForm() {
     step, setStep,
     // step 1
     name, setName, cpf, setCpf, gender, setGender, phone, setPhone, age, setAge,
-    position, setPosition, isGK, setIsGK, pixKey, setPixKey,
+    position, setPosition, pixKey, setPixKey,
     photoUri, setPhotoUri,
     cep, setCep: handleCepChange, cepLoading, street, setStreet, addrNum, setAddrNum,
     complement, setComplement, neighborhood, setNeighborhood,

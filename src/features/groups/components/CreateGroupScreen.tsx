@@ -10,18 +10,13 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { maskCurrency } from '../../common/masks';
 import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
-import { CreateGroupFormData, GoalkeeperPaymentMode, AthleteSearchResult } from '../groupTypes';
+import { CreateGroupFormData, AthleteSearchResult } from '../groupTypes';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const GK_MODES: { value: GoalkeeperPaymentMode; label: string; desc: string; icon: string }[] = [
-  { value: 'MONTHLY', label: 'Mensalista', desc: 'Goleiro paga mensalidade normalmente',       icon: '📅' },
-  { value: 'FREE',    label: 'Isento',     desc: 'Goleiro não paga nada (benefício do grupo)', icon: '🎁' },
-];
 
 const INITIAL: CreateGroupFormData = {
   name: '', description: '', pixKey: '', monthlyFee: '',
-  goalkeeperPaymentMode: 'MONTHLY',
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -128,7 +123,6 @@ export default function CreateGroupScreen() {
         description:           form.description.trim() || undefined,
         pixKey:                form.pixKey.trim()       || undefined,
         monthlyFee:            monthlyFeeNum,
-        goalkeeperPaymentMode: form.goalkeeperPaymentMode,
       });
 
       // Send invites in parallel — ignore individual failures
@@ -227,7 +221,7 @@ function Step1({
       keyboardShouldPersistTaps="handled"
     >
       <Text style={s.stepTitle}>Configurações do grupo</Text>
-      <Text style={s.stepSub}>Defina o nome, regras financeiras e participação do goleiro</Text>
+      <Text style={s.stepSub}>Resumo das configurações do grupo</Text>
 
       {/* Identificação */}
       <Field label="Nome do grupo *">
@@ -284,30 +278,6 @@ function Step1({
           </Field>
         </View>
       </View>
-
-      {/* Goleiro */}
-      <View style={s.divider} />
-      <Text style={s.sectionLabel}>Participação do goleiro fixo</Text>
-      <Text style={s.sectionDesc}>Como o goleiro fixo participa financeiramente nas partidas.</Text>
-
-      {GK_MODES.map((mode) => (
-        <TouchableOpacity
-          key={mode.value}
-          style={[s.modeCard, form.goalkeeperPaymentMode === mode.value ? s.modeCardActive : null]}
-          onPress={() => set('goalkeeperPaymentMode', mode.value)}
-        >
-          <Text style={s.modeIcon}>{mode.icon}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={[s.modeLabel, form.goalkeeperPaymentMode === mode.value ? s.modeLabelActive : null]}>
-              {mode.label}
-            </Text>
-            <Text style={s.modeDesc}>{mode.desc}</Text>
-          </View>
-          <View style={[s.radio, form.goalkeeperPaymentMode === mode.value ? s.radioActive : null]}>
-            {form.goalkeeperPaymentMode === mode.value && <View style={s.radioDot} />}
-          </View>
-        </TouchableOpacity>
-      ))}
 
       <TouchableOpacity style={s.btn} onPress={onNext}>
         <Text style={s.btnText}>Continuar</Text>
