@@ -62,7 +62,7 @@ export interface GroupBalance {
 }
 
 export type GroupFinanceStatus = 'PENDING' | 'PAID' | 'CANCELLED';
-export type GroupFinanceType = 'MONTHLY' | 'SPOT';
+export type GroupFinanceType = 'MONTHLY' | 'SPOT' | 'COURT_RENTAL' | 'PURCHASE';
 
 export interface GroupFinancePayment {
   id: string;
@@ -75,6 +75,7 @@ export interface GroupFinancePayment {
   amount: number;
   type: GroupFinanceType;
   status: GroupFinanceStatus;
+  description?: string | null;
   dueDate?: string | null;
   paymentReportedAt?: string | null;
   createdAt: string;
@@ -114,6 +115,7 @@ export interface GroupFinanceReport {
   summary: {
     cashInHand: number;
     totalPaid: number;
+    totalExpenses: number;
     totalPending: number;
     totalOverdue: number;
     totalReported: number;
@@ -124,6 +126,7 @@ export interface GroupFinanceReport {
   };
   byType: GroupFinanceByType[];
   byMatch: GroupFinanceByMatch[];
+  expenses: GroupFinancePayment[];
   defaulters: GroupFinancePayment[];
   payments: GroupFinancePayment[];
 }
@@ -133,6 +136,13 @@ export interface GroupFinanceFilters {
   to?: string;
   status?: GroupFinanceStatus;
   type?: GroupFinanceType;
+}
+
+export interface GroupExpensePayload {
+  adminId: string;
+  amount: number;
+  description?: string;
+  paidAt?: string;
 }
 
 export interface GroupHomeData {

@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult, FavoriteSpotAthlete, GroupFinanceFilters, GroupFinanceReport } from '../groupTypes';
+import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult, FavoriteSpotAthlete, GroupFinanceFilters, GroupFinanceReport, GroupExpensePayload } from '../groupTypes';
 
 export const groupApi = {
   create: (payload: CreateGroupPayload) =>
@@ -19,6 +19,12 @@ export const groupApi = {
         params: { requesterId, ...filters },
       })
       .then((r) => r.data),
+
+  registerCourtRental: (groupId: string, payload: GroupExpensePayload) =>
+    httpClient.post(`/groups/${groupId}/finance/court-rental`, payload).then((r) => r.data),
+
+  registerPurchase: (groupId: string, payload: GroupExpensePayload) =>
+    httpClient.post(`/groups/${groupId}/finance/purchase`, payload).then((r) => r.data),
 
   update: (groupId: string, payload: UpdateGroupPayload) =>
     httpClient.patch(`/groups/${groupId}`, payload).then((r) => r.data),
