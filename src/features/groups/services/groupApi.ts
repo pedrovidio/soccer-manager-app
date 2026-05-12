@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult } from '../groupTypes';
+import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult, FavoriteSpotAthlete } from '../groupTypes';
 
 export const groupApi = {
   create: (payload: CreateGroupPayload) =>
@@ -66,5 +66,20 @@ export const groupApi = {
   removeMember: (groupId: string, requesterId: string, targetAthleteId: string) =>
     httpClient
       .delete(`/groups/${groupId}/members/${targetAthleteId}`, { data: { requesterId } })
+      .then((r) => r.data),
+
+  listFavoriteSpotAthletes: (groupId: string, requesterId: string) =>
+    httpClient
+      .get<FavoriteSpotAthlete[]>(`/groups/${groupId}/favorite-spot-athletes`, { params: { requesterId } })
+      .then((r) => r.data),
+
+  favoriteSpotAthlete: (groupId: string, requesterId: string, athleteId: string) =>
+    httpClient
+      .post(`/groups/${groupId}/favorite-spot-athletes/${athleteId}`, { requesterId })
+      .then((r) => r.data),
+
+  unfavoriteSpotAthlete: (groupId: string, requesterId: string, athleteId: string) =>
+    httpClient
+      .delete(`/groups/${groupId}/favorite-spot-athletes/${athleteId}`, { data: { requesterId } })
       .then((r) => r.data),
 };

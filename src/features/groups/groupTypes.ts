@@ -90,3 +90,13 @@ export interface AthleteSearchResult {
   position: string;
   overall: number;
 }
+
+export interface FavoriteSpotAthlete {
+  athleteId: string;
+  name: string;
+  position: string;
+  overall: number;
+  age: number;
+  gender: string;
+  createdAt: string;
+}

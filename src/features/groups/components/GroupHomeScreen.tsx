@@ -4,13 +4,13 @@ import {
   SafeAreaView, ActivityIndicator, RefreshControl, Alert, Modal, Pressable, Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
 import { groupApi } from '../services/groupApi';
 import { athleteApi } from '../../athletes/services/athleteApi';
 import { useAuthStore } from '../../auth/useAuthStore';
-import { GroupMember, GroupUpcomingMatch } from '../groupTypes';
+import { FavoriteSpotAthlete, GroupMember, GroupUpcomingMatch } from '../groupTypes';
 import { BackButton } from '../../common/components/BackButton';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -40,6 +40,7 @@ function formatCurrency(value: number) {
 export default function GroupHomeScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
+  const qc = useQueryClient();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const [selectedMember, setSelectedMember] = useState<GroupMember | null>(null);
   const [profileMember, setProfileMember] = useState<GroupMember | null>(null);
@@ -50,6 +51,21 @@ export default function GroupHomeScreen() {
     queryKey: ['group-home', groupId],
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
+  });
+
+  const { data: favoriteSpotAthletes = [] } = useQuery({
+    queryKey: ['favorite-spot-athletes', groupId],
+    queryFn: () => groupApi.listFavoriteSpotAthletes(groupId!, athleteId),
+    enabled: !!groupId && !!athleteId && data?.isAdmin === true,
+  });
+
+  const removeFavoriteMutation = useMutation({
+    mutationFn: (targetAthleteId: string) => groupApi.unfavoriteSpotAthlete(groupId!, athleteId, targetAthleteId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['favorite-spot-athletes', groupId] });
+      qc.invalidateQueries({ queryKey: ['nearby-athletes-all'] });
+    },
+    onError: () => Alert.alert('Erro', 'NÃ£o foi possÃ­vel remover o favorito.'),
   });
 
   if (isLoading) {
@@ -159,6 +175,31 @@ export default function GroupHomeScreen() {
           </View>
         )}
 
+        {isAdmin && (
+          <View style={s.section}>
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionTitle}>Avulsos favoritos</Text>
+              <Ionicons name="star" size={18} color={Colors.warningDark} />
+            </View>
+
+            {favoriteSpotAthletes.length === 0 ? (
+              <View style={s.emptyCard}>
+                <Ionicons name="star-outline" size={32} color={Colors.n300} />
+                <Text style={s.emptyText}>Nenhum avulso favorito ainda</Text>
+              </View>
+            ) : (
+              favoriteSpotAthletes.map((favorite) => (
+                <FavoriteSpotAthleteRow
+                  key={favorite.athleteId}
+                  item={favorite}
+                  onRemove={() => removeFavoriteMutation.mutate(favorite.athleteId)}
+                  disabled={removeFavoriteMutation.isPending}
+                />
+              ))
+            )}
+          </View>
+        )}
+
         {/* ── UPCOMING MATCHES ── */}
         <View style={s.section}>
           <View style={s.sectionHeader}>
@@ -263,6 +304,36 @@ function QuickAction({ icon, label, onPress }: { icon: any; label: string; onPre
       </View>
       <Text style={s.quickActionLabel}>{label}</Text>
     </TouchableOpacity>
+  );
+}
+
+function FavoriteSpotAthleteRow({
+  item, onRemove, disabled,
+}: {
+  item: FavoriteSpotAthlete;
+  onRemove: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <View style={s.favoriteRow}>
+      <View style={s.favoriteAvatar}>
+        <Text style={s.favoriteAvatarText}>{item.name.slice(0, 2).toUpperCase()}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={s.favoriteName} numberOfLines={1}>{item.name}</Text>
+        <Text style={s.favoriteMeta}>
+          {positionLabel(item.position)} · {item.age} anos · OVR {item.overall}
+        </Text>
+      </View>
+      <TouchableOpacity
+        style={s.favoriteRemoveBtn}
+        onPress={onRemove}
+        disabled={disabled}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="star" size={18} color={Colors.warningDark} />
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -626,6 +697,14 @@ const s = StyleSheet.create({
   emptyText:          { fontSize: 13, color: Colors.n500 },
   emptyAction:        { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.primary, borderRadius: Radius.r8 },
   emptyActionText:    { color: Colors.white, fontWeight: '600', fontSize: 13 },
+
+  // Favorite spot athletes
+  favoriteRow:        { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
+  favoriteAvatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.warningLight, alignItems: 'center', justifyContent: 'center' },
+  favoriteAvatarText: { fontSize: 13, fontWeight: '800', color: Colors.warningDark },
+  favoriteName:       { fontSize: 13, fontWeight: '700', color: Colors.n900 },
+  favoriteMeta:       { fontSize: 11, color: Colors.n500, marginTop: 2 },
+  favoriteRemoveBtn:  { width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.warningLight, alignItems: 'center', justifyContent: 'center' },
 
   // Modal
   modalOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center', padding: 24 },

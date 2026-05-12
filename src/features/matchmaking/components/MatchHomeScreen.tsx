@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
 import { matchApi } from '../services/matchApi';
+import { groupApi } from '../../groups/services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender } from '../types';
 import { BackButton } from '../../common/components/BackButton';
@@ -89,9 +90,15 @@ export default function MatchHomeScreen() {
   }, [radiusKm, minAge, maxAge, gender, minOverall]);
 
   const { data: allAthletes = [] } = useQuery<NearbyAthlete[]>({
-    queryKey: ['nearby-athletes-all', matchId],
+    queryKey: ['nearby-athletes-all', matchId, debouncedConfig],
     queryFn:  async () => {
-      const result = await matchApi.nearbyAthletes(matchId!, {});
+      const result = await matchApi.nearbyAthletes(matchId!, {
+        spotRadiusKm: debouncedConfig.radiusKm,
+        minAge: debouncedConfig.minAge,
+        maxAge: debouncedConfig.maxAge,
+        gender: debouncedConfig.gender,
+        minOverall: debouncedConfig.minOverall,
+      });
       return Array.isArray(result) ? result : [];
     },
     enabled:  !!matchId && guestOpen,
@@ -119,6 +126,18 @@ export default function MatchHomeScreen() {
     mutationFn: () => matchApi.openGuestSlots(matchId!, athleteId, guestConfig as GuestSlotConfig),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['match-detail', matchId] }); Alert.alert('Vagas abertas', `${nearby.length} atletas serão notificados.`); },
     onError: () => Alert.alert('Erro', 'Não foi possível abrir as vagas.'),
+  });
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: (athlete: NearbyAthlete) =>
+      athlete.isFavorite
+        ? groupApi.unfavoriteSpotAthlete(groupId!, athleteId, athlete.id)
+        : groupApi.favoriteSpotAthlete(groupId!, athleteId, athlete.id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
+      qc.invalidateQueries({ queryKey: ['favorite-spot-athletes', groupId] });
+    },
+    onError: () => Alert.alert('Erro', 'NÃ£o foi possÃ­vel atualizar o favorito.'),
   });
 
   const closeGuestMutation = useMutation({
@@ -415,6 +434,18 @@ export default function MatchHomeScreen() {
                       <View style={[s.ovrBadge, a.overall >= 70 ? s.ovrHigh : a.overall >= 50 ? s.ovrMid : s.ovrLow]}>
                         <Text style={s.ovrText}>{a.overall}</Text>
                       </View>
+                      <TouchableOpacity
+                        style={[s.favoriteBtn, a.isFavorite && s.favoriteBtnActive]}
+                        onPress={() => toggleFavoriteMutation.mutate(a)}
+                        disabled={toggleFavoriteMutation.isPending}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons
+                          name={a.isFavorite ? 'star' : 'star-outline'}
+                          size={18}
+                          color={a.isFavorite ? Colors.warningDark : Colors.n400}
+                        />
+                      </TouchableOpacity>
                     </View>
                   ))
                 )}
@@ -659,6 +690,8 @@ const s = StyleSheet.create({
   ovrMid:          { backgroundColor: Colors.warningLight },
   ovrLow:          { backgroundColor: Colors.errorLight },
   ovrText:         { fontSize: 12, fontWeight: '800', color: Colors.n900 },
+  favoriteBtn:     { width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
+  favoriteBtnActive: { backgroundColor: Colors.warningLight },
 
   inviteBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: Radius.r12, paddingVertical: 13 },
   inviteBtnDisabled: { opacity: 0.6 },

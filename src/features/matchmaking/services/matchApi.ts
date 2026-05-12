@@ -35,7 +35,7 @@ export const matchApi = {
     httpClient.patch(`/matches/${matchId}/presence/${athleteId}`, { status }).then((r) => r.data),
 
   openGuestSlots: (matchId: string, adminId: string, config: GuestSlotConfig) =>
-    httpClient.post(`/matches/${matchId}/guest-slots`, { adminId, ...config }).then((r) => r.data),
+    httpClient.post(`/matches/${matchId}/open-vacancies`, { adminId, ...config }).then((r) => r.data),
 
   closeGuestSlots: (matchId: string, adminId: string) =>
     httpClient.delete(`/matches/${matchId}/guest-slots`, { data: { adminId } }).then((r) => r.data),

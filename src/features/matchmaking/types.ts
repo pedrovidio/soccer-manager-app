@@ -66,4 +66,6 @@ export interface NearbyAthlete {
   age: number;
   gender: Gender;
   position: string;
+  distanceKm?: number;
+  isFavorite: boolean;
 }
