@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { ConfirmedMatch } from '../../../athletes/athleteTypes';
 import { Colors } from '../../../common/theme';
 import { styles } from './MatchCard.styles';
+import { deriveMatchPhase, phaseLabel } from '../../../matchmaking/utils/matchPhase';
 
 const TYPE_STYLE: Record<string, object> = {
   CAMPO:   styles.tagCampo,
@@ -19,15 +20,20 @@ const TYPE_LABEL: Record<string, string> = {
 interface MatchCardProps {
   match: ConfirmedMatch;
   athleteId?: string;
-  confirmed?: boolean;
 }
 
-export function MatchCard({ match, athleteId, confirmed }: MatchCardProps) {
+export function MatchCard({ match, athleteId }: MatchCardProps) {
   const router = useRouter();
   const fillPct = match.totalSlots > 0 ? (match.confirmedSlots / match.totalSlots) * 100 : 0;
   const isFinished = match.status === 'FINISHED';
   const isAdmin = match.isGroupAdmin === true;
   const hasMatchmaking = match.hasMatchmaking === true && !!match.matchmakingResult;
+  const phase = match.phase ?? deriveMatchPhase({
+    status: match.status,
+    type: match.type,
+    confirmedCount: match.confirmedSlots,
+    hasMatchmaking,
+  });
   const myTeam = hasMatchmaking
     ? match.matchmakingResult!.teams.find((team) => team.athletes.some((athlete) => athlete.id === athleteId))
     : null;
@@ -47,10 +53,10 @@ export function MatchCard({ match, athleteId, confirmed }: MatchCardProps) {
           <Ionicons name="time-outline" size={13} color={Colors.n500} />
           <Text style={styles.dateText}>{match.time}</Text>
         </View>
-        {confirmed && !isFinished && (
+        {!isFinished && (
           <View style={styles.confPill}>
-            <Ionicons name="checkmark" size={10} color={Colors.successDark} />
-            <Text style={styles.confText}>Confirmado</Text>
+            <Ionicons name={phase === 'WAITING_CONFIRMATION' ? 'time-outline' : 'checkmark'} size={10} color={Colors.successDark} />
+            <Text style={styles.confText}>{phase === 'WAITING_CONFIRMATION' ? 'Convocado' : 'Confirmado'}</Text>
           </View>
         )}
       </View>
@@ -73,11 +79,15 @@ export function MatchCard({ match, athleteId, confirmed }: MatchCardProps) {
           <View style={[styles.progFill, { width: `${fillPct}%` as any }]} />
         </View>
 
-        {!isFinished && !hasMatchmaking && (
-          <View style={isAdmin ? styles.drawShortcut : styles.waitingBox}>
-            <Ionicons name={isAdmin ? 'shuffle-outline' : 'hourglass-outline'} size={15} color={isAdmin ? Colors.primary : Colors.warningDark} />
-            <Text style={isAdmin ? styles.drawShortcutText : styles.waitingText}>
-              {isAdmin ? 'Ir para sorteio dos times' : 'Aguardando o sorteio'}
+        {!isFinished && (
+          <View style={phase === 'WAITING_CONFIRMATION' ? styles.waitingBox : styles.drawShortcut}>
+            <Ionicons
+              name={phase === 'IN_PROGRESS' ? 'play-circle-outline' : phase === 'WAITING_CONFIRMATION' ? 'hourglass-outline' : 'shuffle-outline'}
+              size={15}
+              color={phase === 'WAITING_CONFIRMATION' ? Colors.warningDark : Colors.primary}
+            />
+            <Text style={phase === 'WAITING_CONFIRMATION' ? styles.waitingText : styles.drawShortcutText}>
+              {isAdmin && phase === 'CONFIRMED_WAITING_DRAW' ? 'Jogo confirmado. Sortear times.' : phaseLabel(phase)}
             </Text>
           </View>
         )}

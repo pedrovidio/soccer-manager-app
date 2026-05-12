@@ -65,6 +65,9 @@ export interface ConfirmedMatch {
   isoDate: string;
   location: string;
   status: string;
+  phase?: 'WAITING_CONFIRMATION' | 'CONFIRMED_WAITING_DRAW' | 'TEAMS_DRAWN' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
+  displayStatus?: string;
+  minimumConfirmed?: number;
   totalSlots: number;
   confirmedSlots: number;
   minOverall?: number;

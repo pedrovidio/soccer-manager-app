@@ -1,4 +1,5 @@
 export type MatchStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
+export type MatchPhase = 'WAITING_CONFIRMATION' | 'CONFIRMED_WAITING_DRAW' | 'TEAMS_DRAWN' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
 export type PaymentStatus = 'PAID' | 'PENDING' | 'DECLINED';
 export type MatchType = 'CAMPO' | 'SOCIETY' | 'FUTSAL';
 export type PresenceStatus = 'PENDING' | 'CONFIRMED' | 'DECLINED';
@@ -14,6 +15,9 @@ export interface Match {
   city?: string;
   type: MatchType;
   status: MatchStatus;
+  phase?: MatchPhase;
+  displayStatus?: string;
+  minimumConfirmed?: number;
   totalSlots?: number;
   confirmedSlots?: number;
   totalVacancies?: number;
@@ -56,6 +60,9 @@ export interface MatchDetail {
   longitude: number;
   type: MatchType;
   status: MatchStatus;
+  phase?: MatchPhase;
+  displayStatus?: string;
+  minimumConfirmed?: number;
   totalVacancies: number;
   reserveVacancies: number;
   confirmedCount: number;

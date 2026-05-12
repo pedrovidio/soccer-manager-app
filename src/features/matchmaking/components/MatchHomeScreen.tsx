@@ -12,6 +12,7 @@ import { groupApi } from '../../groups/services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender, MatchmakingResult } from '../types';
 import { BackButton } from '../../common/components/BackButton';
+import { deriveMatchPhase, minimumConfirmedFor, phaseLabel } from '../utils/matchPhase';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -32,7 +33,7 @@ function posLabel(pos: string) {
 const STATUS_CONFIG: Record<PresenceStatus, { label: string; bg: string; color: string; icon: string }> = {
   CONFIRMED: { label: 'Confirmado', bg: Colors.successLight, color: Colors.successDark, icon: 'checkmark-circle' },
   DECLINED:  { label: 'Recusou',    bg: Colors.errorLight,   color: Colors.errorDark,   icon: 'close-circle' },
-  PENDING:   { label: 'Pendente',   bg: Colors.warningLight, color: Colors.warningDark, icon: 'time-outline' },
+  PENDING:   { label: 'Aguardando confirmação', bg: Colors.warningLight, color: Colors.warningDark, icon: 'time-outline' },
 };
 
 const GENDER_OPTIONS: { value: Gender; label: string }[] = [
@@ -286,7 +287,18 @@ export default function MatchHomeScreen() {
   const isParticipant = currentPresence?.status === 'CONFIRMED';
   const hasCheckedIn = Boolean(currentPresence?.checkedIn || data.checkedInIds?.includes(athleteId));
   const ratableAthletes = data.presence.filter((p) => p.status === 'CONFIRMED' && p.athleteId !== athleteId);
-  const visibleMatchmakingResult = matchmakingResult ?? data.matchmakingResult ?? null;
+  const rawMatchmakingResult = matchmakingResult ?? data.matchmakingResult ?? null;
+  const visibleMatchmakingResult: MatchmakingResult = rawMatchmakingResult ?? { teams: [], overallDifference: 0 };
+  const hasVisibleMatchmakingResult = !!rawMatchmakingResult;
+  const minimumConfirmed = data.minimumConfirmed ?? minimumConfirmedFor(data.type);
+  const phase = data.phase ?? deriveMatchPhase({
+    status: data.status,
+    type: data.type,
+    confirmedCount: confirmed,
+    hasMatchmaking: hasVisibleMatchmakingResult,
+  });
+  const canDrawTeams = isAdmin && phase === 'CONFIRMED_WAITING_DRAW';
+  const shouldSuggestSpot = isAdmin && phase === 'WAITING_CONFIRMATION' && confirmed < minimumConfirmed;
 
   return (
     <SafeAreaView style={s.safe}>
@@ -295,8 +307,8 @@ export default function MatchHomeScreen() {
       <View style={s.header}>
         <BackButton />
         <View style={{ flex: 1, minWidth: 0 }}>
-          <Text style={s.headerTitle} numberOfLines={1}>{data.location}</Text>
-          <Text style={s.headerSub}>{date}</Text>
+          <Text style={s.headerTitle} numberOfLines={1}>{data.status === 'FINISHED' ? 'Partida encerrada' : 'Próxima partida'}</Text>
+          <Text style={s.headerSub}>{data.location} · {date}</Text>
         </View>
         {isAdmin && (
           <TouchableOpacity
@@ -332,10 +344,9 @@ export default function MatchHomeScreen() {
             </View>
           </View>
 
-          {/* STATUS BADGE */}
-          <View style={[s.statusBadge, { backgroundColor: data.status === 'SCHEDULED' ? Colors.primaryLight : Colors.n100 }]}>
-            <Text style={[s.statusBadgeText, { color: data.status === 'SCHEDULED' ? Colors.primary : Colors.n700 }]}>
-              {data.status === 'SCHEDULED' ? 'Agendada' : data.status === 'IN_PROGRESS' ? 'Em andamento' : data.status === 'FINISHED' ? 'Finalizada' : 'Cancelada'}
+          <View style={[s.statusBadge, { backgroundColor: phase === 'WAITING_CONFIRMATION' ? Colors.warningLight : Colors.primaryLight }]}>
+            <Text style={[s.statusBadgeText, { color: phase === 'WAITING_CONFIRMATION' ? Colors.warningDark : Colors.primary }]}>
+              {phaseLabel(phase)}
             </Text>
           </View>
 
@@ -390,8 +401,37 @@ export default function MatchHomeScreen() {
           <View style={s.progressBg}>
             <View style={[s.progressFill, { width: `${pct}%` as any }]} />
           </View>
-          <Text style={s.progressLabel}>{confirmed} de {data.totalVacancies} vagas preenchidas</Text>
+          <Text style={s.progressLabel}>{confirmed} de {data.totalVacancies} vagas preenchidas · mínimo {minimumConfirmed}</Text>
+          {shouldSuggestSpot && (
+            <View style={s.hintBox}>
+              <Ionicons name="person-add-outline" size={16} color={Colors.warningDark} />
+              <Text style={s.hintText}>Faltam {Math.max(minimumConfirmed - confirmed, 0)} atleta(s) para confirmar o jogo. Considere convidar avulsos.</Text>
+            </View>
+          )}
         </View>
+
+        {hasVisibleMatchmakingResult && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Escalações</Text>
+            <View style={s.teamsWrap}>
+              {visibleMatchmakingResult.teams.map((team) => {
+                const isMyTeam = team.athletes.some((athlete) => athlete.id === athleteId);
+                return (
+                  <View key={team.teamNumber} style={[s.teamBox, isMyTeam && s.myTeamBox]}>
+                    <Text style={[s.teamTitle, isMyTeam && s.myTeamTitle]}>
+                      {team.name ?? teamNameFallback(team.teamNumber)} · OVR {team.averageOverall}{isMyTeam ? ' · seu time' : ''}
+                    </Text>
+                    {team.athletes.map((athlete) => (
+                      <Text key={athlete.id} style={[s.teamAthlete, athlete.id === athleteId && s.myTeamTitle]}>
+                        {athlete.name}{athlete.id === athleteId ? ' (você)' : ''} · {posLabel(athlete.position)} · {athlete.overall}
+                      </Text>
+                    ))}
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
         {(isParticipant || isAdmin) && (
           <View style={s.section}>
@@ -417,18 +457,18 @@ export default function MatchHomeScreen() {
                     <TouchableOpacity
                       style={[s.secondaryActionBtn, { flex: 1 }]}
                       onPress={() => matchmakingMutation.mutate()}
-                      disabled={matchmakingMutation.isPending}
+                      disabled={!canDrawTeams || matchmakingMutation.isPending}
                       activeOpacity={0.7}
                     >
                       <Ionicons name="shuffle-outline" size={16} color={Colors.primary} />
-                      <Text style={s.secondaryActionText}>Sortear times</Text>
+                      <Text style={s.secondaryActionText}>{canDrawTeams ? 'Sortear times' : 'Aguardando mínimo'}</Text>
                     </TouchableOpacity>
                   </View>
 
-                  {visibleMatchmakingResult && (
+                  {false && hasVisibleMatchmakingResult && (
                     <View style={s.teamsWrap}>
                       <Text style={s.teamsDiff}>Diferença OVR: {visibleMatchmakingResult.overallDifference}</Text>
-                      {visibleMatchmakingResult.teams.map((team) => (
+                      {visibleMatchmakingResult!.teams.map((team) => (
                         <View key={team.teamNumber} style={s.teamBox}>
                           <Text style={s.teamTitle}>
                             {team.name ?? teamNameFallback(team.teamNumber)} · OVR {team.averageOverall}
@@ -869,6 +909,8 @@ const s = StyleSheet.create({
   progressBg:   { height: 6, backgroundColor: Colors.n200, borderRadius: Radius.r999, overflow: 'hidden' },
   progressFill: { height: '100%', backgroundColor: Colors.primary, borderRadius: Radius.r999 },
   progressLabel:{ fontSize: 11, color: Colors.n500, marginTop: 6, textAlign: 'right' },
+  hintBox:      { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.warningLight, borderRadius: Radius.r8, padding: 10, marginTop: 10 },
+  hintText:     { flex: 1, fontSize: 12, fontWeight: '700', color: Colors.warningDark },
 
   emptyCard:    { alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, paddingVertical: 20 },
   emptyText:    { fontSize: 13, color: Colors.n400 },
@@ -935,7 +977,9 @@ const s = StyleSheet.create({
   teamsWrap:       { gap: 8 },
   teamsDiff:       { fontSize: 11, fontWeight: '700', color: Colors.n500 },
   teamBox:         { backgroundColor: Colors.n50, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n200, padding: 10 },
+  myTeamBox:       { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
   teamTitle:       { fontSize: 12, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
+  myTeamTitle:     { color: Colors.primary },
   teamAthlete:     { fontSize: 11, color: Colors.n600, marginTop: 2 },
   ratingRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: Colors.n200, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9 },
   ratingName:      { fontSize: 12, fontWeight: '600', color: Colors.n900 },
