@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { FlatList, View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useProfileLogic } from '../../hooks/useProfileLogic';
 import { ProfileHistoryItem } from '../../types/profile.types';
@@ -88,10 +87,9 @@ export const ProfileView = () => {
       <Text className="text-lg font-bold text-neutral-800 mb-3">Histórico de Partidas</Text>
       
       <View className="flex-1">
-        <FlashList
+        <FlatList
           data={data.history}
           renderItem={renderHistoryItem}
-          estimatedItemSize={100}
           refreshing={isRefetching}
           onRefresh={refetch}
           ListEmptyComponent={<Text className="text-neutral-500 text-center mt-4">Você ainda não tem histórico de partidas.</Text>}
