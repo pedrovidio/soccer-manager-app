@@ -61,6 +61,80 @@ export interface GroupBalance {
   totalPending: number;
 }
 
+export type GroupFinanceStatus = 'PENDING' | 'PAID' | 'CANCELLED';
+export type GroupFinanceType = 'MONTHLY' | 'SPOT';
+
+export interface GroupFinancePayment {
+  id: string;
+  athleteId: string;
+  athleteName: string;
+  athletePhone: string;
+  matchId?: string | null;
+  matchDate?: string | null;
+  matchLocation?: string | null;
+  amount: number;
+  type: GroupFinanceType;
+  status: GroupFinanceStatus;
+  dueDate?: string | null;
+  paymentReportedAt?: string | null;
+  createdAt: string;
+  isOverdue: boolean;
+}
+
+export interface GroupFinanceByType {
+  type: GroupFinanceType;
+  paid: number;
+  pending: number;
+  overdue: number;
+  count: number;
+}
+
+export interface GroupFinanceByMatch {
+  matchId: string;
+  matchDate?: string | null;
+  matchLocation: string;
+  matchStatus?: string | null;
+  paid: number;
+  pending: number;
+  overdue: number;
+  total: number;
+  transactionCount: number;
+  paidCount: number;
+  pendingCount: number;
+}
+
+export interface GroupFinanceReport {
+  group: {
+    id: string;
+    name: string;
+    monthlyFee: number;
+    spotFee: number;
+    pixKey?: string | null;
+  };
+  summary: {
+    cashInHand: number;
+    totalPaid: number;
+    totalPending: number;
+    totalOverdue: number;
+    totalReported: number;
+    expectedTotal: number;
+    transactionsCount: number;
+    pendingCount: number;
+    overdueCount: number;
+  };
+  byType: GroupFinanceByType[];
+  byMatch: GroupFinanceByMatch[];
+  defaulters: GroupFinancePayment[];
+  payments: GroupFinancePayment[];
+}
+
+export interface GroupFinanceFilters {
+  from?: string;
+  to?: string;
+  status?: GroupFinanceStatus;
+  type?: GroupFinanceType;
+}
+
 export interface GroupHomeData {
   group: {
     id: string;
