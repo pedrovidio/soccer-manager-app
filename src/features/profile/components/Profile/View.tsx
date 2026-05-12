@@ -1,10 +1,12 @@
 import React from 'react';
 import { FlatList, View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useProfileLogic } from '../../hooks/useProfileLogic';
 import { ProfileHistoryItem } from '../../types/profile.types';
 
 export const ProfileView = () => {
+  const router = useRouter();
   const { data, isLoading, isError, refetch, isRefetching, handleLogout } = useProfileLogic();
 
   if (isLoading) {
@@ -81,6 +83,13 @@ export const ProfileView = () => {
         {data.financialDebt > 0 && (
           <Text className="text-red-600 text-xs mt-2 font-medium">Você possui débitos pendentes. Marketplace e convites bloqueados.</Text>
         )}
+        <TouchableOpacity
+          onPress={() => router.push('/athlete-finance' as any)}
+          className="mt-4 bg-white/80 border border-neutral-200 px-4 py-3 rounded-xl flex-row items-center justify-between"
+        >
+          <Text className="font-bold text-neutral-700">Ver historico e pagamentos</Text>
+          <MaterialCommunityIcons name="chevron-right" size={20} color="#374151" />
+        </TouchableOpacity>
       </View>
 
       {/* History List */}

@@ -87,3 +87,66 @@ export interface Invite {
   createdAt: string;
   respondUrl: string;
 }
+
+export type AthleteFinanceStatus = 'PENDING' | 'PAID' | 'CANCELLED';
+export type AthleteFinanceType = 'MONTHLY' | 'SPOT';
+
+export interface AthleteFinancePayment {
+  id: string;
+  amount: number;
+  type: AthleteFinanceType;
+  status: AthleteFinanceStatus;
+  dueDate?: string | null;
+  paymentReportedAt?: string | null;
+  createdAt: string;
+  isOverdue: boolean;
+  group?: {
+    id: string;
+    name: string;
+    pixKey?: string | null;
+    adminName?: string | null;
+    adminPhone?: string | null;
+    adminPixKey?: string | null;
+  } | null;
+  match?: {
+    id: string;
+    date: string;
+    location: string;
+    type: string;
+    status: string;
+  } | null;
+}
+
+export interface AthleteFinanceReport {
+  athlete: {
+    id: string;
+    name: string;
+    financialDebt: number;
+  };
+  summary: {
+    totalPaid: number;
+    totalPending: number;
+    totalOverdue: number;
+    totalReported: number;
+    transactionsCount: number;
+    pendingCount: number;
+    overdueCount: number;
+  };
+  byType: {
+    type: AthleteFinanceType;
+    paid: number;
+    pending: number;
+    overdue: number;
+    count: number;
+  }[];
+  byGroup: {
+    groupId: string;
+    groupName: string;
+    paid: number;
+    pending: number;
+    overdue: number;
+    count: number;
+  }[];
+  duePayments: AthleteFinancePayment[];
+  payments: AthleteFinancePayment[];
+}

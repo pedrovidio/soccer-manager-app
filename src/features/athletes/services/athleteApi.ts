@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { AthleteDashboard, Invite } from '../athleteTypes';
+import { AthleteDashboard, AthleteFinanceReport, Invite } from '../athleteTypes';
 import { Notification } from '../../notifications/types';
 import { AssessmentPayload, AvailabilitySlot } from '../../auth/registerTypes';
 
@@ -13,6 +13,13 @@ interface NotificationsResponse {
 export const athleteApi = {
   dashboard: (athleteId: string) =>
     httpClient.get<AthleteDashboard>(`/athletes/${athleteId}/dashboard`).then((r) => r.data),
+
+  financeReport: (athleteId: string, filters: Record<string, string> = {}) =>
+    httpClient
+      .get<AthleteFinanceReport>(`/athletes/${athleteId}/finance/report`, {
+        params: { requesterId: athleteId, ...filters },
+      })
+      .then((r) => r.data),
 
   notifications: (athleteId: string) =>
     httpClient

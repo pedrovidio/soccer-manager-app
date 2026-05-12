@@ -11,7 +11,7 @@ export type NavTab = 'home' | 'groups' | 'financial' | 'profile';
 export const NAV_ROUTES: Record<NavTab, string> = {
   home:      '/',
   groups:    '/groups',
-  financial: '/profile',  // ainda sem tela dedicada → redireciona para perfil
+  financial: '/athlete-finance',
   profile:   '/profile',
 };
 
