@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment } from '../types';
+import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResult } from '../types';
 
 export interface CreateMatchPayload {
   adminId: string;
@@ -47,6 +47,23 @@ export const matchApi = {
 
   respondInvite: (inviteId: string, athleteId: string, accept: boolean) =>
     httpClient.patch(`/match-invites/${inviteId}/respond`, { athleteId, accept }).then((r) => r.data),
+
+  checkIn: (matchId: string, athleteId: string) =>
+    httpClient.post(`/matches/${matchId}/check-in`, { athleteId }).then((r) => r.data),
+
+  matchmaking: (matchId: string, teamsCount = 2) =>
+    httpClient.post<MatchmakingResult>(`/matches/${matchId}/matchmaking`, { teamsCount }).then((r) => r.data),
+
+  registerRating: (
+    matchId: string,
+    ratedBy: string,
+    ratedAthlete: string,
+    stats: { pace: number; shooting: number; passing: number; dribbling: number; defense: number; physical: number },
+  ) =>
+    httpClient.post(`/matches/${matchId}/ratings`, { ratedBy, ratedAthlete, stats }).then((r) => r.data),
+
+  registerScore: (matchId: string, registeredBy: string, scores: { teamName: string; goals: number }[]) =>
+    httpClient.post(`/matches/${matchId}/score`, { registeredBy, scores }).then((r) => r.data),
 
   cancelMatch: (matchId: string, adminId: string, reason: string) =>
     httpClient.patch(`/matches/${matchId}/cancel`, { adminId, reason }).then((r) => r.data),

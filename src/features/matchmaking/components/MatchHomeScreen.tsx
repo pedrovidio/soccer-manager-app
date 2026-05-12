@@ -10,7 +10,7 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { matchApi } from '../services/matchApi';
 import { groupApi } from '../../groups/services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
-import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender } from '../types';
+import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender, MatchmakingResult } from '../types';
 import { BackButton } from '../../common/components/BackButton';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -63,6 +63,14 @@ export default function MatchHomeScreen() {
   const [finishModalVisible, setFinishModalVisible] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [finishComment, setFinishComment] = useState('');
+  const [teamsCount, setTeamsCount] = useState('2');
+  const [matchmakingResult, setMatchmakingResult] = useState<MatchmakingResult | null>(null);
+  const [scoreA, setScoreA] = useState('');
+  const [scoreB, setScoreB] = useState('');
+  const [ratingTarget, setRatingTarget] = useState<MatchPresence | null>(null);
+  const [ratingStats, setRatingStats] = useState({
+    pace: '70', shooting: '70', passing: '70', dribbling: '70', defense: '70', physical: '70',
+  });
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['match-detail', matchId],
@@ -185,6 +193,57 @@ export default function MatchHomeScreen() {
     },
   });
 
+  const checkInMutation = useMutation({
+    mutationFn: () => matchApi.checkIn(matchId!, athleteId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      Alert.alert('Check-in confirmado', 'Sua presença no local foi registrada.');
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível fazer check-in.');
+    },
+  });
+
+  const matchmakingMutation = useMutation({
+    mutationFn: () => matchApi.matchmaking(matchId!, Math.max(2, Math.min(4, Number(teamsCount) || 2))),
+    onSuccess: (result) => setMatchmakingResult(result),
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível montar os times.');
+    },
+  });
+
+  const scoreMutation = useMutation({
+    mutationFn: () => matchApi.registerScore(matchId!, athleteId, [
+      { teamName: 'Time 1', goals: Number(scoreA) || 0 },
+      { teamName: 'Time 2', goals: Number(scoreB) || 0 },
+    ]),
+    onSuccess: () => Alert.alert('Placar registrado', 'O resultado foi salvo no histórico.'),
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível registrar o placar.');
+    },
+  });
+
+  const ratingMutation = useMutation({
+    mutationFn: () => {
+      if (!ratingTarget) throw new Error('Selecione um atleta.');
+      return matchApi.registerRating(matchId!, athleteId, ratingTarget.athleteId, {
+        pace: Number(ratingStats.pace) || 0,
+        shooting: Number(ratingStats.shooting) || 0,
+        passing: Number(ratingStats.passing) || 0,
+        dribbling: Number(ratingStats.dribbling) || 0,
+        defense: Number(ratingStats.defense) || 0,
+        physical: Number(ratingStats.physical) || 0,
+      });
+    },
+    onSuccess: () => {
+      setRatingTarget(null);
+      Alert.alert('Avaliação enviada', 'A avaliação do atleta foi registrada.');
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível enviar a avaliação.');
+    },
+  });
+
   if (isLoading) {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
@@ -212,6 +271,10 @@ export default function MatchHomeScreen() {
   const spotsLeft  = data.totalVacancies - confirmed;
   const pct        = Math.min((confirmed / data.totalVacancies) * 100, 100);
   const isAdmin = isAdminParam === '1';
+  const currentPresence = data.presence.find((p) => p.athleteId === athleteId);
+  const isParticipant = currentPresence?.status === 'CONFIRMED';
+  const hasCheckedIn = Boolean(currentPresence?.checkedIn || data.checkedInIds?.includes(athleteId));
+  const ratableAthletes = data.presence.filter((p) => p.status === 'CONFIRMED' && p.athleteId !== athleteId);
 
   return (
     <SafeAreaView style={s.safe}>
@@ -317,6 +380,119 @@ export default function MatchHomeScreen() {
           </View>
           <Text style={s.progressLabel}>{confirmed} de {data.totalVacancies} vagas preenchidas</Text>
         </View>
+
+        {(isParticipant || isAdmin) && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Ações da partida</Text>
+            <View style={s.matchActionsCard}>
+              {isParticipant && data.status !== 'FINISHED' && data.status !== 'CANCELLED' && (
+                <TouchableOpacity
+                  style={[s.secondaryActionBtn, hasCheckedIn && s.secondaryActionDone]}
+                  onPress={() => checkInMutation.mutate()}
+                  disabled={hasCheckedIn || checkInMutation.isPending}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name={hasCheckedIn ? 'checkmark-circle' : 'location-outline'} size={16} color={hasCheckedIn ? Colors.successDark : Colors.primary} />
+                  <Text style={[s.secondaryActionText, hasCheckedIn && { color: Colors.successDark }]}>
+                    {hasCheckedIn ? 'Check-in feito' : 'Fazer check-in'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {isAdmin && data.status !== 'CANCELLED' && (
+                <>
+                  <View style={s.inlineActionRow}>
+                    <TextInput style={[s.filterInput, { width: 72 }]} value={teamsCount} onChangeText={setTeamsCount} keyboardType="numeric" />
+                    <TouchableOpacity
+                      style={[s.secondaryActionBtn, { flex: 1 }]}
+                      onPress={() => matchmakingMutation.mutate()}
+                      disabled={matchmakingMutation.isPending}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="shuffle-outline" size={16} color={Colors.primary} />
+                      <Text style={s.secondaryActionText}>Sortear times</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {matchmakingResult && (
+                    <View style={s.teamsWrap}>
+                      <Text style={s.teamsDiff}>Diferença OVR: {matchmakingResult.overallDifference}</Text>
+                      {matchmakingResult.teams.map((team) => (
+                        <View key={team.teamNumber} style={s.teamBox}>
+                          <Text style={s.teamTitle}>Time {team.teamNumber} · OVR {team.averageOverall}</Text>
+                          {team.athletes.map((athlete) => (
+                            <Text key={athlete.id} style={s.teamAthlete}>
+                              {athlete.name} · {posLabel(athlete.position)} · {athlete.overall}
+                            </Text>
+                          ))}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+        )}
+
+        {isParticipant && data.status === 'FINISHED' && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Pós-jogo</Text>
+            <View style={s.matchActionsCard}>
+              <Text style={s.filterLabel}>Registrar placar</Text>
+              <View style={s.inlineActionRow}>
+                <TextInput style={[s.filterInput, { flex: 1 }]} value={scoreA} onChangeText={setScoreA} keyboardType="numeric" placeholder="Time 1" />
+                <TextInput style={[s.filterInput, { flex: 1 }]} value={scoreB} onChangeText={setScoreB} keyboardType="numeric" placeholder="Time 2" />
+                <TouchableOpacity style={s.smallPrimaryBtn} onPress={() => scoreMutation.mutate()} disabled={scoreMutation.isPending}>
+                  <Text style={s.smallPrimaryText}>Salvar</Text>
+                </TouchableOpacity>
+              </View>
+
+              <Text style={[s.filterLabel, { marginTop: 12 }]}>Avaliar atletas</Text>
+              {ratableAthletes.map((athlete) => (
+                <TouchableOpacity key={athlete.athleteId} style={s.ratingRow} onPress={() => setRatingTarget(athlete)} activeOpacity={0.7}>
+                  <Text style={s.ratingName}>{athlete.name}</Text>
+                  <Ionicons name="chevron-forward" size={16} color={Colors.n400} />
+                </TouchableOpacity>
+              ))}
+
+              {ratingTarget && (
+                <View style={s.ratingBox}>
+                  <Text style={s.ratingTitle}>Avaliar {ratingTarget.name}</Text>
+                  <View style={s.ratingGrid}>
+                    {([
+                      ['pace', 'Vel.'],
+                      ['shooting', 'Fin.'],
+                      ['passing', 'Pas.'],
+                      ['dribbling', 'Dri.'],
+                      ['defense', 'Def.'],
+                      ['physical', 'Fis.'],
+                    ] as const).map(([key, label]) => (
+                      <View key={key} style={s.ratingInputWrap}>
+                        <Text style={s.ratingLabel}>{label}</Text>
+                        <TextInput
+                          style={s.ratingInput}
+                          value={ratingStats[key]}
+                          onChangeText={(v) => setRatingStats((prev) => ({ ...prev, [key]: v }))}
+                          keyboardType="numeric"
+                          maxLength={3}
+                        />
+                      </View>
+                    ))}
+                  </View>
+                  <View style={s.inlineActionRow}>
+                    <TouchableOpacity style={[s.modalBtn, s.modalBtnSecondary]} onPress={() => setRatingTarget(null)}>
+                      <Text style={s.modalBtnTextSecondary}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[s.modalBtn, s.modalBtnPrimary]} onPress={() => ratingMutation.mutate()} disabled={ratingMutation.isPending}>
+                      <Text style={s.modalBtnTextPrimary}>Enviar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
 
         {!isAdmin && data.status === 'FINISHED' && data.mySpotPayment?.status === 'PENDING' && (
           <View style={s.section}>
@@ -735,6 +911,27 @@ const s = StyleSheet.create({
   paymentText:     { fontSize: 12, color: Colors.n500, marginTop: 2 },
   paymentBtn:      { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 9 },
   paymentBtnText:  { color: Colors.white, fontSize: 12, fontWeight: '700' },
+
+  matchActionsCard: { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, gap: 10 },
+  inlineActionRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  secondaryActionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: Colors.primaryLight, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
+  secondaryActionDone: { backgroundColor: Colors.successLight },
+  secondaryActionText: { fontSize: 12, fontWeight: '700', color: Colors.primary },
+  smallPrimaryBtn: { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
+  smallPrimaryText: { fontSize: 12, fontWeight: '700', color: Colors.white },
+  teamsWrap:       { gap: 8 },
+  teamsDiff:       { fontSize: 11, fontWeight: '700', color: Colors.n500 },
+  teamBox:         { backgroundColor: Colors.n50, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n200, padding: 10 },
+  teamTitle:       { fontSize: 12, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
+  teamAthlete:     { fontSize: 11, color: Colors.n600, marginTop: 2 },
+  ratingRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: Colors.n200, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9 },
+  ratingName:      { fontSize: 12, fontWeight: '600', color: Colors.n900 },
+  ratingBox:       { borderWidth: 1, borderColor: Colors.n200, borderRadius: Radius.r8, padding: 10, gap: 10 },
+  ratingTitle:     { fontSize: 13, fontWeight: '800', color: Colors.n900 },
+  ratingGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  ratingInputWrap: { width: '30%' },
+  ratingLabel:     { fontSize: 10, fontWeight: '700', color: Colors.n500, marginBottom: 3 },
+  ratingInput:     { backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 8, paddingVertical: 7, fontSize: 13, color: Colors.n900 },
 
   inviteBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: Radius.r12, paddingVertical: 13 },
   inviteBtnDisabled: { opacity: 0.6 },

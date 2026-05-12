@@ -35,6 +35,7 @@ export interface MatchPresence {
   overall: number;
   status: PresenceStatus;
   isGuest: boolean;
+  checkedIn?: boolean;
 }
 
 export interface GuestSlotConfig {
@@ -58,6 +59,8 @@ export interface MatchDetail {
   totalVacancies: number;
   reserveVacancies: number;
   confirmedCount: number;
+  checkedInCount?: number;
+  checkedInIds?: string[];
   isRecurring: boolean;
   guestConfig: GuestSlotConfig | null;
   mySpotPayment?: {
@@ -80,6 +83,17 @@ export interface SpotPayment {
   amount: number;
   dueDate: string | null;
   paymentReportedAt: string | null;
+}
+
+export interface MatchmakingTeam {
+  teamNumber: number;
+  athletes: { id: string; name: string; position: string; overall: number }[];
+  averageOverall: number;
+}
+
+export interface MatchmakingResult {
+  teams: MatchmakingTeam[];
+  overallDifference: number;
 }
 
 export interface NearbyAthlete {
