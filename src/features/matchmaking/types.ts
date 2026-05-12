@@ -49,6 +49,7 @@ export interface GuestSlotConfig {
   gender: Gender;
   spotRadiusKm: number;
   minOverall: number;
+  athleteIds?: string[];
 }
 
 export interface MatchDetail {

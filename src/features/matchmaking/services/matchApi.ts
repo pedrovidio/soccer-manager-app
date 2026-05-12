@@ -36,8 +36,8 @@ export const matchApi = {
       ? httpClient.post(`/matches/${matchId}/confirm-presence`, { athleteId }).then((r) => r.data)
       : Promise.reject(new Error('Decline presence requires a match invite id; use respondInvite instead.')),
 
-  openGuestSlots: (matchId: string, adminId: string, config: GuestSlotConfig) =>
-    httpClient.post(`/matches/${matchId}/open-vacancies`, { adminId, ...config }).then((r) => r.data),
+  openGuestSlots: (matchId: string, adminId: string, config: GuestSlotConfig, athleteIds?: string[]) =>
+    httpClient.post(`/matches/${matchId}/open-vacancies`, { adminId, ...config, ...(athleteIds ? { athleteIds } : {}) }).then((r) => r.data),
 
   closeGuestSlots: (matchId: string, adminId: string) =>
     httpClient.delete(`/matches/${matchId}/open-vacancies`, { data: { adminId } }).then((r) => r.data),

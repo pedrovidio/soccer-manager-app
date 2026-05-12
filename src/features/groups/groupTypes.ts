@@ -45,6 +45,15 @@ export interface GroupMember {
   name: string;
   position: string;
   overall: number;
+  averageStats?: {
+    pace: number;
+    shooting: number;
+    passing: number;
+    dribbling: number;
+    defense: number;
+    physical: number;
+    overall: number;
+  };
   isAdmin: boolean;
   isInjured: boolean;
   hasDebt: boolean;

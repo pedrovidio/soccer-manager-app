@@ -62,6 +62,7 @@ export default function MatchHomeScreen() {
   const [radiusKm, setRadiusKm]               = useState('10');
   const [minOverall, setMinOverall]           = useState('0');
   const [nameSearch, setNameSearch]           = useState('');
+  const [selectedSpotAthleteIds, setSelectedSpotAthleteIds] = useState<string[]>([]);
 
   // Modal states for cancel/finish
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -129,6 +130,10 @@ export default function MatchHomeScreen() {
     if (nameSearch.trim() && !(a.name ?? '').toLowerCase().includes(nameSearch.trim().toLowerCase())) return false;
     return true;
   });
+  const nearbyIds = new Set(nearby.map((a) => a.id));
+  const selectedVisibleAthleteIds = selectedSpotAthleteIds.filter((id) => nearbyIds.has(id));
+  const selectedVisibleCount = selectedVisibleAthleteIds.length;
+  const selectedSpotAthletesCount = selectedSpotAthleteIds.length;
 
   const guestConfig: Partial<GuestSlotConfig> = {
     guestVacancies: +guestVacancies || 2,
@@ -140,10 +145,25 @@ export default function MatchHomeScreen() {
   };
 
   const openGuestMutation = useMutation({
-    mutationFn: () => matchApi.openGuestSlots(matchId!, athleteId, guestConfig as GuestSlotConfig),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['match-detail', matchId] }); Alert.alert('Vagas abertas', `${nearby.length} atletas serão notificados.`); },
+    mutationFn: () => matchApi.openGuestSlots(matchId!, athleteId, guestConfig as GuestSlotConfig, selectedSpotAthleteIds),
+    onSuccess: (result: any) => {
+      setSelectedSpotAthleteIds([]);
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
+      const sent = result?.spotInvitesSent ?? selectedSpotAthletesCount;
+      const plural = sent !== 1;
+      Alert.alert('Convites enviados', `${sent} atleta${plural ? 's' : ''} selecionado${plural ? 's' : ''} receber${plural ? 'ao' : 'a'} o convite.`);
+    },
     onError: () => Alert.alert('Erro', 'Não foi possível abrir as vagas.'),
   });
+
+  function toggleSpotSelection(targetAthleteId: string) {
+    setSelectedSpotAthleteIds((current) =>
+      current.includes(targetAthleteId)
+        ? current.filter((id) => id !== targetAthleteId)
+        : [...current, targetAthleteId],
+    );
+  }
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: (athlete: NearbyAthlete) =>
@@ -677,7 +697,8 @@ export default function MatchHomeScreen() {
                     </Text>
                   </View>
                   <Text style={s.athleteCounterSub}>
-                    Raio de {+radiusKm || 10} km
+                    {selectedSpotAthletesCount} selecionado{selectedSpotAthletesCount !== 1 ? 's' : ''}
+                    {selectedSpotAthletesCount !== selectedVisibleCount ? ` (${selectedVisibleCount} visiveis)` : ''}
                   </Text>
                 </View>
 
@@ -688,8 +709,18 @@ export default function MatchHomeScreen() {
                     <Text style={s.emptyText}>Nenhum atleta encontrado com esses filtros</Text>
                   </View>
                 ) : (
-                  nearby.map((a) => (
-                    <View key={a.id} style={s.guestRow}>
+                  nearby.map((a) => {
+                    const isSelected = selectedSpotAthleteIds.includes(a.id);
+                    return (
+                    <TouchableOpacity
+                      key={a.id}
+                      style={[s.guestRow, isSelected && s.guestRowSelected]}
+                      onPress={() => toggleSpotSelection(a.id)}
+                      activeOpacity={0.75}
+                    >
+                      <View style={[s.selectCircle, isSelected && s.selectCircleActive]}>
+                        {isSelected && <Ionicons name="checkmark" size={14} color={Colors.white} />}
+                      </View>
                       <View style={s.guestAvatar}>
                         <Text style={s.guestAvatarText}>{(a.name ?? '??').slice(0, 2).toUpperCase()}</Text>
                       </View>
@@ -702,7 +733,10 @@ export default function MatchHomeScreen() {
                       </View>
                       <TouchableOpacity
                         style={[s.favoriteBtn, a.isFavorite && s.favoriteBtnActive]}
-                        onPress={() => toggleFavoriteMutation.mutate(a)}
+                        onPress={(event) => {
+                          event.stopPropagation();
+                          toggleFavoriteMutation.mutate(a);
+                        }}
                         disabled={toggleFavoriteMutation.isPending}
                         activeOpacity={0.7}
                       >
@@ -712,15 +746,16 @@ export default function MatchHomeScreen() {
                           color={a.isFavorite ? Colors.warningDark : Colors.n400}
                         />
                       </TouchableOpacity>
-                    </View>
-                  ))
+                    </TouchableOpacity>
+                    );
+                  })
                 )}
 
                 {/* BOTÃO CONVIDAR */}
                 <TouchableOpacity
-                  style={[s.inviteBtn, openGuestMutation.isPending && s.inviteBtnDisabled]}
+                  style={[s.inviteBtn, (openGuestMutation.isPending || selectedSpotAthletesCount === 0) && s.inviteBtnDisabled]}
                   onPress={() => openGuestMutation.mutate()}
-                  disabled={openGuestMutation.isPending}
+                  disabled={openGuestMutation.isPending || selectedSpotAthletesCount === 0}
                   activeOpacity={0.8}
                 >
                   {openGuestMutation.isPending
@@ -728,7 +763,7 @@ export default function MatchHomeScreen() {
                     : <>
                         <Ionicons name="send-outline" size={16} color={Colors.white} />
                         <Text style={s.inviteBtnText}>
-                          Convidar {nearby.length} atleta{nearby.length !== 1 ? 's' : ''}
+                          Convidar {selectedSpotAthletesCount} selecionado{selectedSpotAthletesCount !== 1 ? 's' : ''}
                         </Text>
                       </>
                   }
@@ -949,6 +984,9 @@ const s = StyleSheet.create({
   athleteCounterSub:   { fontSize: 12, color: Colors.primaryDark, fontWeight: '600' },
 
   guestRow:        { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
+  guestRowSelected: { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
+  selectCircle:    { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: Colors.n300, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.white },
+  selectCircleActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
   guestAvatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
   guestAvatarText: { fontSize: 13, fontWeight: '800', color: Colors.primary },
   guestName:       { fontSize: 13, fontWeight: '600', color: Colors.n900 },

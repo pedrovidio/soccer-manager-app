@@ -9,7 +9,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { BackButton } from '../../common/components/BackButton';
 import { Colors, Radius, Spacing } from '../../common/theme';
 import { useAuthStore } from '../../auth/useAuthStore';
-import { athleteApi } from '../../athletes/services/athleteApi';
 import { groupApi } from '../services/groupApi';
 import { FavoriteSpotAthlete, GroupMember } from '../groupTypes';
 import { GroupTopMenu } from './GroupTopMenu';
@@ -22,6 +21,12 @@ function positionLabel(pos: string) {
     Goalkeeper: 'GOL', Defender: 'ZAG', Midfielder: 'MEI', Forward: 'ATA', Undefined: '-',
   };
   return map[pos] ?? pos.slice(0, 3).toUpperCase();
+}
+
+function normalizeStat(value: unknown) {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.min(100, Math.round(numeric)));
 }
 
 export default function GroupMembersScreen() {
@@ -308,23 +313,16 @@ function MemberOptionsModal({
 }
 
 function MemberProfileModal({ member, onClose }: { member: GroupMember | null; onClose: () => void }) {
-  const { data, isLoading } = useQuery({
-    queryKey: ['athlete-dashboard', member?.id],
-    queryFn: () => athleteApi.dashboard(member!.id),
-    enabled: !!member,
-    staleTime: 60_000,
-  });
-
   if (!member) return null;
 
-  const stats = data?.averageStats;
+  const stats = member.averageStats;
   const statItems = stats ? [
-    { label: 'Velocidade', value: stats.pace },
-    { label: 'Finalizacao', value: stats.shooting },
-    { label: 'Passe', value: stats.passing },
-    { label: 'Drible', value: stats.dribbling },
-    { label: 'Defesa', value: stats.defense },
-    { label: 'Fisico', value: stats.physical },
+    { label: 'Velocidade', value: normalizeStat(stats.pace) },
+    { label: 'Finalizacao', value: normalizeStat(stats.shooting) },
+    { label: 'Passe', value: normalizeStat(stats.passing) },
+    { label: 'Drible', value: normalizeStat(stats.dribbling) },
+    { label: 'Defesa', value: normalizeStat(stats.defense) },
+    { label: 'Fisico', value: normalizeStat(stats.physical) },
   ] : [];
 
   return (
@@ -350,17 +348,15 @@ function MemberProfileModal({ member, onClose }: { member: GroupMember | null; o
             </View>
           </View>
           <Text style={s.profileStatsTitle}>Atributos tecnicos</Text>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.primary} style={{ marginVertical: 16 }} />
-          ) : statItems.length === 0 ? (
+          {statItems.length === 0 ? (
             <Text style={s.profileNoStats}>Sem partidas avaliadas ainda</Text>
           ) : statItems.map(({ label, value }) => (
             <View key={label} style={s.statRow}>
               <Text style={s.statLabel}>{label}</Text>
               <View style={s.statBarBg}>
-                <View style={[s.statBarFill, { width: `${value}%` as any }]} />
+                <View style={[s.statBarFill, { width: `${value}%` }]} />
               </View>
-              <Text style={s.statValue}>{value}</Text>
+              <Text style={s.statValue} numberOfLines={1}>{value}/100</Text>
             </View>
           ))}
           <TouchableOpacity style={s.profileCloseBtn} onPress={onClose} activeOpacity={0.7}>
@@ -482,7 +478,7 @@ const s = StyleSheet.create({
   statLabel: { fontSize: 12, color: Colors.n500, width: 78 },
   statBarBg: { flex: 1, height: 6, backgroundColor: Colors.n200, borderRadius: Radius.r999, overflow: 'hidden' },
   statBarFill: { height: '100%', borderRadius: Radius.r999, backgroundColor: Colors.primary },
-  statValue: { fontSize: 12, fontWeight: '800', color: Colors.primary, width: 24, textAlign: 'right' },
+  statValue: { fontSize: 11, fontWeight: '800', color: Colors.primary, width: 44, textAlign: 'right' },
   profileCloseBtn: { backgroundColor: Colors.n100, borderRadius: Radius.r12, paddingVertical: 13, alignItems: 'center', marginTop: 16 },
   profileCloseBtnText: { fontSize: 14, fontWeight: '800', color: Colors.n700 },
 });
