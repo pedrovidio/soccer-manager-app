@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../auth/useAuthStore';
 import { useHomeDashboard } from './hooks/useHomeDashboard';
 import { useNotificationActions } from '../notifications/hooks/useNotifications';
@@ -36,16 +35,16 @@ export default function HomeScreen() {
   const { unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll, respondInvite, respondInvitePending } =
     useNotificationActions(athleteId, notifications);
 
-  const { favoriteId, toggle } = useFavoriteGroup();
-  const { data: favoriteGroup, isError: favoriteError } = useQuery({
+  const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup();
+  const { data: favoriteGroup } = useQuery({
     queryKey: ['group', favoriteId],
     queryFn: async () => {
       try {
         return await groupApi.findById(favoriteId!);
       } catch (e: any) {
-        if (e.response?.status === 404) {
-          await AsyncStorage.removeItem('favorite_group_id');
-          toggle(favoriteId!); // Update local state too
+        if (e.response?.status === 403 || e.response?.status === 404) {
+          await clearFavoriteGroup();
+          return null;
         }
         throw e;
       }

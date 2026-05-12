@@ -74,6 +74,7 @@ export interface ConfirmedMatch {
     overallDifference: number;
     teams: {
       teamNumber: number;
+      name?: string;
       athletes: { id: string; name: string; position: string; overall: number }[];
       averageOverall: number;
     }[];

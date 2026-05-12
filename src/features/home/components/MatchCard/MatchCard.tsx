@@ -85,12 +85,12 @@ export function MatchCard({ match, athleteId, confirmed }: MatchCardProps) {
         {!isFinished && hasMatchmaking && (
           <View style={styles.teamsBox}>
             <Text style={styles.teamsTitle}>
-              {myTeam ? `Voce esta no Time ${myTeam.teamNumber}` : 'Times sorteados'}
+              {myTeam ? `Voce esta no ${myTeam.name ?? `Time ${myTeam.teamNumber}`}` : 'Times sorteados'}
             </Text>
             {match.matchmakingResult!.teams.map((team) => (
               <View key={team.teamNumber} style={[styles.teamLine, myTeam?.teamNumber === team.teamNumber && styles.myTeamLine]}>
                 <Text style={[styles.teamName, myTeam?.teamNumber === team.teamNumber && styles.myTeamName]}>
-                  Time {team.teamNumber}
+                  {team.name ?? `Time ${team.teamNumber}`}
                 </Text>
                 <Text style={styles.teamPlayers} numberOfLines={2}>
                   {team.athletes.map((athlete) => athlete.id === athleteId ? `${athlete.name} (voce)` : athlete.name).join(', ')}

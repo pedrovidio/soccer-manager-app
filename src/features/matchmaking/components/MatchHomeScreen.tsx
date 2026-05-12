@@ -43,6 +43,10 @@ const GENDER_OPTIONS: { value: Gender; label: string }[] = [
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
+function teamNameFallback(teamNumber: number) {
+  return `Time ${teamNumber}`;
+}
+
 export default function MatchHomeScreen() {
   const router   = useRouter();
   const qc       = useQueryClient();
@@ -63,7 +67,6 @@ export default function MatchHomeScreen() {
   const [finishModalVisible, setFinishModalVisible] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [finishComment, setFinishComment] = useState('');
-  const [teamsCount, setTeamsCount] = useState('2');
   const [matchmakingResult, setMatchmakingResult] = useState<MatchmakingResult | null>(null);
   const [scoreA, setScoreA] = useState('');
   const [scoreB, setScoreB] = useState('');
@@ -77,6 +80,11 @@ export default function MatchHomeScreen() {
     queryFn: () => matchApi.getDetail(matchId!, athleteId),
     enabled: !!matchId,
   });
+
+  useEffect(() => {
+    if (!data?.matchmakingResult) return;
+    setMatchmakingResult(data.matchmakingResult);
+  }, [data?.matchmakingResult]);
 
   // Busca atletas próximos diretamente no banco via backend
   // com debounce para não disparar a cada tecla
@@ -205,8 +213,11 @@ export default function MatchHomeScreen() {
   });
 
   const matchmakingMutation = useMutation({
-    mutationFn: () => matchApi.matchmaking(matchId!, Math.max(2, Math.min(4, Number(teamsCount) || 2))),
-    onSuccess: (result) => setMatchmakingResult(result),
+    mutationFn: () => matchApi.matchmaking(matchId!, 2),
+    onSuccess: (result) => {
+      setMatchmakingResult(result);
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+    },
     onError: (error: any) => {
       Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível montar os times.');
     },
@@ -275,6 +286,7 @@ export default function MatchHomeScreen() {
   const isParticipant = currentPresence?.status === 'CONFIRMED';
   const hasCheckedIn = Boolean(currentPresence?.checkedIn || data.checkedInIds?.includes(athleteId));
   const ratableAthletes = data.presence.filter((p) => p.status === 'CONFIRMED' && p.athleteId !== athleteId);
+  const visibleMatchmakingResult = matchmakingResult ?? data.matchmakingResult ?? null;
 
   return (
     <SafeAreaView style={s.safe}>
@@ -402,7 +414,6 @@ export default function MatchHomeScreen() {
               {isAdmin && data.status !== 'CANCELLED' && (
                 <>
                   <View style={s.inlineActionRow}>
-                    <TextInput style={[s.filterInput, { width: 72 }]} value={teamsCount} onChangeText={setTeamsCount} keyboardType="numeric" />
                     <TouchableOpacity
                       style={[s.secondaryActionBtn, { flex: 1 }]}
                       onPress={() => matchmakingMutation.mutate()}
@@ -414,12 +425,14 @@ export default function MatchHomeScreen() {
                     </TouchableOpacity>
                   </View>
 
-                  {matchmakingResult && (
+                  {visibleMatchmakingResult && (
                     <View style={s.teamsWrap}>
-                      <Text style={s.teamsDiff}>Diferença OVR: {matchmakingResult.overallDifference}</Text>
-                      {matchmakingResult.teams.map((team) => (
+                      <Text style={s.teamsDiff}>Diferença OVR: {visibleMatchmakingResult.overallDifference}</Text>
+                      {visibleMatchmakingResult.teams.map((team) => (
                         <View key={team.teamNumber} style={s.teamBox}>
-                          <Text style={s.teamTitle}>Time {team.teamNumber} · OVR {team.averageOverall}</Text>
+                          <Text style={s.teamTitle}>
+                            {team.name ?? teamNameFallback(team.teamNumber)} · OVR {team.averageOverall}
+                          </Text>
                           {team.athletes.map((athlete) => (
                             <Text key={athlete.id} style={s.teamAthlete}>
                               {athlete.name} · {posLabel(athlete.position)} · {athlete.overall}

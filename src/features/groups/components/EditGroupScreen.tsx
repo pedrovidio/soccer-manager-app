@@ -36,7 +36,7 @@ export default function EditGroupScreen() {
 
   const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>({
-    name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '',
+    name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,6 +58,7 @@ export default function EditGroupScreen() {
           pixKey:      g.pixKey ?? '',
           monthlyFee:  g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
           spotFee:     g.spotFee > 0 ? maskCurrency(g.spotFee.toFixed(2).replace('.', '')) : '',
+          teamNames:   [...(g.teamNames ?? ['Time 1', 'Time 2']), 'Time 2'].slice(0, 2),
         });
       })
       .catch(() => Alert.alert('Erro', 'Não foi possível carregar o grupo.', [
@@ -75,6 +76,8 @@ export default function EditGroupScreen() {
     if (form.spotFee && !form.spotFee.replace(/\D/g, '')) {
       return 'Valor do avulso deve ser um valor numérico.';
     }
+    const teamNames = form.teamNames.map((name) => name.trim()).filter(Boolean);
+    if (teamNames.length < 2) return 'Informe pelo menos dois nomes de times.';
     return null;
   }
 
@@ -91,6 +94,7 @@ export default function EditGroupScreen() {
         pixKey:      form.pixKey.trim()       || undefined,
         monthlyFee:  form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
         spotFee:     form.spotFee ? Number(form.spotFee.replace(/\D/g, '')) / 100 : 0,
+        teamNames:   form.teamNames.map((name) => name.trim()).filter(Boolean),
       });
       Alert.alert('Salvo!', 'As alterações foram salvas com sucesso.', [
         { text: 'OK', onPress: () => router.back() },
@@ -210,6 +214,27 @@ export default function EditGroupScreen() {
             </View>
           </View>
 
+          <View style={s.divider} />
+          <Text style={s.sectionLabel}>Times</Text>
+          <Text style={s.sectionDesc}>Nomes usados automaticamente no sorteio</Text>
+          {[0, 1].map((index) => (
+            <Field key={index} label={`Time ${index + 1} *`}>
+              <TextInput
+                style={[s.input, !isAdmin ? s.inputDisabled : null]}
+                placeholder={`Time ${index + 1}`}
+                placeholderTextColor={Colors.n400}
+                value={form.teamNames[index] ?? ''}
+                onChangeText={(value) => {
+                  const next = [...form.teamNames];
+                  next[index] = value;
+                  set('teamNames', next);
+                }}
+                maxLength={40}
+                editable={isAdmin}
+              />
+            </Field>
+          ))}
+
           {/* ── INFO MEMBROS ── */}
           {group && (
             <>
@@ -257,6 +282,7 @@ const s = StyleSheet.create({
   scroll:           { padding: Spacing.lg, paddingBottom: 40 },
   sectionLabel:     { fontSize: 13, fontWeight: '700', color: Colors.n700, marginBottom: 4 },
   divider:          { height: 1, backgroundColor: Colors.n200, marginVertical: 16 },
+  sectionDesc:      { fontSize: 12, color: Colors.n500, marginBottom: 12 },
   field:            { marginBottom: 12 },
   fieldLabel:       { fontSize: 12, fontWeight: '600', color: Colors.n700, marginBottom: 5 },
   input:            { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: Colors.n900 },

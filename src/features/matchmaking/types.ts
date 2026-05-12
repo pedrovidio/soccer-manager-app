@@ -63,6 +63,8 @@ export interface MatchDetail {
   checkedInIds?: string[];
   isRecurring: boolean;
   guestConfig: GuestSlotConfig | null;
+  hasMatchmaking?: boolean;
+  matchmakingResult?: MatchmakingResult | null;
   mySpotPayment?: {
     id: string;
     amount: number;
@@ -87,6 +89,7 @@ export interface SpotPayment {
 
 export interface MatchmakingTeam {
   teamNumber: number;
+  name?: string;
   athletes: { id: string; name: string; position: string; overall: number }[];
   averageOverall: number;
 }

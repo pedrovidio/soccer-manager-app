@@ -16,7 +16,7 @@ import { CreateGroupFormData, AthleteSearchResult } from '../groupTypes';
 
 
 const INITIAL: CreateGroupFormData = {
-  name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '',
+  name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -73,6 +73,8 @@ export default function CreateGroupScreen() {
     if (form.spotFee && parseCurrency(form.spotFee) === undefined) {
       return 'Valor do avulso deve ser um valor numérico.';
     }
+    const teamNames = form.teamNames.map((name) => name.trim()).filter(Boolean);
+    if (teamNames.length < 2) return 'Informe pelo menos dois nomes de times.';
     return null;
   }
 
@@ -118,6 +120,7 @@ export default function CreateGroupScreen() {
     try {
       const monthlyFeeNum = parseCurrency(form.monthlyFee);
       const spotFeeNum = parseCurrency(form.spotFee);
+      const teamNames = form.teamNames.map((name) => name.trim()).filter(Boolean);
 
       const group = await groupApi.create({
         adminId:               athleteId,
@@ -126,6 +129,7 @@ export default function CreateGroupScreen() {
         pixKey:                form.pixKey.trim()       || undefined,
         monthlyFee:            monthlyFeeNum,
         spotFee:               spotFeeNum,
+        teamNames,
       });
 
       // Send invites in parallel — ignore individual failures
@@ -295,6 +299,26 @@ function Step1({
           </Field>
         </View>
       </View>
+
+      <View style={s.divider} />
+      <Text style={s.sectionLabel}>Times</Text>
+      <Text style={s.sectionDesc}>Nomes usados automaticamente no sorteio</Text>
+      {[0, 1].map((index) => (
+        <Field key={index} label={`Time ${index + 1} *`}>
+          <TextInput
+            style={s.input}
+            placeholder={`Time ${index + 1}`}
+            placeholderTextColor={Colors.n400}
+            value={form.teamNames[index] ?? ''}
+            onChangeText={(value) => {
+              const next = [...form.teamNames];
+              next[index] = value;
+              set('teamNames', next);
+            }}
+            maxLength={40}
+          />
+        </Field>
+      ))}
 
       <TouchableOpacity style={s.btn} onPress={onNext}>
         <Text style={s.btnText}>Continuar</Text>

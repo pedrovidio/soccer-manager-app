@@ -17,5 +17,10 @@ export function useFavoriteGroup() {
     else await AsyncStorage.removeItem(KEY);
   }, [favoriteId]);
 
-  return { favoriteId, toggle };
+  const clear = useCallback(async () => {
+    setFavoriteId(null);
+    await AsyncStorage.removeItem(KEY);
+  }, []);
+
+  return { favoriteId, toggle, clear };
 }

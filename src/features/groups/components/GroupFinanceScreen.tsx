@@ -3,7 +3,7 @@ import {
   ActivityIndicator, Alert, Modal, Pressable, RefreshControl, SafeAreaView, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { BackButton } from '../../common/components/BackButton';
@@ -11,6 +11,7 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { groupApi } from '../services/groupApi';
 import { GroupFinancePayment, GroupFinanceStatus, GroupFinanceType } from '../groupTypes';
+import { GroupTopMenu } from './GroupTopMenu';
 
 type Tab = 'overview' | 'matches' | 'defaulters' | 'expenses' | 'payments';
 type StatusFilter = 'ALL' | GroupFinanceStatus;
@@ -47,6 +48,7 @@ function isExpenseType(type: GroupFinanceType) {
 
 export default function GroupFinanceScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
+  const router = useRouter();
   const qc = useQueryClient();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const [tab, setTab] = useState<Tab>('overview');
@@ -61,7 +63,7 @@ export default function GroupFinanceScreen() {
     ...(typeFilter !== 'ALL' && { type: typeFilter }),
   }), [statusFilter, typeFilter]);
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['group-finance-report', groupId, athleteId, filters],
     queryFn: () => groupApi.financeReport(groupId!, athleteId, filters),
     enabled: !!groupId && !!athleteId,
@@ -103,12 +105,13 @@ export default function GroupFinanceScreen() {
   }
 
   if (isError || !data) {
+    const isForbidden = (error as any)?.response?.status === 403;
     return (
       <SafeAreaView style={[s.safe, s.center]}>
         <Ionicons name="alert-circle-outline" size={42} color={Colors.error} />
-        <Text style={s.errorText}>Erro ao carregar financeiro</Text>
-        <TouchableOpacity style={s.primaryBtn} onPress={() => refetch()}>
-          <Text style={s.primaryBtnText}>Tentar novamente</Text>
+        <Text style={s.errorText}>{isForbidden ? 'Voce nao tem acesso a este grupo' : 'Erro ao carregar financeiro'}</Text>
+        <TouchableOpacity style={s.primaryBtn} onPress={() => (isForbidden ? router.back() : refetch())}>
+          <Text style={s.primaryBtnText}>{isForbidden ? 'Voltar' : 'Tentar novamente'}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -126,6 +129,8 @@ export default function GroupFinanceScreen() {
           <Text style={s.headerSub} numberOfLines={1}>{data.group.name}</Text>
         </View>
       </View>
+
+      <GroupTopMenu groupId={groupId!} active="finance" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
