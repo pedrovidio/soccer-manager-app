@@ -16,7 +16,7 @@ import { CreateGroupFormData, AthleteSearchResult } from '../groupTypes';
 
 
 const INITIAL: CreateGroupFormData = {
-  name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
+  name: '', description: '', pixKey: '', courtMonthlyFee: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -67,6 +67,9 @@ export default function CreateGroupScreen() {
   function validateStep1(): string | null {
     if (!form.name.trim())           return 'Informe o nome do grupo.';
     if (form.name.trim().length < 3) return 'O nome deve ter ao menos 3 caracteres.';
+    if (form.courtMonthlyFee && parseCurrency(form.courtMonthlyFee) === undefined) {
+      return 'Aluguel mensal da quadra deve ser um valor numerico.';
+    }
     if (form.monthlyFee && parseCurrency(form.monthlyFee) === undefined) {
       return 'Mensalidade deve ser um valor numérico.';
     }
@@ -118,6 +121,7 @@ export default function CreateGroupScreen() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
+      const courtMonthlyFeeNum = parseCurrency(form.courtMonthlyFee);
       const monthlyFeeNum = parseCurrency(form.monthlyFee);
       const spotFeeNum = parseCurrency(form.spotFee);
       const teamNames = form.teamNames.map((name) => name.trim()).filter(Boolean);
@@ -127,6 +131,7 @@ export default function CreateGroupScreen() {
         name:                  form.name.trim(),
         description:           form.description.trim() || undefined,
         pixKey:                form.pixKey.trim()       || undefined,
+        courtMonthlyFee:       courtMonthlyFeeNum,
         monthlyFee:            monthlyFeeNum,
         spotFee:               spotFeeNum,
         teamNames,
@@ -259,9 +264,20 @@ function Step1({
       <View style={s.divider} />
       <Text style={s.sectionLabel}>Financeiro</Text>
 
+      <Field label="Aluguel mensal da quadra">
+        <TextInput
+          style={s.input}
+          placeholder="0,00"
+          placeholderTextColor={Colors.n400}
+          keyboardType="decimal-pad"
+          value={form.courtMonthlyFee}
+          onChangeText={(v) => set('courtMonthlyFee', maskCurrency(v))}
+        />
+      </Field>
+
       <View style={s.row}>
         <View style={{ flex: 1, marginRight: 8 }}>
-          <Field label="Valor Mensal">
+          <Field label="Mensalidade do mensalista">
             <TextInput
               style={s.input}
               placeholder="0,00"
@@ -273,7 +289,7 @@ function Step1({
           </Field>
         </View>
         <View style={{ flex: 1 }}>
-          <Field label="Valor Avulso">
+          <Field label="Valor do avulso">
             <TextInput
               style={s.input}
               placeholder="0,00"

@@ -36,7 +36,7 @@ export default function EditGroupScreen() {
 
   const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>({
-    name: '', description: '', pixKey: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
+    name: '', description: '', pixKey: '', courtMonthlyFee: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -56,6 +56,7 @@ export default function EditGroupScreen() {
           name:        g.name,
           description: g.description ?? '',
           pixKey:      g.pixKey ?? '',
+          courtMonthlyFee: g.courtMonthlyFee > 0 ? maskCurrency(g.courtMonthlyFee.toFixed(2).replace('.', '')) : '',
           monthlyFee:  g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
           spotFee:     g.spotFee > 0 ? maskCurrency(g.spotFee.toFixed(2).replace('.', '')) : '',
           teamNames:   [...(g.teamNames ?? ['Time 1', 'Time 2']), 'Time 2'].slice(0, 2),
@@ -70,6 +71,9 @@ export default function EditGroupScreen() {
   function validate(): string | null {
     if (!form.name.trim())           return 'Informe o nome do grupo.';
     if (form.name.trim().length < 3) return 'O nome deve ter ao menos 3 caracteres.';
+    if (form.courtMonthlyFee && !form.courtMonthlyFee.replace(/\D/g, '')) {
+      return 'Aluguel mensal da quadra deve ser um valor numerico.';
+    }
     if (form.monthlyFee && !form.monthlyFee.replace(/\D/g, '')) {
       return 'Mensalidade deve ser um valor numérico.';
     }
@@ -92,6 +96,7 @@ export default function EditGroupScreen() {
         name:        form.name.trim(),
         description: form.description.trim() || undefined,
         pixKey:      form.pixKey.trim()       || undefined,
+        courtMonthlyFee: form.courtMonthlyFee ? Number(form.courtMonthlyFee.replace(/\D/g, '')) / 100 : 0,
         monthlyFee:  form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
         spotFee:     form.spotFee ? Number(form.spotFee.replace(/\D/g, '')) / 100 : 0,
         teamNames:   form.teamNames.map((name) => name.trim()).filter(Boolean),
@@ -170,9 +175,21 @@ export default function EditGroupScreen() {
           <View style={s.divider} />
           <Text style={s.sectionLabel}>Financeiro</Text>
 
+          <Field label="Aluguel mensal da quadra">
+            <TextInput
+              style={[s.input, !isAdmin ? s.inputDisabled : null]}
+              placeholder="0,00"
+              placeholderTextColor={Colors.n400}
+              keyboardType="decimal-pad"
+              value={form.courtMonthlyFee}
+              onChangeText={(v) => set('courtMonthlyFee', maskCurrency(v))}
+              editable={isAdmin}
+            />
+          </Field>
+
           <View style={s.row}>
             <View style={{ flex: 1, marginRight: 8 }}>
-              <Field label="Valor Mensal">
+              <Field label="Mensalidade do mensalista">
                 <TextInput
                   style={[s.input, !isAdmin ? s.inputDisabled : null]}
                   placeholder="0,00"
@@ -185,7 +202,7 @@ export default function EditGroupScreen() {
               </Field>
             </View>
             <View style={{ flex: 1 }}>
-              <Field label="Valor Avulso">
+              <Field label="Valor do avulso">
                 <TextInput
                   style={[s.input, !isAdmin ? s.inputDisabled : null]}
                   placeholder="0,00"
