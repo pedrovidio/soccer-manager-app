@@ -16,7 +16,7 @@ import { CreateGroupFormData, AthleteSearchResult } from '../groupTypes';
 
 
 const INITIAL: CreateGroupFormData = {
-  name: '', description: '', pixKey: '', courtMonthlyFee: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
+  name: '', description: '', pixKey: '', courtMonthlyFee: '', monthlyFee: '', monthlyFeeDueDay: '10', spotFee: '', teamNames: ['Time 1', 'Time 2'],
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -73,6 +73,10 @@ export default function CreateGroupScreen() {
     if (form.monthlyFee && parseCurrency(form.monthlyFee) === undefined) {
       return 'Mensalidade deve ser um valor numérico.';
     }
+    const monthlyFeeDueDay = Number(form.monthlyFeeDueDay);
+    if (!Number.isInteger(monthlyFeeDueDay) || monthlyFeeDueDay < 1 || monthlyFeeDueDay > 28) {
+      return 'O vencimento da mensalidade deve ser um dia entre 1 e 28.';
+    }
     if (form.spotFee && parseCurrency(form.spotFee) === undefined) {
       return 'Valor do avulso deve ser um valor numérico.';
     }
@@ -123,6 +127,7 @@ export default function CreateGroupScreen() {
     try {
       const courtMonthlyFeeNum = parseCurrency(form.courtMonthlyFee);
       const monthlyFeeNum = parseCurrency(form.monthlyFee);
+      const monthlyFeeDueDay = Number(form.monthlyFeeDueDay);
       const spotFeeNum = parseCurrency(form.spotFee);
       const teamNames = form.teamNames.map((name) => name.trim()).filter(Boolean);
 
@@ -133,6 +138,7 @@ export default function CreateGroupScreen() {
         pixKey:                form.pixKey.trim()       || undefined,
         courtMonthlyFee:       courtMonthlyFeeNum,
         monthlyFee:            monthlyFeeNum,
+        monthlyFeeDueDay,
         spotFee:               spotFeeNum,
         teamNames,
       });
@@ -315,6 +321,18 @@ function Step1({
           </Field>
         </View>
       </View>
+
+      <Field label="Dia de vencimento da mensalidade">
+        <TextInput
+          style={s.input}
+          placeholder="10"
+          placeholderTextColor={Colors.n400}
+          keyboardType="number-pad"
+          value={form.monthlyFeeDueDay}
+          onChangeText={(v) => set('monthlyFeeDueDay', v.replace(/\D/g, '').slice(0, 2))}
+          maxLength={2}
+        />
+      </Field>
 
       <View style={s.divider} />
       <Text style={s.sectionLabel}>Times</Text>

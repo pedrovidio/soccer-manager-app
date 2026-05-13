@@ -96,6 +96,18 @@ export default function GroupFinanceScreen() {
     onError: (error: any) => Alert.alert('Erro', error?.message ?? 'Nao foi possivel registrar a saida.'),
   });
 
+  const confirmPaymentMutation = useMutation({
+    mutationFn: (payment: GroupFinancePayment) =>
+      payment.type === 'MONTHLY'
+        ? groupApi.confirmMonthlyPayment(payment.id)
+        : groupApi.confirmSpotPayment(payment.id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['group-finance-report', groupId] });
+      qc.invalidateQueries({ queryKey: ['group-home', groupId] });
+    },
+    onError: () => Alert.alert('Erro', 'Nao foi possivel confirmar o pagamento.'),
+  });
+
   if (isLoading) {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
@@ -227,15 +239,15 @@ export default function GroupFinanceScreen() {
         )}
 
         {tab === 'defaulters' && (
-          <PaymentList title="Inadimplentes e pendencias" empty="Nenhum pagamento pendente" payments={data.defaulters} />
+          <PaymentList title="Inadimplentes e pendencias" empty="Nenhum pagamento pendente" payments={data.defaulters} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
         )}
 
         {tab === 'expenses' && (
-          <PaymentList title="Saidas de caixa" empty="Nenhuma despesa registrada" payments={data.expenses} />
+          <PaymentList title="Saidas de caixa" empty="Nenhuma despesa registrada" payments={data.expenses} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
         )}
 
         {tab === 'payments' && (
-          <PaymentList title="Todos os lancamentos" empty="Nenhum lancamento encontrado" payments={data.payments} />
+          <PaymentList title="Todos os lancamentos" empty="Nenhum lancamento encontrado" payments={data.payments} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
         )}
 
         <View style={{ height: 32 }} />
@@ -293,22 +305,31 @@ function AlertLine({ icon, label, value, tone }: { icon: any; label: string; val
   );
 }
 
-function PaymentList({ title, empty, payments }: { title: string; empty: string; payments: GroupFinancePayment[] }) {
+function PaymentList({
+  title, empty, payments, onConfirm, confirmingId,
+}: {
+  title: string;
+  empty: string;
+  payments: GroupFinancePayment[];
+  onConfirm: (payment: GroupFinancePayment) => void;
+  confirmingId?: string;
+}) {
   return (
     <View style={s.section}>
       <Text style={s.sectionTitle}>{title}</Text>
       {payments.length === 0 ? (
         <EmptyState text={empty} />
       ) : payments.map((payment) => (
-        <PaymentRow key={payment.id} payment={payment} />
+        <PaymentRow key={payment.id} payment={payment} onConfirm={() => onConfirm(payment)} isConfirming={confirmingId === payment.id} />
       ))}
     </View>
   );
 }
 
-function PaymentRow({ payment }: { payment: GroupFinancePayment }) {
+function PaymentRow({ payment, onConfirm, isConfirming }: { payment: GroupFinancePayment; onConfirm: () => void; isConfirming: boolean }) {
   const isExpense = isExpenseType(payment.type);
   const statusTone = payment.status === 'PAID' ? Colors.successDark : payment.isOverdue ? Colors.errorDark : Colors.warningDark;
+  const canConfirm = !isExpense && payment.status === 'PENDING' && !!payment.paymentReportedAt;
   return (
     <View style={s.paymentRow}>
       <View style={{ flex: 1 }}>
@@ -327,6 +348,11 @@ function PaymentRow({ payment }: { payment: GroupFinancePayment }) {
         <Text style={[s.statusText, { color: statusTone }]}>
           {payment.isOverdue ? 'Vencido' : statusLabel(payment.status)}
         </Text>
+        {canConfirm && (
+          <TouchableOpacity style={[s.confirmBtn, isConfirming && { opacity: 0.6 }]} onPress={onConfirm} disabled={isConfirming} activeOpacity={0.7}>
+            <Text style={s.confirmBtnText}>{isConfirming ? 'Confirmando...' : 'Confirmar'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -434,6 +460,8 @@ const s = StyleSheet.create({
   expenseText:      { color: Colors.errorDark },
   expenseValue:     { fontSize: 13, fontWeight: '900', color: Colors.errorDark },
   statusText:       { fontSize: 11, fontWeight: '800', marginTop: 2 },
+  confirmBtn:       { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 6, marginTop: 6 },
+  confirmBtnText:   { color: Colors.white, fontSize: 11, fontWeight: '800' },
   reportedText:     { fontSize: 11, fontWeight: '700', color: Colors.warningDark, marginTop: 4 },
   alertLine:        { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: 12, gap: 8 },
   alertLabel:       { flex: 1, fontSize: 12, fontWeight: '700', color: Colors.n700 },

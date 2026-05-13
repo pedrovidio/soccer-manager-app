@@ -26,6 +26,12 @@ export const groupApi = {
   registerPurchase: (groupId: string, payload: GroupExpensePayload) =>
     httpClient.post(`/groups/${groupId}/finance/purchase`, payload).then((r) => r.data),
 
+  confirmMonthlyPayment: (transactionId: string) =>
+    httpClient.patch(`/monthly-payments/${transactionId}/confirm`).then((r) => r.data),
+
+  confirmSpotPayment: (transactionId: string) =>
+    httpClient.patch(`/spot-payments/${transactionId}/confirm`).then((r) => r.data),
+
   update: (groupId: string, payload: UpdateGroupPayload) =>
     httpClient.patch(`/groups/${groupId}`, payload).then((r) => r.data),
 

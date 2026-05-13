@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import {
-  ActivityIndicator, Modal, Pressable, RefreshControl, SafeAreaView, ScrollView,
+  ActivityIndicator, Alert, Modal, Pressable, RefreshControl, SafeAreaView, ScrollView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { BackButton } from '../../common/components/BackButton';
 import { BottomNav } from '../../common/components/BottomNav/BottomNav';
@@ -39,6 +39,7 @@ function statusLabel(payment: AthleteFinancePayment) {
 
 export default function AthleteFinanceScreen() {
   const router = useRouter();
+  const qc = useQueryClient();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const [tab, setTab] = useState<Tab>('due');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
@@ -54,6 +55,16 @@ export default function AthleteFinanceScreen() {
     queryKey: ['athlete-finance-report', athleteId, filters],
     queryFn: () => athleteApi.financeReport(athleteId, filters),
     enabled: !!athleteId,
+  });
+
+  const reportMonthlyPaymentMutation = useMutation({
+    mutationFn: (transactionId: string) => athleteApi.reportMonthlyPayment(transactionId),
+    onSuccess: () => {
+      setSelectedPayment(null);
+      qc.invalidateQueries({ queryKey: ['athlete-finance-report', athleteId] });
+      Alert.alert('Pagamento informado', 'O administrador foi avisado para conferir o Pix.');
+    },
+    onError: () => Alert.alert('Erro', 'Nao foi possivel informar o pagamento.'),
   });
 
   if (isLoading) {
@@ -171,6 +182,8 @@ export default function AthleteFinanceScreen() {
 
       <PaymentModal
         payment={selectedPayment}
+        isReporting={reportMonthlyPaymentMutation.isPending}
+        onReportPayment={(payment) => reportMonthlyPaymentMutation.mutate(payment.id)}
         onClose={() => setSelectedPayment(null)}
         onOpenMatch={(payment) => {
           setSelectedPayment(null);
@@ -284,14 +297,17 @@ function ReportRow({
 }
 
 function PaymentModal({
-  payment, onClose, onOpenMatch,
+  payment, isReporting, onClose, onOpenMatch, onReportPayment,
 }: {
   payment: AthleteFinancePayment | null;
+  isReporting: boolean;
   onClose: () => void;
   onOpenMatch: (payment: AthleteFinancePayment) => void;
+  onReportPayment: (payment: AthleteFinancePayment) => void;
 }) {
   if (!payment) return null;
   const pix = payment.group?.pixKey ?? payment.group?.adminPixKey ?? 'Pix não cadastrado';
+  const canReportPayment = payment.type === 'MONTHLY' && payment.status === 'PENDING';
   return (
     <Modal transparent animationType="slide" visible onRequestClose={onClose}>
       <Pressable style={s.modalOverlay} onPress={onClose}>
@@ -308,6 +324,17 @@ function PaymentModal({
             <TouchableOpacity style={s.primaryBtnFull} onPress={() => onOpenMatch(payment)} activeOpacity={0.7}>
               <Ionicons name="football-outline" size={18} color={Colors.white} />
               <Text style={s.primaryBtnText}>Abrir jogo e informar pagamento</Text>
+            </TouchableOpacity>
+          )}
+          {canReportPayment && (
+            <TouchableOpacity
+              style={[s.primaryBtnFull, isReporting && { opacity: 0.6 }]}
+              onPress={() => onReportPayment(payment)}
+              disabled={isReporting}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="receipt-outline" size={18} color={Colors.white} />
+              <Text style={s.primaryBtnText}>{isReporting ? 'Informando...' : 'Informar pagamento'}</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity style={s.secondaryBtnFull} onPress={onClose} activeOpacity={0.7}>

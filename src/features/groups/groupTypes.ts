@@ -5,6 +5,7 @@ export interface CreateGroupPayload {
   pixKey?: string;
   courtMonthlyFee?: number;
   monthlyFee?: number;
+  monthlyFeeDueDay?: number;
   spotFee?: number;
   teamNames?: string[];
 }
@@ -18,6 +19,7 @@ export interface GroupResponse {
   pixKey?: string;
   courtMonthlyFee: number;
   monthlyFee: number;
+  monthlyFeeDueDay: number;
   spotFee: number;
   teamNames: string[];
   status: string;
@@ -29,6 +31,7 @@ export interface CreateGroupFormData {
   pixKey: string;
   courtMonthlyFee: string;
   monthlyFee: string;
+  monthlyFeeDueDay: string;
   spotFee: string;
   teamNames: string[];
 }
@@ -40,6 +43,7 @@ export interface UpdateGroupPayload {
   pixKey?: string;
   courtMonthlyFee?: number;
   monthlyFee?: number;
+  monthlyFeeDueDay?: number;
   spotFee?: number;
   teamNames?: string[];
 }
@@ -127,6 +131,7 @@ export interface GroupFinanceReport {
     name: string;
     courtMonthlyFee: number;
     monthlyFee: number;
+    monthlyFeeDueDay: number;
     spotFee: number;
     pixKey?: string | null;
   };
@@ -170,6 +175,7 @@ export interface GroupHomeData {
     description?: string;
     courtMonthlyFee: number;
     monthlyFee: number;
+    monthlyFeeDueDay: number;
     spotFee: number;
     teamNames: string[];
     pixKey?: string;

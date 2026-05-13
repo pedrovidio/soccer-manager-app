@@ -21,6 +21,9 @@ export const athleteApi = {
       })
       .then((r) => r.data),
 
+  reportMonthlyPayment: (transactionId: string) =>
+    httpClient.post(`/monthly-payments/${transactionId}/report`).then((r) => r.data),
+
   notifications: (athleteId: string) =>
     httpClient
       .get<NotificationsResponse>(`/athletes/${athleteId}/notifications`)

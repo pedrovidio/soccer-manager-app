@@ -36,7 +36,7 @@ export default function EditGroupScreen() {
 
   const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>({
-    name: '', description: '', pixKey: '', courtMonthlyFee: '', monthlyFee: '', spotFee: '', teamNames: ['Time 1', 'Time 2'],
+    name: '', description: '', pixKey: '', courtMonthlyFee: '', monthlyFee: '', monthlyFeeDueDay: '10', spotFee: '', teamNames: ['Time 1', 'Time 2'],
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,6 +58,7 @@ export default function EditGroupScreen() {
           pixKey:      g.pixKey ?? '',
           courtMonthlyFee: g.courtMonthlyFee > 0 ? maskCurrency(g.courtMonthlyFee.toFixed(2).replace('.', '')) : '',
           monthlyFee:  g.monthlyFee > 0 ? maskCurrency(g.monthlyFee.toFixed(2).replace('.', '')) : '',
+          monthlyFeeDueDay: String(g.monthlyFeeDueDay ?? 10),
           spotFee:     g.spotFee > 0 ? maskCurrency(g.spotFee.toFixed(2).replace('.', '')) : '',
           teamNames:   [...(g.teamNames ?? ['Time 1', 'Time 2']), 'Time 2'].slice(0, 2),
         });
@@ -76,6 +77,10 @@ export default function EditGroupScreen() {
     }
     if (form.monthlyFee && !form.monthlyFee.replace(/\D/g, '')) {
       return 'Mensalidade deve ser um valor numérico.';
+    }
+    const monthlyFeeDueDay = Number(form.monthlyFeeDueDay);
+    if (!Number.isInteger(monthlyFeeDueDay) || monthlyFeeDueDay < 1 || monthlyFeeDueDay > 28) {
+      return 'O vencimento da mensalidade deve ser um dia entre 1 e 28.';
     }
     if (form.spotFee && !form.spotFee.replace(/\D/g, '')) {
       return 'Valor do avulso deve ser um valor numérico.';
@@ -98,6 +103,7 @@ export default function EditGroupScreen() {
         pixKey:      form.pixKey.trim()       || undefined,
         courtMonthlyFee: form.courtMonthlyFee ? Number(form.courtMonthlyFee.replace(/\D/g, '')) / 100 : 0,
         monthlyFee:  form.monthlyFee ? Number(form.monthlyFee.replace(/\D/g, '')) / 100 : 0,
+        monthlyFeeDueDay: Number(form.monthlyFeeDueDay),
         spotFee:     form.spotFee ? Number(form.spotFee.replace(/\D/g, '')) / 100 : 0,
         teamNames:   form.teamNames.map((name) => name.trim()).filter(Boolean),
       });
@@ -230,6 +236,19 @@ export default function EditGroupScreen() {
               </Field>
             </View>
           </View>
+
+          <Field label="Dia de vencimento da mensalidade">
+            <TextInput
+              style={[s.input, !isAdmin ? s.inputDisabled : null]}
+              placeholder="10"
+              placeholderTextColor={Colors.n400}
+              keyboardType="number-pad"
+              value={form.monthlyFeeDueDay}
+              onChangeText={(v) => set('monthlyFeeDueDay', v.replace(/\D/g, '').slice(0, 2))}
+              maxLength={2}
+              editable={isAdmin}
+            />
+          </Field>
 
           <View style={s.divider} />
           <Text style={s.sectionLabel}>Times</Text>
