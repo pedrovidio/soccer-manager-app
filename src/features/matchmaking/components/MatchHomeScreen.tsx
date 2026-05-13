@@ -233,6 +233,30 @@ export default function MatchHomeScreen() {
     },
   });
 
+  const cancelPresenceMutation = useMutation({
+    mutationFn: () => matchApi.cancelPresence(matchId!),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
+      Alert.alert('Check-in cancelado', 'Sua vaga foi aberta e o administrador foi avisado.');
+      router.replace('/' as any);
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel cancelar sua presenca.');
+    },
+  });
+
+  function confirmCancelPresence() {
+    Alert.alert(
+      'Cancelar check-in?',
+      'Sua vaga sera aberta para outro atleta e o administrador sera avisado.',
+      [
+        { text: 'Voltar', style: 'cancel' },
+        { text: 'Cancelar check-in', style: 'destructive', onPress: () => cancelPresenceMutation.mutate() },
+      ],
+    );
+  }
+
   const matchmakingMutation = useMutation({
     mutationFn: () => matchApi.matchmaking(matchId!, 2),
     onSuccess: (result) => {
@@ -459,14 +483,14 @@ export default function MatchHomeScreen() {
             <View style={s.matchActionsCard}>
               {isParticipant && data.status !== 'FINISHED' && data.status !== 'CANCELLED' && (
                 <TouchableOpacity
-                  style={[s.secondaryActionBtn, hasCheckedIn && s.secondaryActionDone]}
-                  onPress={() => checkInMutation.mutate()}
-                  disabled={hasCheckedIn || checkInMutation.isPending}
+                  style={[s.secondaryActionBtn, s.secondaryActionDanger]}
+                  onPress={confirmCancelPresence}
+                  disabled={cancelPresenceMutation.isPending}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name={hasCheckedIn ? 'checkmark-circle' : 'location-outline'} size={16} color={hasCheckedIn ? Colors.successDark : Colors.primary} />
-                  <Text style={[s.secondaryActionText, hasCheckedIn && { color: Colors.successDark }]}>
-                    {hasCheckedIn ? 'Check-in feito' : 'Fazer check-in'}
+                  <Ionicons name="exit-outline" size={16} color={Colors.errorDark} />
+                  <Text style={[s.secondaryActionText, { color: Colors.errorDark }]}>
+                    {cancelPresenceMutation.isPending ? 'Cancelando...' : 'Cancelar check-in'}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -1009,6 +1033,7 @@ const s = StyleSheet.create({
   inlineActionRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
   secondaryActionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: Colors.primaryLight, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
   secondaryActionDone: { backgroundColor: Colors.successLight },
+  secondaryActionDanger: { backgroundColor: Colors.errorLight },
   secondaryActionText: { fontSize: 12, fontWeight: '700', color: Colors.primary },
   smallPrimaryBtn: { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
   smallPrimaryText: { fontSize: 12, fontWeight: '700', color: Colors.white },

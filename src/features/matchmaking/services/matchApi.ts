@@ -51,6 +51,9 @@ export const matchApi = {
   checkIn: (matchId: string, athleteId: string) =>
     httpClient.post(`/matches/${matchId}/check-in`, { athleteId }).then((r) => r.data),
 
+  cancelPresence: (matchId: string) =>
+    httpClient.delete(`/matches/${matchId}/confirm-presence`).then((r) => r.data),
+
   matchmaking: (matchId: string, teamsCount = 2) =>
     httpClient.post<MatchmakingResult>(`/matches/${matchId}/matchmaking`, { teamsCount }).then((r) => r.data),
 
