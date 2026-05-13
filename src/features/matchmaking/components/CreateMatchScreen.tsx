@@ -17,9 +17,9 @@ import { BackButton } from '../../common/components/BackButton';
 type MatchType = 'CAMPO' | 'SOCIETY' | 'FUTSAL';
 
 const MATCH_TYPES: { value: MatchType; label: string; vacancies: number }[] = [
-  { value: 'CAMPO',   label: 'Campo',   vacancies: 22 },
-  { value: 'SOCIETY', label: 'Society', vacancies: 14 },
-  { value: 'FUTSAL',  label: 'Futsal',  vacancies: 10 },
+  { value: 'CAMPO',   label: 'Campo',   vacancies: 24 },
+  { value: 'SOCIETY', label: 'Society', vacancies: 16 },
+  { value: 'FUTSAL',  label: 'Futsal',  vacancies: 12 },
 ];
 
 function formatDate(d: Date) {
@@ -41,7 +41,7 @@ export default function CreateMatchScreen() {
   const [date, setDate]                     = useState(new Date());
   const [location, setLocation]             = useState('');
   const [coords, setCoords]                 = useState({ latitude: 0, longitude: 0 });
-  const [totalVacancies, setTotalVacancies] = useState('14');
+  const [totalVacancies, setTotalVacancies] = useState('16');
   const [reserveVacancies, setReserve]      = useState('2');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -258,7 +258,7 @@ export default function CreateMatchScreen() {
           <Ionicons name="information-circle-outline" size={13} color={Colors.n400} />
           <Text style={s.hintText}>
             Sugestão para {MATCH_TYPES.find((t) => t.value === type)?.label}:{' '}
-            {MATCH_TYPES.find((t) => t.value === type)?.vacancies} jogadores (editável)
+            {MATCH_TYPES.find((t) => t.value === type)?.vacancies} jogadores no maximo, incluindo reservas (editavel)
           </Text>
         </View>
 
