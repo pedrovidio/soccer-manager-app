@@ -84,4 +84,7 @@ export const styles = StyleSheet.create({
   favoriteCardLabel: { fontSize: 11, fontWeight: '600', color: Colors.warning },
   favoriteCardRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1, justifyContent: 'flex-end' },
   favoriteCardName:  { fontSize: 13, fontWeight: '700', color: Colors.n900, flexShrink: 1 },
+  debtCard:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: Colors.errorLight, marginHorizontal: Spacing.lg, marginTop: Spacing.lg, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.error, padding: Spacing.md },
+  debtTitle:         { fontSize: 13, fontWeight: '800', color: Colors.errorDark },
+  debtText:          { fontSize: 11, color: Colors.errorDark, marginTop: 2, lineHeight: 15 },
 });

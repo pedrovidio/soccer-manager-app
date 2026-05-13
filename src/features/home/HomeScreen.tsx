@@ -19,6 +19,8 @@ import { NotificationsSheet } from '../notifications/components/NotificationsShe
 import { Colors } from '../common/theme';
 import { styles } from './HomeScreen.styles';
 import { formatPositionLabel } from '../athletes/utils/positionLabel';
+import { useAthleteLocationSync } from '../athletes/hooks/useAthleteLocationSync';
+import { financialBlockMessage, hasFinancialBlock } from '../athletes/utils/financialAccess';
 
 export default function HomeScreen() {
   const [activeTab] = useState<NavTab>('home');
@@ -31,6 +33,7 @@ export default function HomeScreen() {
 
   const { dashboard, notifications, confirmedMatches, isLoading, isError, refetch } =
     useHomeDashboard(athleteId);
+  useAthleteLocationSync(athleteId, !!athleteId);
 
   const { unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll, respondInvite, respondInvitePending } =
     useNotificationActions(athleteId, notifications);
@@ -58,6 +61,7 @@ export default function HomeScreen() {
   const overall  = dashboard?.overall  ?? 0;
   const position = formatPositionLabel(dashboard?.position);
   const status   = dashboard?.status   ?? 'Ativo';
+  const blockedByDebt = hasFinancialBlock(dashboard);
 
   const allMatches  = confirmedMatches;
   const upcoming    = allMatches.filter((m) => m.status === 'SCHEDULED' || m.status === 'IN_PROGRESS');
@@ -123,6 +127,20 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
         )}
+        {blockedByDebt && (
+          <TouchableOpacity
+            style={styles.debtCard}
+            onPress={() => router.push('/athlete-finance' as any)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="lock-closed-outline" size={18} color={Colors.errorDark} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.debtTitle}>Acesso limitado por pendencia financeira</Text>
+              <Text style={styles.debtText}>{financialBlockMessage(dashboard)}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={Colors.errorDark} />
+          </TouchableOpacity>
+        )}
         <View style={styles.section}>
           <View style={styles.tabs}>
             <Text
@@ -179,6 +197,7 @@ export default function HomeScreen() {
         onDeleteAll={deleteAll}
         onRespondInvite={respondInvite}
         respondInvitePending={respondInvitePending}
+        blockMatchAccept={blockedByDebt}
       />
     </View>
   );

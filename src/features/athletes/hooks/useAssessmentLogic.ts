@@ -7,8 +7,10 @@ import { Alert } from 'react-native';
 import { assessmentSchema, AssessmentFormData } from '../schemas/assessmentSchema';
 import { calculateWeightedOverall } from '../../../utils/overallCalculator';
 import { httpClient as api } from '../../../lib/httpClient';
+import { useAuthStore } from '../../auth/useAuthStore';
 
 export const useAssessmentLogic = () => {
+  const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const {
     control,
     handleSubmit,
@@ -52,7 +54,7 @@ export const useAssessmentLogic = () => {
   // Mutation do React Query gerenciando o estado do servidor e os Side Effects
   const { mutateAsync: submitAssessment, isPending } = useMutation({
     mutationFn: async (data: AssessmentFormData) => {
-      const response = await api.post('/assessment', data);
+      const response = await api.post(`/athletes/${athleteId}/assessment`, data);
       return response.data;
     },
     onSuccess: () => {

@@ -24,6 +24,9 @@ export const athleteApi = {
   reportMonthlyPayment: (transactionId: string) =>
     httpClient.post(`/monthly-payments/${transactionId}/report`).then((r) => r.data),
 
+  updateLocation: (athleteId: string, latitude: number, longitude: number) =>
+    httpClient.patch(`/athletes/${athleteId}/location`, { latitude, longitude }).then((r) => r.data),
+
   notifications: (athleteId: string) =>
     httpClient
       .get<NotificationsResponse>(`/athletes/${athleteId}/notifications`)

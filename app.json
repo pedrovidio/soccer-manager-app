@@ -12,6 +12,12 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Usamos sua localizacao para encontrar vagas avulsas perto de voce."
+        }
+      ],
       "@react-native-community/datetimepicker"
     ],
     "android": {

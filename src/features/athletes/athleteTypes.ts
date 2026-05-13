@@ -35,6 +35,7 @@ export interface AthleteDashboard {
   groupIds?: string[];
   isInjured?: boolean;
   paymentStatus?: 'PAID' | 'PENDING' | 'DECLINED';
+  financialDebt?: number;
   photoUrl?: string;
   phone?: string;
   age?: number;
@@ -92,6 +93,7 @@ export interface Invite {
   groupName?: string;
   invitedBy?: string;
   // match invite
+  inviteType?: 'MEMBER' | 'SPOT';
   matchId?: string;
   matchDate?: string;
   matchLocation?: string;

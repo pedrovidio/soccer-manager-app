@@ -43,11 +43,13 @@ interface NotifCardProps {
   onMarkRead: (id: string) => void;
   onRespondInvite: (notificationId: string, inviteId: string, accept: boolean) => void;
   respondInvitePending: boolean;
+  blockMatchAccept?: boolean;
 }
 
-function NotifCard({ item, onDelete, onMarkRead, onRespondInvite, respondInvitePending }: NotifCardProps) {
+function NotifCard({ item, onDelete, onMarkRead, onRespondInvite, respondInvitePending, blockMatchAccept }: NotifCardProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const isInvite = INVITE_TYPES.includes(item.type) && !!item.referenceId && !item.read;
+  const isMatchAcceptBlocked = blockMatchAccept && item.type === 'MATCH_INVITE';
   const icon = notifIcon(item.type);
 
   const pan = useRef(
@@ -92,10 +94,12 @@ function NotifCard({ item, onDelete, onMarkRead, onRespondInvite, respondInviteP
             <TouchableOpacity
               style={[styles.actionBtn, styles.actionBtnAccept]}
               onPress={() => onRespondInvite(item.id, item.referenceId!, true)}
-              disabled={respondInvitePending}
+              disabled={respondInvitePending || isMatchAcceptBlocked}
             >
-              <Ionicons name="checkmark" size={14} color={Colors.successDark} />
-              <Text style={[styles.actionBtnText, { color: Colors.successDark }]}>Aceitar</Text>
+              <Ionicons name={isMatchAcceptBlocked ? 'lock-closed' : 'checkmark'} size={14} color={isMatchAcceptBlocked ? Colors.n500 : Colors.successDark} />
+              <Text style={[styles.actionBtnText, { color: isMatchAcceptBlocked ? Colors.n500 : Colors.successDark }]}>
+                {isMatchAcceptBlocked ? 'Bloqueado' : 'Aceitar'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionBtn, styles.actionBtnDecline]}
@@ -127,11 +131,12 @@ interface NotificationsSheetProps {
   onDeleteAll: () => void;
   onRespondInvite: (notificationId: string, inviteId: string, accept: boolean) => void;
   respondInvitePending: boolean;
+  blockMatchAccept?: boolean;
 }
 
 export function NotificationsSheet({
   visible, notifications, onClose, onMarkRead, onMarkAllRead,
-  onDelete, onDeleteAll, onRespondInvite, respondInvitePending,
+  onDelete, onDeleteAll, onRespondInvite, respondInvitePending, blockMatchAccept,
 }: NotificationsSheetProps) {
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose} statusBarTranslucent>
@@ -178,6 +183,7 @@ export function NotificationsSheet({
                 onMarkRead={onMarkRead}
                 onRespondInvite={onRespondInvite}
                 respondInvitePending={respondInvitePending}
+                blockMatchAccept={blockMatchAccept}
               />
             )}
           />

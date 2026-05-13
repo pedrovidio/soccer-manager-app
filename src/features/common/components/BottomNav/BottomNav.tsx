@@ -5,14 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '../../theme';
 
-export type NavTab = 'home' | 'groups' | 'financial' | 'profile';
+export type NavTab = 'home' | 'groups' | 'marketplace' | 'financial' | 'profile';
 
-/** Mapeia cada tab para sua rota Expo Router */
 export const NAV_ROUTES: Record<NavTab, string> = {
-  home:      '/',
-  groups:    '/groups',
+  home: '/',
+  groups: '/groups',
+  marketplace: '/marketplace',
   financial: '/athlete-finance',
-  profile:   '/profile',
+  profile: '/profile',
 };
 
 interface NavItem {
@@ -23,15 +23,15 @@ interface NavItem {
 }
 
 const ITEMS: NavItem[] = [
-  { key: 'home',      label: 'Início',     icon: 'home-outline',   iconActive: 'home' },
-  { key: 'groups',    label: 'Grupos',     icon: 'people-outline', iconActive: 'people' },
+  { key: 'home', label: 'Inicio', icon: 'home-outline', iconActive: 'home' },
+  { key: 'groups', label: 'Grupos', icon: 'people-outline', iconActive: 'people' },
+  { key: 'marketplace', label: 'Avulsos', icon: 'football-outline', iconActive: 'football' },
   { key: 'financial', label: 'Financeiro', icon: 'wallet-outline', iconActive: 'wallet' },
-  { key: 'profile',   label: 'Perfil',     icon: 'person-outline', iconActive: 'person' },
+  { key: 'profile', label: 'Perfil', icon: 'person-outline', iconActive: 'person' },
 ];
 
 interface BottomNavProps {
   active: NavTab;
-  /** Opcional: sobrescreve o comportamento padrão de navegação */
   onPress?: (tab: NavTab) => void;
 }
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.n200,
     paddingTop: 6,
   },
-  btn:         { flex: 1, alignItems: 'center', gap: 2 },
-  label:       { fontSize: 10, fontWeight: '500', color: Colors.n400 },
+  btn: { flex: 1, alignItems: 'center', gap: 2 },
+  label: { fontSize: 10, fontWeight: '500', color: Colors.n400 },
   labelActive: { color: Colors.primary, fontWeight: '600' },
 });
