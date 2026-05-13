@@ -119,3 +119,21 @@ export interface NearbyAthlete {
   distanceKm?: number;
   isFavorite: boolean;
 }
+
+export interface SpotMarketplaceMatch {
+  id: string;
+  groupId: string;
+  groupName: string;
+  type: MatchType;
+  date: string;
+  location: string;
+  distanceKm: number;
+  vacanciesLeft: number;
+  totalVacancies: number;
+  confirmedCount: number;
+  spotFee: number;
+  minOverall: number;
+  minAge: number;
+  maxAge: number;
+  applicationStatus: 'PENDING' | 'ACCEPTED' | 'DECLINED' | null;
+}

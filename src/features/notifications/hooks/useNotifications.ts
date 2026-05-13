@@ -54,6 +54,16 @@ export function useNotificationActions(athleteId: string, notifications: Notific
     onError: invalidate,
   });
 
+  const respondSpotApplication = useMutation({
+    mutationFn: ({ applicationId, accept }: { applicationId: string; accept: boolean }) =>
+      matchApi.respondSpotApplication(applicationId, accept),
+    onSuccess: (_data, { applicationId }) => {
+      setLocal((prev) => prev.filter((n) => n.referenceId !== applicationId));
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
+    },
+    onError: invalidate,
+  });
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return {
@@ -67,6 +77,12 @@ export function useNotificationActions(athleteId: string, notifications: Notific
         respondInvite.mutate({ notificationId, inviteId, accept }),
       [respondInvite],
     ),
+    respondSpotApplication: useCallback(
+      (applicationId: string, accept: boolean) =>
+        respondSpotApplication.mutate({ applicationId, accept }),
+      [respondSpotApplication],
+    ),
     respondInvitePending: respondInvite.isPending,
+    respondSpotApplicationPending: respondSpotApplication.isPending,
   };
 }

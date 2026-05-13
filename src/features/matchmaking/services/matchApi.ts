@@ -1,5 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
-import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResult } from '../types';
+import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResult, SpotMarketplaceMatch } from '../types';
 
 export interface CreateMatchPayload {
   adminId: string;
@@ -82,4 +82,13 @@ export const matchApi = {
 
   confirmSpotPayment: (transactionId: string, adminId: string) =>
     httpClient.patch(`/spot-payments/${transactionId}/confirm`, { adminId }).then((r) => r.data),
+
+  listMarketplaceSpotMatches: () =>
+    httpClient.get<SpotMarketplaceMatch[]>('/marketplace/spot-matches').then((r) => r.data),
+
+  applyToSpotMatch: (matchId: string) =>
+    httpClient.post(`/matches/${matchId}/spot-applications`).then((r) => r.data as { id: string; status: 'PENDING' | 'ACCEPTED' | 'DECLINED' }),
+
+  respondSpotApplication: (applicationId: string, accept: boolean) =>
+    httpClient.patch(`/spot-applications/${applicationId}/respond`, { accept }).then((r) => r.data),
 };

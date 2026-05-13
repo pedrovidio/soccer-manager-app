@@ -43,12 +43,18 @@ interface NotifCardProps {
   onMarkRead: (id: string) => void;
   onRespondInvite: (notificationId: string, inviteId: string, accept: boolean) => void;
   respondInvitePending: boolean;
+  onRespondSpotApplication?: (applicationId: string, accept: boolean) => void;
+  respondSpotApplicationPending?: boolean;
   blockMatchAccept?: boolean;
 }
 
-function NotifCard({ item, onDelete, onMarkRead, onRespondInvite, respondInvitePending, blockMatchAccept }: NotifCardProps) {
+function NotifCard({
+  item, onDelete, onMarkRead, onRespondInvite, respondInvitePending,
+  onRespondSpotApplication, respondSpotApplicationPending, blockMatchAccept,
+}: NotifCardProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const isInvite = INVITE_TYPES.includes(item.type) && !!item.referenceId && !item.read;
+  const isSpotApplication = item.title === 'Candidatura de avulso' && !!item.referenceId && !item.read;
   const isMatchAcceptBlocked = blockMatchAccept && item.type === 'MATCH_INVITE';
   const icon = notifIcon(item.type);
 
@@ -111,6 +117,27 @@ function NotifCard({ item, onDelete, onMarkRead, onRespondInvite, respondInviteP
             </TouchableOpacity>
           </View>
         )}
+
+        {isSpotApplication && onRespondSpotApplication && (
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.actionBtnAccept]}
+              onPress={() => onRespondSpotApplication(item.referenceId!, true)}
+              disabled={respondSpotApplicationPending}
+            >
+              <Ionicons name="checkmark" size={14} color={Colors.successDark} />
+              <Text style={[styles.actionBtnText, { color: Colors.successDark }]}>Aprovar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.actionBtnDecline]}
+              onPress={() => onRespondSpotApplication(item.referenceId!, false)}
+              disabled={respondSpotApplicationPending}
+            >
+              <Ionicons name="close" size={14} color={Colors.errorDark} />
+              <Text style={[styles.actionBtnText, { color: Colors.errorDark }]}>Recusar</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </TouchableOpacity>
 
       {/* Unread dot */}
@@ -131,12 +158,15 @@ interface NotificationsSheetProps {
   onDeleteAll: () => void;
   onRespondInvite: (notificationId: string, inviteId: string, accept: boolean) => void;
   respondInvitePending: boolean;
+  onRespondSpotApplication?: (applicationId: string, accept: boolean) => void;
+  respondSpotApplicationPending?: boolean;
   blockMatchAccept?: boolean;
 }
 
 export function NotificationsSheet({
   visible, notifications, onClose, onMarkRead, onMarkAllRead,
-  onDelete, onDeleteAll, onRespondInvite, respondInvitePending, blockMatchAccept,
+  onDelete, onDeleteAll, onRespondInvite, respondInvitePending,
+  onRespondSpotApplication, respondSpotApplicationPending, blockMatchAccept,
 }: NotificationsSheetProps) {
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose} statusBarTranslucent>
@@ -183,6 +213,8 @@ export function NotificationsSheet({
                 onMarkRead={onMarkRead}
                 onRespondInvite={onRespondInvite}
                 respondInvitePending={respondInvitePending}
+                onRespondSpotApplication={onRespondSpotApplication}
+                respondSpotApplicationPending={respondSpotApplicationPending}
                 blockMatchAccept={blockMatchAccept}
               />
             )}

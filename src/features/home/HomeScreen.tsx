@@ -35,7 +35,10 @@ export default function HomeScreen() {
     useHomeDashboard(athleteId);
   useAthleteLocationSync(athleteId, !!athleteId);
 
-  const { unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll, respondInvite, respondInvitePending } =
+  const {
+    unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll,
+    respondInvite, respondInvitePending, respondSpotApplication, respondSpotApplicationPending,
+  } =
     useNotificationActions(athleteId, notifications);
 
   const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup();
@@ -197,6 +200,8 @@ export default function HomeScreen() {
         onDeleteAll={deleteAll}
         onRespondInvite={respondInvite}
         respondInvitePending={respondInvitePending}
+        onRespondSpotApplication={respondSpotApplication}
+        respondSpotApplicationPending={respondSpotApplicationPending}
         blockMatchAccept={blockedByDebt}
       />
     </View>
