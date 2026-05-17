@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { TOKEN_KEY, setMemoryToken } from '../../lib/httpClient';
+import { TOKEN_KEY, setMemoryToken, setUnauthorizedHandler } from '../../lib/httpClient';
 import { AuthState } from './authTypes';
 import { authApi } from './services/authApi';
 import { queryClient } from '../../lib/queryClient';
@@ -83,3 +83,15 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ token: null, athleteId: null, name: null, hasCompletedAssessment: false, isAuthenticated: false });
   },
 }));
+
+setUnauthorizedHandler(() => {
+  setMemoryToken(null);
+  queryClient.clear();
+  useAuthStore.setState({
+    token: null,
+    athleteId: null,
+    name: null,
+    hasCompletedAssessment: false,
+    isAuthenticated: false,
+  });
+});

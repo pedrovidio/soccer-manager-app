@@ -258,7 +258,7 @@ export default function CreateMatchScreen() {
           <Ionicons name="information-circle-outline" size={13} color={Colors.n400} />
           <Text style={s.hintText}>
             Sugestão para {MATCH_TYPES.find((t) => t.value === type)?.label}:{' '}
-            {MATCH_TYPES.find((t) => t.value === type)?.vacancies} jogadores no maximo, incluindo reservas (editavel)
+            {MATCH_TYPES.find((t) => t.value === type)?.vacancies} jogadores no máximo, incluindo reservas (editável)
           </Text>
         </View>
 

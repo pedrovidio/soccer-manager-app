@@ -98,15 +98,15 @@ export default function MarketplaceScreen() {
     <SafeAreaView style={s.safe}>
       <View style={s.header}>
         <View>
-          <Text style={s.headerTitle}>Vagas avulsas</Text>
-          <Text style={s.headerSub}>{tab === 'invites' ? 'Convites recebidos' : 'Partidas perto de voce'}</Text>
+          <Text style={s.headerTitle}>Buscar jogos</Text>
+          <Text style={s.headerSub}>{tab === 'invites' ? 'Convites recebidos' : 'Partidas perto de você'}</Text>
         </View>
         {isSyncingLocation && <ActivityIndicator color={Colors.primary} />}
       </View>
 
       <View style={s.tabs}>
         <TabButton label={`Convites (${opportunities.length})`} active={tab === 'invites'} onPress={() => setTab('invites')} />
-        <TabButton label={`Buscar (${spotMatches.length})`} active={tab === 'search'} onPress={() => setTab('search')} />
+        <TabButton label={`Buscar jogos (${spotMatches.length})`} active={tab === 'search'} onPress={() => setTab('search')} />
       </View>
 
       <ScrollView
@@ -129,8 +129,8 @@ export default function MarketplaceScreen() {
         {!blockedByDebt && tab === 'search' && locationSyncError && (
           <View style={s.infoCard}>
             <Ionicons name="location-outline" size={24} color={Colors.warningDark} />
-            <Text style={s.infoTitle}>Localizacao necessaria</Text>
-            <Text style={s.infoText}>Habilite a localizacao para buscar partidas abertas perto de voce.</Text>
+            <Text style={s.infoTitle}>Localização necessária</Text>
+            <Text style={s.infoText}>Habilite a localização para buscar partidas abertas perto de você.</Text>
           </View>
         )}
 
@@ -139,11 +139,11 @@ export default function MarketplaceScreen() {
         )}
 
         {!blockedByDebt && !isError && tab === 'invites' && opportunities.length === 0 && (
-          <EmptyState icon="mail-open-outline" text="Nenhum convite avulso recebido agora" />
+          <EmptyState icon="mail-open-outline" text="Nenhum convite avulso recebido agora." />
         )}
 
         {!blockedByDebt && !isError && tab === 'search' && spotMatches.length === 0 && (
-          <EmptyState icon="football-outline" text="Nenhuma partida aberta perto de voce agora" />
+          <EmptyState icon="football-outline" text="Nenhum jogo aberto dentro dos seus critérios. Confira sua localização, disponibilidade e tente novamente." />
         )}
 
         {!blockedByDebt && tab === 'invites' && opportunities.map((invite) => (
@@ -221,10 +221,10 @@ function SpotMatchCard({ match, isPending, onApply }: { match: SpotMarketplaceMa
         </View>
       </View>
       <InfoLine icon="calendar-outline" text={formatDate(match.date)} />
-      <InfoLine icon="navigate-outline" text={`${match.distanceKm} km de distancia`} />
+      <InfoLine icon="navigate-outline" text={`${match.distanceKm} km de distância`} />
       <InfoLine icon="people-outline" text={`${match.vacanciesLeft} vaga(s) aberta(s) de ${match.totalVacancies}`} />
       <Text style={s.criteria}>
-        {match.type} · OVR minimo {match.minOverall} · {match.minAge}-{match.maxAge} anos · {formatCurrency(match.spotFee)}
+        {match.type} · OVR mínimo {match.minOverall} · {match.minAge}-{match.maxAge} anos · {formatCurrency(match.spotFee)}
       </Text>
       <TouchableOpacity
         style={[s.primaryBtn, (isPending || waiting) && { opacity: 0.65 }]}
@@ -234,7 +234,7 @@ function SpotMatchCard({ match, isPending, onApply }: { match: SpotMarketplaceMa
         {isPending ? (
           <ActivityIndicator color={Colors.white} size="small" />
         ) : (
-          <Text style={s.primaryBtnText}>{waiting ? 'Aguardando aprovacao' : 'Candidatar-se'}</Text>
+          <Text style={s.primaryBtnText}>{waiting ? 'Aguardando aprovação' : 'Candidatar-se'}</Text>
         )}
       </TouchableOpacity>
     </View>

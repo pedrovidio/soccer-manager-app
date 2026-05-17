@@ -103,7 +103,7 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
                   {team.name ?? `Time ${team.teamNumber}`}
                 </Text>
                 <Text style={styles.teamPlayers} numberOfLines={2}>
-                  {team.athletes.map((athlete) => athlete.id === athleteId ? `${athlete.name} (voce)` : athlete.name).join(', ')}
+                  {team.athletes.map((athlete) => athlete.id === athleteId ? `${athlete.name} (você)` : athlete.name).join(', ')}
                 </Text>
               </View>
             ))}

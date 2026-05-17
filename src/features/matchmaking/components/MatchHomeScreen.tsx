@@ -10,7 +10,7 @@ import { Colors, Radius, Spacing } from '../../common/theme';
 import { matchApi } from '../services/matchApi';
 import { groupApi } from '../../groups/services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
-import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender, MatchmakingResult } from '../types';
+import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender, MatchmakingResult, SpotApplication } from '../types';
 import { BackButton } from '../../common/components/BackButton';
 import { deriveMatchPhase, minimumConfirmedFor, phaseLabel } from '../utils/matchPhase';
 
@@ -53,6 +53,7 @@ export default function MatchHomeScreen() {
   const qc       = useQueryClient();
   const { matchId, groupId, isAdmin: isAdminParam } = useLocalSearchParams<{ matchId: string; groupId: string; isAdmin: string }>();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
+  const isAdmin = isAdminParam === '1';
 
   const [guestOpen, setGuestOpen]           = useState(false);
   const [guestVacancies, setGuestVacancies]   = useState('2');
@@ -81,6 +82,12 @@ export default function MatchHomeScreen() {
     queryKey: ['match-detail', matchId],
     queryFn: () => matchApi.getDetail(matchId!, athleteId),
     enabled: !!matchId,
+  });
+
+  const { data: spotApplications = [] } = useQuery<SpotApplication[]>({
+    queryKey: ['spot-applications', matchId],
+    queryFn: () => matchApi.listSpotApplications(matchId!),
+    enabled: !!matchId && isAdmin,
   });
 
   useEffect(() => {
@@ -174,7 +181,7 @@ export default function MatchHomeScreen() {
       qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
       qc.invalidateQueries({ queryKey: ['favorite-spot-athletes', groupId] });
     },
-    onError: () => Alert.alert('Erro', 'NÃ£o foi possÃ­vel atualizar o favorito.'),
+    onError: () => Alert.alert('Erro', 'Não foi possível atualizar o favorito.'),
   });
 
   const closeGuestMutation = useMutation({
@@ -230,6 +237,19 @@ export default function MatchHomeScreen() {
     },
     onError: (error: any) => {
       Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível fazer check-in.');
+    },
+  });
+
+  const respondSpotApplicationMutation = useMutation({
+    mutationFn: ({ applicationId, accept }: { applicationId: string; accept: boolean }) =>
+      matchApi.respondSpotApplication(applicationId, accept),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['spot-applications', matchId] });
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel responder a candidatura.');
     },
   });
 
@@ -326,7 +346,6 @@ export default function MatchHomeScreen() {
   const pending    = data.presence.filter((p) => p.status === 'PENDING').length;
   const spotsLeft  = data.totalVacancies - confirmed;
   const pct        = Math.min((confirmed / data.totalVacancies) * 100, 100);
-  const isAdmin = isAdminParam === '1';
   const currentPresence = data.presence.find((p) => p.athleteId === athleteId);
   const isParticipant = currentPresence?.status === 'CONFIRMED';
   const hasCheckedIn = Boolean(currentPresence?.checkedIn || data.checkedInIds?.includes(athleteId));
@@ -343,6 +362,7 @@ export default function MatchHomeScreen() {
   });
   const canDrawTeams = isAdmin && phase === 'CONFIRMED_WAITING_DRAW';
   const shouldSuggestSpot = isAdmin && phase === 'WAITING_CONFIRMATION' && confirmed < minimumConfirmed;
+  const pendingSpotApplications = spotApplications.filter((application) => application.status === 'PENDING');
 
   return (
     <SafeAreaView style={s.safe}>
@@ -614,6 +634,21 @@ export default function MatchHomeScreen() {
                 }
               </TouchableOpacity>
             </View>
+          </View>
+        )}
+
+        {isAdmin && pendingSpotApplications.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Candidaturas pendentes</Text>
+            {pendingSpotApplications.map((application) => (
+              <SpotApplicationRow
+                key={application.id}
+                item={application}
+                isPending={respondSpotApplicationMutation.isPending && respondSpotApplicationMutation.variables?.applicationId === application.id}
+                onAccept={() => respondSpotApplicationMutation.mutate({ applicationId: application.id, accept: true })}
+                onDecline={() => respondSpotApplicationMutation.mutate({ applicationId: application.id, accept: false })}
+              />
+            ))}
           </View>
         )}
 
@@ -898,6 +933,49 @@ export default function MatchHomeScreen() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
+function SpotApplicationRow({
+  item, isPending, onAccept, onDecline,
+}: {
+  item: SpotApplication;
+  isPending: boolean;
+  onAccept: () => void;
+  onDecline: () => void;
+}) {
+  return (
+    <View style={s.applicationRow}>
+      <View style={s.guestAvatar}>
+        <Text style={s.guestAvatarText}>{item.athleteName.slice(0, 2).toUpperCase()}</Text>
+      </View>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text style={s.guestName} numberOfLines={1}>{item.athleteName}</Text>
+        <Text style={s.guestSub}>
+          {posLabel(item.position)} · OVR {item.overall} · {item.age} anos
+        </Text>
+        {!item.isEligibleNow && <Text style={s.applicationWarning}>Atleta indisponível agora</Text>}
+      </View>
+      <View style={s.applicationActions}>
+        <TouchableOpacity
+          style={[s.applicationBtn, s.applicationDecline]}
+          onPress={onDecline}
+          disabled={isPending}
+        >
+          <Ionicons name="close" size={14} color={Colors.errorDark} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[s.applicationBtn, s.applicationAccept, (!item.isEligibleNow || isPending) && s.inviteBtnDisabled]}
+          onPress={onAccept}
+          disabled={!item.isEligibleNow || isPending}
+        >
+          {isPending
+            ? <ActivityIndicator color={Colors.successDark} size="small" />
+            : <Ionicons name="checkmark" size={14} color={Colors.successDark} />
+          }
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 function CounterBadge({ value, label, color }: { value: number; label: string; color: string }) {
   return (
     <View style={s.counterItem}>
@@ -1009,6 +1087,12 @@ const s = StyleSheet.create({
 
   guestRow:        { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
   guestRowSelected: { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
+  applicationRow:  { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
+  applicationActions: { flexDirection: 'row', gap: 6 },
+  applicationBtn:  { width: 34, height: 34, borderRadius: Radius.r8, alignItems: 'center', justifyContent: 'center' },
+  applicationAccept: { backgroundColor: Colors.successLight },
+  applicationDecline: { backgroundColor: Colors.errorLight },
+  applicationWarning: { fontSize: 11, color: Colors.errorDark, fontWeight: '700', marginTop: 2 },
   selectCircle:    { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: Colors.n300, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.white },
   selectCircleActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
   guestAvatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },

@@ -25,7 +25,7 @@ interface NavItem {
 const ITEMS: NavItem[] = [
   { key: 'home', label: 'Inicio', icon: 'home-outline', iconActive: 'home' },
   { key: 'groups', label: 'Grupos', icon: 'people-outline', iconActive: 'people' },
-  { key: 'marketplace', label: 'Avulsos', icon: 'football-outline', iconActive: 'football' },
+  { key: 'marketplace', label: 'Buscar jogos', icon: 'football-outline', iconActive: 'football' },
   { key: 'financial', label: 'Financeiro', icon: 'wallet-outline', iconActive: 'wallet' },
   { key: 'profile', label: 'Perfil', icon: 'person-outline', iconActive: 'person' },
 ];

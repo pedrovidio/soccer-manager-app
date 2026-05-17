@@ -137,3 +137,16 @@ export interface SpotMarketplaceMatch {
   maxAge: number;
   applicationStatus: 'PENDING' | 'ACCEPTED' | 'DECLINED' | null;
 }
+
+export interface SpotApplication {
+  id: string;
+  matchId: string;
+  athleteId: string;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  createdAt: string;
+  athleteName: string;
+  position: string;
+  age: number;
+  overall: number;
+  isEligibleNow: boolean;
+}

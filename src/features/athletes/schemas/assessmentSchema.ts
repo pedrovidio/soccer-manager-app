@@ -1,21 +1,21 @@
 import { z } from 'zod';
 
 const statAttribute = z
-  .number({ error: 'O valor deve ser um numero.' })
-  .min(0, 'O valor minimo e 0.')
-  .max(100, 'O valor maximo e 100.');
+  .number({ error: 'O valor deve ser um número.' })
+  .min(0, 'O valor mínimo é 0.')
+  .max(100, 'O valor máximo é 100.');
 
 export const assessmentSchema = z.object({
   highestLevel: z.enum(['PROFESSIONAL', 'AMATEUR', 'CASUAL'], {
-    error: 'Selecione o nivel mais alto em que voce ja competiu.',
+    error: 'Selecione o nível mais alto em que você já competiu.',
   }),
 
   yearsPlaying: z.enum(['LESS_THAN_2', '2_TO_5', '6_TO_10', 'MORE_THAN_10'], {
-    error: 'Selecione ha quantos anos voce joga futebol regularmente.',
+    error: 'Selecione há quantos anos você joga futebol regularmente.',
   }),
 
   weeklyFrequency: z.enum(['RARELY', '1_TO_2', '3_OR_MORE'], {
-    error: 'Selecione com que frequencia voce joga por semana.',
+    error: 'Selecione com que frequência você joga por semana.',
   }),
 
   selfRatedPace: statAttribute,
@@ -26,7 +26,7 @@ export const assessmentSchema = z.object({
   selfRatedPhysical: statAttribute,
 
   preferredPosition: z.enum(['Goalkeeper', 'Defender', 'Midfielder', 'Forward'], {
-    error: 'Selecione sua posicao preferida.',
+    error: 'Selecione sua posição preferida.',
   }),
 });
 
