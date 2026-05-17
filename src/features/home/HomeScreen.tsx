@@ -15,6 +15,7 @@ import { OverallBadge } from '../common/components/OverallBadge';
 import { Badge } from '../common/components/Badge';
 import { BottomNav, NavTab } from '../common/components/BottomNav';
 import { MatchCard } from './components/MatchCard';
+import { QuickActionsCard } from './components/QuickActionsCard';
 import { NotificationsSheet } from '../notifications/components/NotificationsSheet';
 import { Colors } from '../common/theme';
 import { styles } from './HomeScreen.styles';
@@ -146,6 +147,15 @@ export default function HomeScreen() {
             <Ionicons name="chevron-forward" size={16} color={Colors.errorDark} />
           </TouchableOpacity>
         )}
+        <QuickActionsCard
+          notifications={notifications}
+          onRespondInvite={respondInvite}
+          respondInvitePending={respondInvitePending}
+          onRespondSpotApplication={respondSpotApplication}
+          respondSpotApplicationPending={respondSpotApplicationPending}
+          blockMatchAccept={blockedByDebt}
+          onViewAll={() => setShowNotifications(true)}
+        />
         <View style={styles.section}>
           <View style={styles.tabs}>
             <Text

@@ -63,7 +63,14 @@ export function useNotificationActions(athleteId: string, notifications: Notific
     mutationFn: ({ applicationId, accept }: { applicationId: string; accept: boolean }) =>
       matchApi.respondSpotApplication(applicationId, accept),
     onSuccess: (_data, { applicationId }) => {
+      const relatedNotificationIds = (qc.getQueryData<Notification[]>(key) ?? [])
+        .filter((n) => n.referenceId === applicationId)
+        .map((n) => n.id);
+
       setLocal((prev) => prev.filter((n) => n.referenceId !== applicationId));
+      relatedNotificationIds.forEach((notificationId) => {
+        athleteApi.deleteNotification(athleteId, notificationId).catch(() => null);
+      });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       qc.invalidateQueries({ queryKey: ['spot-applications'] });
       qc.invalidateQueries({ queryKey: ['match-detail'] });
