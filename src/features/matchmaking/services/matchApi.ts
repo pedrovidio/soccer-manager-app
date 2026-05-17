@@ -71,6 +71,9 @@ export const matchApi = {
   cancelMatch: (matchId: string, adminId: string, reason: string) =>
     httpClient.patch(`/matches/${matchId}/cancel`, { adminId, reason }).then((r) => r.data),
 
+  cancelRecurringMatches: (matchId: string, adminId: string, reason: string) =>
+    httpClient.patch<{ success: boolean; cancelledCount: number }>(`/matches/${matchId}/cancel-recurring`, { adminId, reason }).then((r) => r.data),
+
   finishMatch: (matchId: string, adminId: string, comment?: string) =>
     httpClient.patch(`/matches/${matchId}/finish`, { adminId, comment }).then((r) => r.data),
 

@@ -70,6 +70,7 @@ export interface MatchDetail {
   checkedInCount?: number;
   checkedInIds?: string[];
   isRecurring: boolean;
+  recurrenceSeriesId?: string | null;
   guestConfig: GuestSlotConfig | null;
   hasMatchmaking?: boolean;
   matchmakingResult?: MatchmakingResult | null;

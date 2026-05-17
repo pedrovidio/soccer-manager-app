@@ -69,10 +69,8 @@ export default function MatchHomeScreen() {
   const [nameSearch, setNameSearch]           = useState('');
   const [selectedSpotAthleteIds, setSelectedSpotAthleteIds] = useState<string[]>([]);
 
-  // Modal states for cancel/finish
-  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  // Modal state for finish
   const [finishModalVisible, setFinishModalVisible] = useState(false);
-  const [cancelReason, setCancelReason] = useState('');
   const [finishComment, setFinishComment] = useState('');
   const [matchmakingResult, setMatchmakingResult] = useState<MatchmakingResult | null>(null);
   const [presenceFilter, setPresenceFilter] = useState<PresenceFilter>('ALL');
@@ -198,20 +196,6 @@ export default function MatchHomeScreen() {
     onError: () => Alert.alert('Erro', 'Não foi possível fechar as vagas.'),
   });
 
-  const cancelMatchMutation = useMutation({
-    mutationFn: () => matchApi.cancelMatch(matchId!, athleteId, cancelReason),
-    onSuccess: () => {
-      setCancelModalVisible(false);
-      setCancelReason('');
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      Alert.alert('Sucesso', 'Jogo cancelado com sucesso');
-      refetch();
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível cancelar o jogo');
-    },
-  });
-
   const finishMatchMutation = useMutation({
     mutationFn: () => matchApi.finishMatch(matchId!, athleteId, finishComment || undefined),
     onSuccess: () => {
@@ -257,7 +241,7 @@ export default function MatchHomeScreen() {
       qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
     },
     onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel responder a candidatura.');
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível responder a candidatura.');
     },
   });
 
@@ -270,7 +254,7 @@ export default function MatchHomeScreen() {
       router.replace('/' as any);
     },
     onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel cancelar sua presenca.');
+      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível cancelar sua presença.');
     },
   });
 
@@ -429,22 +413,6 @@ export default function MatchHomeScreen() {
           {/* ADMIN ACTIONS */}
           {isAdmin && data.status !== 'FINISHED' && data.status !== 'CANCELLED' && (
             <View style={s.adminActionsRow}>
-              <TouchableOpacity
-                style={[s.actionBtn, s.actionBtnCancel]}
-                onPress={() => setCancelModalVisible(true)}
-                disabled={cancelMatchMutation.isPending}
-                activeOpacity={0.7}
-              >
-                {cancelMatchMutation.isPending ? (
-                  <ActivityIndicator color={Colors.errorDark} size="small" />
-                ) : (
-                  <>
-                    <Ionicons name="close-circle" size={16} color={Colors.errorDark} />
-                    <Text style={s.actionBtnTextCancel}>Cancelar</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-
               <TouchableOpacity
                 style={[s.actionBtn, s.actionBtnFinish]}
                 onPress={() => setFinishModalVisible(true)}
@@ -846,52 +814,6 @@ export default function MatchHomeScreen() {
         )}
 
       </ScrollView>
-
-      {/* MODAL CANCELAR JOGO */}
-      {cancelModalVisible && (
-        <View style={s.modalOverlay}>
-          <View style={s.modal}>
-            <Text style={s.modalTitle}>Cancelar Jogo</Text>
-            <Text style={s.modalSubtitle}>Por favor, informe o motivo do cancelamento</Text>
-
-            <TextInput
-              style={s.modalInput}
-              placeholder="Motivo (mín. 10 caracteres)"
-              placeholderTextColor={Colors.n400}
-              value={cancelReason}
-              onChangeText={setCancelReason}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-
-            <View style={s.modalButtonRow}>
-              <TouchableOpacity
-                style={[s.modalBtn, s.modalBtnSecondary]}
-                onPress={() => {
-                  setCancelModalVisible(false);
-                  setCancelReason('');
-                }}
-                disabled={cancelMatchMutation.isPending}
-              >
-                <Text style={s.modalBtnTextSecondary}>Cancelar</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[s.modalBtn, s.modalBtnPrimary, cancelReason.length < 10 && s.modalBtnDisabled]}
-                onPress={() => cancelMatchMutation.mutate()}
-                disabled={cancelReason.length < 10 || cancelMatchMutation.isPending}
-              >
-                {cancelMatchMutation.isPending ? (
-                  <ActivityIndicator color={Colors.white} size="small" />
-                ) : (
-                  <Text style={s.modalBtnTextPrimary}>Confirmar</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
 
       {/* MODAL FINALIZAR JOGO */}
       {finishModalVisible && (
