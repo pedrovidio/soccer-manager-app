@@ -50,6 +50,11 @@ export function useNotificationActions(athleteId: string, notifications: Notific
     onSuccess: (_data, { notificationId, inviteId }) => {
       setLocal((prev) => prev.filter((n) => n.id !== notificationId && n.referenceId !== inviteId));
       athleteApi.deleteNotification(athleteId, notificationId).catch(() => null);
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
+      qc.invalidateQueries({ queryKey: queryKeys.invites(athleteId) });
+      qc.invalidateQueries({ queryKey: ['groups', athleteId] });
+      qc.invalidateQueries({ queryKey: ['group-home'] });
+      qc.invalidateQueries({ queryKey: ['match-detail'] });
     },
     onError: invalidate,
   });
@@ -60,6 +65,8 @@ export function useNotificationActions(athleteId: string, notifications: Notific
     onSuccess: (_data, { applicationId }) => {
       setLocal((prev) => prev.filter((n) => n.referenceId !== applicationId));
       qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
+      qc.invalidateQueries({ queryKey: ['spot-applications'] });
+      qc.invalidateQueries({ queryKey: ['match-detail'] });
     },
     onError: invalidate,
   });

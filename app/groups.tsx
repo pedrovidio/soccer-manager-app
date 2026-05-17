@@ -12,6 +12,7 @@ import { useFavoriteGroup } from '../src/features/groups/hooks/useFavoriteGroup'
 import { BottomNav, NavTab } from '../src/features/common/components/BottomNav';
 import { Colors, Radius, Spacing } from '../src/features/common/theme';
 import { GroupResponse } from '../src/features/groups/groupTypes';
+import { realtime } from '../src/lib/realtime';
 
 export default function GroupsScreen() {
   const activeTab: NavTab = 'groups';
@@ -23,6 +24,7 @@ export default function GroupsScreen() {
     queryKey: ['groups', athleteId],
     queryFn: () => groupApi.listByAthlete(athleteId),
     enabled: !!athleteId,
+    refetchInterval: realtime.sharedStateMs,
   });
 
 

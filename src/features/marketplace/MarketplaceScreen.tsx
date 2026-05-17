@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { queryKeys } from '../../lib/queryKeys';
+import { realtime } from '../../lib/realtime';
 import { useAuthStore } from '../auth/useAuthStore';
 import { BottomNav } from '../common/components/BottomNav';
 import { Colors, Radius, Spacing } from '../common/theme';
@@ -43,6 +44,7 @@ export default function MarketplaceScreen() {
     queryKey: queryKeys.invites(athleteId),
     queryFn: () => athleteApi.invites(athleteId),
     enabled: !!athleteId,
+    refetchInterval: realtime.notificationsMs,
   });
 
   const {
@@ -54,6 +56,7 @@ export default function MarketplaceScreen() {
     queryKey: queryKeys.marketplace(athleteId),
     queryFn: () => matchApi.listMarketplaceSpotMatches(),
     enabled: !!athleteId && !blockedByDebt,
+    refetchInterval: realtime.discoveryMs,
   });
 
   const respondMutation = useMutation({

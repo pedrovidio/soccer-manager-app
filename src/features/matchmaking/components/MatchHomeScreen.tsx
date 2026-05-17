@@ -7,6 +7,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '../../common/theme';
+import { realtime } from '../../../lib/realtime';
 import { matchApi } from '../services/matchApi';
 import { groupApi } from '../../groups/services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
@@ -82,12 +83,14 @@ export default function MatchHomeScreen() {
     queryKey: ['match-detail', matchId],
     queryFn: () => matchApi.getDetail(matchId!, athleteId),
     enabled: !!matchId,
+    refetchInterval: realtime.sharedStateMs,
   });
 
   const { data: spotApplications = [] } = useQuery<SpotApplication[]>({
     queryKey: ['spot-applications', matchId],
     queryFn: () => matchApi.listSpotApplications(matchId!),
     enabled: !!matchId && isAdmin,
+    refetchInterval: realtime.notificationsMs,
   });
 
   useEffect(() => {
@@ -128,6 +131,7 @@ export default function MatchHomeScreen() {
     },
     enabled:  !!matchId && guestOpen,
     staleTime: 30_000,
+    refetchInterval: realtime.discoveryMs,
   });
 
   const nearby = allAthletes.filter((a) => {

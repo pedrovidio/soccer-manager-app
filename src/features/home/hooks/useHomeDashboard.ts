@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { athleteApi } from '../../athletes/services/athleteApi';
 import { queryKeys } from '../../../lib/queryKeys';
+import { realtime } from '../../../lib/realtime';
 import { AthleteDashboard, ConfirmedMatch, Invite } from '../../athletes/athleteTypes';
 import { Notification } from '../../notifications/types';
 
@@ -19,18 +20,21 @@ export function useHomeDashboard(athleteId: string): HomeDashboardResult {
     queryKey: queryKeys.dashboard(athleteId),
     queryFn: () => athleteApi.dashboard(athleteId),
     enabled: !!athleteId,
+    refetchInterval: realtime.sharedStateMs,
   });
 
   const notificationsQuery = useQuery({
     queryKey: queryKeys.notifications(athleteId),
     queryFn: () => athleteApi.notifications(athleteId),
     enabled: !!athleteId,
+    refetchInterval: realtime.notificationsMs,
   });
 
   const invitesQuery = useQuery({
     queryKey: queryKeys.invites(athleteId),
     queryFn: () => athleteApi.invites(athleteId),
     enabled: !!athleteId,
+    refetchInterval: realtime.notificationsMs,
   });
 
   const isLoading = dashboardQuery.isLoading || notificationsQuery.isLoading || invitesQuery.isLoading;

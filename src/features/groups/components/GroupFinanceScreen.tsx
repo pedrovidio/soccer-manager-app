@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { BackButton } from '../../common/components/BackButton';
 import { Colors, Radius, Spacing } from '../../common/theme';
+import { realtime } from '../../../lib/realtime';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { groupApi } from '../services/groupApi';
 import { GroupFinancePayment, GroupFinanceStatus, GroupFinanceType } from '../groupTypes';
@@ -67,6 +68,7 @@ export default function GroupFinanceScreen() {
     queryKey: ['group-finance-report', groupId, athleteId, filters],
     queryFn: () => groupApi.financeReport(groupId!, athleteId, filters),
     enabled: !!groupId && !!athleteId,
+    refetchInterval: realtime.financeMs,
   });
 
   const registerExpenseMutation = useMutation({

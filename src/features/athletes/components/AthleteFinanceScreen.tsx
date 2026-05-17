@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BackButton } from '../../common/components/BackButton';
 import { BottomNav } from '../../common/components/BottomNav/BottomNav';
 import { Colors, Radius, Spacing } from '../../common/theme';
+import { realtime } from '../../../lib/realtime';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { athleteApi } from '../services/athleteApi';
 import { AthleteFinancePayment, AthleteFinanceStatus, AthleteFinanceType } from '../athleteTypes';
@@ -55,6 +56,7 @@ export default function AthleteFinanceScreen() {
     queryKey: ['athlete-finance-report', athleteId, filters],
     queryFn: () => athleteApi.financeReport(athleteId, filters),
     enabled: !!athleteId,
+    refetchInterval: realtime.financeMs,
   });
 
   const reportMonthlyPaymentMutation = useMutation({

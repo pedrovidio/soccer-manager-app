@@ -10,6 +10,7 @@ import { groupApi } from '../services/groupApi';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { AthleteSearchResult, GroupInviteItem } from '../groupTypes';
 import { BackButton } from '../../common/components/BackButton';
+import { realtime } from '../../../lib/realtime';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -61,7 +62,11 @@ export default function InviteAthleteScreen() {
     }
   }
 
-  useEffect(() => { loadInvites(); }, [groupId]);
+  useEffect(() => {
+    loadInvites();
+    const interval = setInterval(loadInvites, realtime.notificationsMs);
+    return () => clearInterval(interval);
+  }, [groupId]);
 
   // ── Debounced search ──
   const handleSearch = useCallback((text: string) => {
