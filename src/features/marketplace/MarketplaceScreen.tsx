@@ -213,7 +213,8 @@ function InviteCard({
 }
 
 function SpotMatchCard({ match, isPending, onApply }: { match: SpotMarketplaceMatch; isPending: boolean; onApply: () => void }) {
-  const waiting = match.applicationStatus === 'PENDING';
+  const waiting = match.applicationStatus === 'PENDING' || match.applicationStatus === 'WAITLISTED';
+  const waitlisted = match.applicationStatus === 'WAITLISTED';
   return (
     <View style={s.card}>
       <View style={s.cardTop}>
@@ -230,9 +231,9 @@ function SpotMatchCard({ match, isPending, onApply }: { match: SpotMarketplaceMa
         {match.type} · OVR mínimo {match.minOverall} · {match.minAge}-{match.maxAge} anos · {formatCurrency(match.spotFee)}
       </Text>
       <TouchableOpacity
-        style={[s.primaryBtn, (isPending || waiting) && { opacity: 0.65 }]}
+        style={[s.primaryBtn, (isPending || waiting || waitlisted) && { opacity: 0.65 }]}
         onPress={onApply}
-        disabled={isPending || waiting}
+        disabled={isPending || waiting || waitlisted}
       >
         {isPending ? (
           <ActivityIndicator color={Colors.white} size="small" />

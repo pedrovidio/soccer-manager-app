@@ -18,9 +18,9 @@ export function deriveMatchPhase(input: {
 }): MatchPhase {
   if (input.status === 'CANCELLED') return 'CANCELLED';
   if (input.status === 'FINISHED') return 'FINISHED';
-  if (input.status === 'IN_PROGRESS') return 'IN_PROGRESS';
   if (input.hasMatchmaking) return 'TEAMS_DRAWN';
   if (input.confirmedCount >= minimumConfirmedFor(input.type)) return 'CONFIRMED_WAITING_DRAW';
+  if (input.status === 'IN_PROGRESS') return 'IN_PROGRESS';
   return 'WAITING_CONFIRMATION';
 }
 

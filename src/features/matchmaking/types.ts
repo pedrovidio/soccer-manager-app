@@ -2,7 +2,7 @@ export type MatchStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED'
 export type MatchPhase = 'WAITING_CONFIRMATION' | 'CONFIRMED_WAITING_DRAW' | 'TEAMS_DRAWN' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
 export type PaymentStatus = 'PAID' | 'PENDING' | 'DECLINED';
 export type MatchType = 'CAMPO' | 'SOCIETY' | 'FUTSAL';
-export type PresenceStatus = 'PENDING' | 'CONFIRMED' | 'DECLINED';
+export type PresenceStatus = 'PENDING' | 'CONFIRMED' | 'WAITLISTED' | 'DECLINED';
 export type Gender = 'M' | 'F' | 'ANY';
 
 export interface Match {
@@ -135,14 +135,14 @@ export interface SpotMarketplaceMatch {
   minOverall: number;
   minAge: number;
   maxAge: number;
-  applicationStatus: 'PENDING' | 'ACCEPTED' | 'DECLINED' | null;
+  applicationStatus: 'PENDING' | 'ACCEPTED' | 'WAITLISTED' | 'DECLINED' | null;
 }
 
 export interface SpotApplication {
   id: string;
   matchId: string;
   athleteId: string;
-  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  status: 'PENDING' | 'ACCEPTED' | 'WAITLISTED' | 'DECLINED';
   createdAt: string;
   athleteName: string;
   position: string;

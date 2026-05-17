@@ -15,6 +15,8 @@ import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender, 
 import { BackButton } from '../../common/components/BackButton';
 import { deriveMatchPhase, minimumConfirmedFor, phaseLabel } from '../utils/matchPhase';
 
+type PresenceFilter = 'ALL' | PresenceStatus;
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatDateTime(iso: string) {
@@ -33,6 +35,7 @@ function posLabel(pos: string) {
 
 const STATUS_CONFIG: Record<PresenceStatus, { label: string; bg: string; color: string; icon: string }> = {
   CONFIRMED: { label: 'Confirmado', bg: Colors.successLight, color: Colors.successDark, icon: 'checkmark-circle' },
+  WAITLISTED:{ label: 'Na fila de espera', bg: Colors.primaryLight, color: Colors.primary, icon: 'hourglass-outline' },
   DECLINED:  { label: 'Recusou',    bg: Colors.errorLight,   color: Colors.errorDark,   icon: 'close-circle' },
   PENDING:   { label: 'Aguardando confirmação', bg: Colors.warningLight, color: Colors.warningDark, icon: 'time-outline' },
 };
@@ -72,6 +75,7 @@ export default function MatchHomeScreen() {
   const [cancelReason, setCancelReason] = useState('');
   const [finishComment, setFinishComment] = useState('');
   const [matchmakingResult, setMatchmakingResult] = useState<MatchmakingResult | null>(null);
+  const [presenceFilter, setPresenceFilter] = useState<PresenceFilter>('ALL');
   const [scoreA, setScoreA] = useState('');
   const [scoreB, setScoreB] = useState('');
   const [ratingTarget, setRatingTarget] = useState<MatchPresence | null>(null);
@@ -346,6 +350,7 @@ export default function MatchHomeScreen() {
 
   const { date, time } = formatDateTime(data.date);
   const confirmed  = data.presence.filter((p) => p.status === 'CONFIRMED').length;
+  const waitlisted = data.presence.filter((p) => p.status === 'WAITLISTED').length;
   const declined   = data.presence.filter((p) => p.status === 'DECLINED').length;
   const pending    = data.presence.filter((p) => p.status === 'PENDING').length;
   const spotsLeft  = data.totalVacancies - confirmed;
@@ -354,6 +359,9 @@ export default function MatchHomeScreen() {
   const isParticipant = currentPresence?.status === 'CONFIRMED';
   const hasCheckedIn = Boolean(currentPresence?.checkedIn || data.checkedInIds?.includes(athleteId));
   const ratableAthletes = data.presence.filter((p) => p.status === 'CONFIRMED' && p.athleteId !== athleteId);
+  const filteredPresence = presenceFilter === 'ALL'
+    ? data.presence
+    : data.presence.filter((p) => p.status === presenceFilter);
   const rawMatchmakingResult = matchmakingResult ?? data.matchmakingResult ?? null;
   const visibleMatchmakingResult: MatchmakingResult = rawMatchmakingResult ?? { teams: [], overallDifference: 0 };
   const hasVisibleMatchmakingResult = !!rawMatchmakingResult;
@@ -460,10 +468,11 @@ export default function MatchHomeScreen() {
         <View style={s.section}>
           <Text style={s.sectionTitle}>Confirmações</Text>
           <View style={s.counterCard}>
-            <CounterBadge value={confirmed} label="Confirmados" color={Colors.success} />
-            <CounterBadge value={pending}   label="Pendentes"   color={Colors.warning} />
-            <CounterBadge value={declined}  label="Recusaram"   color={Colors.error} />
-            <CounterBadge value={spotsLeft} label="Vagas livres" color={Colors.n500} />
+            <CounterBadge value={confirmed} label="Confirmados" color={Colors.success} active={presenceFilter === 'CONFIRMED'} onPress={() => setPresenceFilter(presenceFilter === 'CONFIRMED' ? 'ALL' : 'CONFIRMED')} />
+            <CounterBadge value={pending}   label="Pendentes"   color={Colors.warning} active={presenceFilter === 'PENDING'} onPress={() => setPresenceFilter(presenceFilter === 'PENDING' ? 'ALL' : 'PENDING')} />
+            <CounterBadge value={waitlisted} label="Na fila" color={Colors.primary} active={presenceFilter === 'WAITLISTED'} onPress={() => setPresenceFilter(presenceFilter === 'WAITLISTED' ? 'ALL' : 'WAITLISTED')} />
+            <CounterBadge value={declined}  label="Recusaram"   color={Colors.error} active={presenceFilter === 'DECLINED'} onPress={() => setPresenceFilter(presenceFilter === 'DECLINED' ? 'ALL' : 'DECLINED')} />
+            <CounterBadge value={spotsLeft} label="Vagas livres" color={Colors.n500} active={false} />
           </View>
           {/* PROGRESS */}
           <View style={s.progressBg}>
@@ -658,13 +667,13 @@ export default function MatchHomeScreen() {
 
         {/* ── LISTA DE PRESENÇA ── */}
         <View style={s.section}>
-          <Text style={s.sectionTitle}>Lista de presença</Text>
-          {data.presence.length === 0 ? (
+          <Text style={s.sectionTitle}>{presenceFilter === 'ALL' ? 'Lista de presenca' : STATUS_CONFIG[presenceFilter].label}</Text>
+          {filteredPresence.length === 0 ? (
             <View style={s.emptyCard}>
-              <Text style={s.emptyText}>Nenhum membro ainda</Text>
+              <Text style={s.emptyText}>Nenhum atleta encontrado</Text>
             </View>
           ) : (
-            data.presence.map((p) => <PresenceRow key={p.athleteId} item={p} />)
+            filteredPresence.map((p) => <PresenceRow key={p.athleteId} item={p} />)
           )}
         </View>
 
@@ -980,12 +989,23 @@ function SpotApplicationRow({
   );
 }
 
-function CounterBadge({ value, label, color }: { value: number; label: string; color: string }) {
+function CounterBadge({ value, label, color, active, onPress }: {
+  value: number;
+  label: string;
+  color: string;
+  active: boolean;
+  onPress?: () => void;
+}) {
   return (
-    <View style={s.counterItem}>
+    <TouchableOpacity
+      style={[s.counterItem, active && { backgroundColor: Colors.primaryLight }]}
+      onPress={onPress}
+      disabled={!onPress}
+      activeOpacity={0.75}
+    >
       <Text style={[s.counterValue, { color }]}>{value}</Text>
       <Text style={s.counterLabel}>{label}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -1166,3 +1186,4 @@ const s = StyleSheet.create({
   modalBtnTextSecondary: { color: Colors.n700, fontSize: 14, fontWeight: '700' },
   modalBtnDisabled:  { opacity: 0.5 },
 });
+

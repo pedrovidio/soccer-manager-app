@@ -90,7 +90,7 @@ export const matchApi = {
     httpClient.get<SpotApplication[]>(`/matches/${matchId}/spot-applications`).then((r) => r.data),
 
   applyToSpotMatch: (matchId: string) =>
-    httpClient.post(`/matches/${matchId}/spot-applications`).then((r) => r.data as { id: string; status: 'PENDING' | 'ACCEPTED' | 'DECLINED' }),
+    httpClient.post(`/matches/${matchId}/spot-applications`).then((r) => r.data as { id: string; status: 'PENDING' | 'ACCEPTED' | 'WAITLISTED' | 'DECLINED' }),
 
   respondSpotApplication: (applicationId: string, accept: boolean) =>
     httpClient.patch(`/spot-applications/${applicationId}/respond`, { accept }).then((r) => r.data),
