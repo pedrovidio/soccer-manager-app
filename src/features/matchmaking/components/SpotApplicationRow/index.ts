@@ -1,0 +1,1 @@
+export { SpotApplicationRow } from './SpotApplicationRow';

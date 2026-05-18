@@ -1,44 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView, StyleSheet,
-  SafeAreaView, ActivityIndicator, Alert, Switch, TextInput,
+  View, Text, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, Switch, TextInput, FlatList,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius, Spacing } from '../../common/theme';
-import { realtime } from '../../../lib/realtime';
-import { matchApi } from '../services/matchApi';
-import { groupApi } from '../../groups/services/groupApi';
-import { useAuthStore } from '../../auth/useAuthStore';
-import { GuestSlotConfig, MatchPresence, NearbyAthlete, PresenceStatus, Gender, MatchmakingResult, SpotApplication } from '../types';
+import { Colors } from '../../common/theme';
+import { PresenceStatus, Gender } from '../types';
 import { BackButton } from '../../common/components/BackButton';
-import { deriveMatchPhase, minimumConfirmedFor, phaseLabel } from '../utils/matchPhase';
-
-type PresenceFilter = 'ALL' | PresenceStatus;
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatDateTime(iso: string) {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
-  const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return { date, time };
-}
-
-function posLabel(pos: string) {
-  const map: Record<string, string> = {
-    Goalkeeper: 'GOL', Defender: 'ZAG', Midfielder: 'MEI', Forward: 'ATA', Undefined: '—',
-  };
-  return map[pos] ?? pos.slice(0, 3).toUpperCase();
-}
-
-const STATUS_CONFIG: Record<PresenceStatus, { label: string; bg: string; color: string; icon: string }> = {
-  CONFIRMED: { label: 'Confirmado', bg: Colors.successLight, color: Colors.successDark, icon: 'checkmark-circle' },
-  WAITLISTED:{ label: 'Na fila de espera', bg: Colors.primaryLight, color: Colors.primary, icon: 'hourglass-outline' },
-  DECLINED:  { label: 'Recusou',    bg: Colors.errorLight,   color: Colors.errorDark,   icon: 'close-circle' },
-  PENDING:   { label: 'Aguardando confirmação', bg: Colors.warningLight, color: Colors.warningDark, icon: 'time-outline' },
-};
+import { phaseLabel } from '../utils/matchPhase';
+import { AthleteRatingRow } from './AthleteRatingRow';
+import { CounterBadge } from './CounterBadge';
+import { PresenceRow } from './PresenceRow';
+import { SpotApplicationRow } from './SpotApplicationRow';
+import { s } from './MatchHomeScreen.styles';
+import { posLabel } from '../utils/formatters';
+import { useMatchHomeController } from '../hooks/useMatchHomeController';
 
 const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: 'ANY', label: 'Qualquer' },
@@ -46,271 +21,74 @@ const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: 'F',   label: 'Feminino' },
 ];
 
-// ─── Main Screen ──────────────────────────────────────────────────────────────
+const PRESENCE_FILTER_LABEL: Record<PresenceStatus, string> = {
+  CONFIRMED: 'Confirmados',
+  WAITLISTED: 'Na fila de espera',
+  DECLINED: 'Recusaram',
+  PENDING: 'Pendentes',
+};
+
+// Main screen
 
 function teamNameFallback(teamNumber: number) {
   return `Time ${teamNumber}`;
 }
 
 export default function MatchHomeScreen() {
-  const router   = useRouter();
-  const qc       = useQueryClient();
-  const { matchId, groupId, isAdmin: isAdminParam } = useLocalSearchParams<{ matchId: string; groupId: string; isAdmin: string }>();
-  const athleteId = useAuthStore((s) => s.athleteId) ?? '';
-  const isAdmin = isAdminParam === '1';
-
-  const [guestOpen, setGuestOpen]           = useState(false);
-  const [guestVacancies, setGuestVacancies]   = useState('2');
-  const [minAge, setMinAge]                   = useState('16');
-  const [maxAge, setMaxAge]                   = useState('50');
-  const [gender, setGender]                   = useState<Gender>('ANY');
-  const [radiusKm, setRadiusKm]               = useState('10');
-  const [minOverall, setMinOverall]           = useState('0');
-  const [nameSearch, setNameSearch]           = useState('');
-  const [selectedSpotAthleteIds, setSelectedSpotAthleteIds] = useState<string[]>([]);
-
-  // Modal state for finish
-  const [finishModalVisible, setFinishModalVisible] = useState(false);
-  const [finishComment, setFinishComment] = useState('');
-  const [matchmakingResult, setMatchmakingResult] = useState<MatchmakingResult | null>(null);
-  const [presenceFilter, setPresenceFilter] = useState<PresenceFilter>('ALL');
-  const [scoreA, setScoreA] = useState('');
-  const [scoreB, setScoreB] = useState('');
-  const [ratingTarget, setRatingTarget] = useState<MatchPresence | null>(null);
-  const [ratingStats, setRatingStats] = useState({
-    pace: '70', shooting: '70', passing: '70', dribbling: '70', defense: '70', physical: '70',
-  });
-
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['match-detail', matchId],
-    queryFn: () => matchApi.getDetail(matchId!, athleteId),
-    enabled: !!matchId,
-    refetchInterval: realtime.sharedStateMs,
-  });
-
-  const { data: spotApplications = [] } = useQuery<SpotApplication[]>({
-    queryKey: ['spot-applications', matchId],
-    queryFn: () => matchApi.listSpotApplications(matchId!),
-    enabled: !!matchId && isAdmin,
-    refetchInterval: realtime.notificationsMs,
-  });
-
-  useEffect(() => {
-    if (!data?.matchmakingResult) return;
-    setMatchmakingResult(data.matchmakingResult);
-  }, [data?.matchmakingResult]);
-
-  // Busca atletas próximos diretamente no banco via backend
-  // com debounce para não disparar a cada tecla
-  const [debouncedConfig, setDebouncedConfig] = useState({
-    radiusKm: 10, minAge: 16, maxAge: 50, gender: 'ANY' as Gender, minOverall: 0,
-  });
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setDebouncedConfig({
-        radiusKm:   +radiusKm   || 10,
-        minAge:     +minAge     || 16,
-        maxAge:     +maxAge     || 50,
-        gender,
-        minOverall: +minOverall || 0,
-      });
-    }, 600);
-    return () => clearTimeout(t);
-  }, [radiusKm, minAge, maxAge, gender, minOverall]);
-
-  const { data: allAthletes = [] } = useQuery<NearbyAthlete[]>({
-    queryKey: ['nearby-athletes-all', matchId, debouncedConfig],
-    queryFn:  async () => {
-      const result = await matchApi.nearbyAthletes(matchId!, {
-        spotRadiusKm: debouncedConfig.radiusKm,
-        minAge: debouncedConfig.minAge,
-        maxAge: debouncedConfig.maxAge,
-        gender: debouncedConfig.gender,
-        minOverall: debouncedConfig.minOverall,
-      });
-      return Array.isArray(result) ? result : [];
-    },
-    enabled:  !!matchId && guestOpen,
-    staleTime: 30_000,
-    refetchInterval: realtime.discoveryMs,
-  });
-
-  const nearby = allAthletes.filter((a) => {
-    if (a.overall < debouncedConfig.minOverall) return false;
-    if (a.age < debouncedConfig.minAge || a.age > debouncedConfig.maxAge) return false;
-    if (debouncedConfig.gender !== 'ANY' && a.gender !== debouncedConfig.gender) return false;
-    if (nameSearch.trim() && !(a.name ?? '').toLowerCase().includes(nameSearch.trim().toLowerCase())) return false;
-    return true;
-  });
-  const nearbyIds = new Set(nearby.map((a) => a.id));
-  const selectedVisibleAthleteIds = selectedSpotAthleteIds.filter((id) => nearbyIds.has(id));
-  const selectedVisibleCount = selectedVisibleAthleteIds.length;
-  const selectedSpotAthletesCount = selectedSpotAthleteIds.length;
-
-  const guestConfig: Partial<GuestSlotConfig> = {
-    guestVacancies: +guestVacancies || 2,
-    minAge:         +minAge         || 16,
-    maxAge:         +maxAge         || 50,
+  const {
+    athleteId,
+    data,
+    guestOpen,
+    guestVacancies,
+    isAdmin,
+    isError,
+    isLoading,
+    maxAge,
+    minAge,
+    minOverall,
+    nameSearch,
+    nearby,
+    presenceFilter,
+    radiusKm,
+    ratingStars,
+    refetch,
+    scoreA,
+    scoreB,
+    selectedSpotAthleteIds,
+    selectedSpotAthletesCount,
+    selectedVisibleCount,
+    finishComment,
+    finishModalVisible,
     gender,
-    spotRadiusKm:   +radiusKm       || 10,
-    minOverall:     +minOverall     || 0,
-  };
-
-  const openGuestMutation = useMutation({
-    mutationFn: () => matchApi.openGuestSlots(matchId!, athleteId, guestConfig as GuestSlotConfig, selectedSpotAthleteIds),
-    onSuccess: (result: any) => {
-      setSelectedSpotAthleteIds([]);
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
-      const sent = result?.spotInvitesSent ?? selectedSpotAthletesCount;
-      const plural = sent !== 1;
-      Alert.alert('Convites enviados', `${sent} atleta${plural ? 's' : ''} selecionado${plural ? 's' : ''} receber${plural ? 'ao' : 'a'} o convite.`);
-    },
-    onError: () => Alert.alert('Erro', 'Não foi possível abrir as vagas.'),
-  });
-
-  function toggleSpotSelection(targetAthleteId: string) {
-    setSelectedSpotAthleteIds((current) =>
-      current.includes(targetAthleteId)
-        ? current.filter((id) => id !== targetAthleteId)
-        : [...current, targetAthleteId],
-    );
-  }
-
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: (athlete: NearbyAthlete) =>
-      athlete.isFavorite
-        ? groupApi.unfavoriteSpotAthlete(groupId!, athleteId, athlete.id)
-        : groupApi.favoriteSpotAthlete(groupId!, athleteId, athlete.id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
-      qc.invalidateQueries({ queryKey: ['favorite-spot-athletes', groupId] });
-    },
-    onError: () => Alert.alert('Erro', 'Não foi possível atualizar o favorito.'),
-  });
-
-  const closeGuestMutation = useMutation({
-    mutationFn: () => matchApi.closeGuestSlots(matchId!, athleteId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['match-detail', matchId] }),
-    onError: () => Alert.alert('Erro', 'Não foi possível fechar as vagas.'),
-  });
-
-  const finishMatchMutation = useMutation({
-    mutationFn: () => matchApi.finishMatch(matchId!, athleteId, finishComment || undefined),
-    onSuccess: () => {
-      setFinishModalVisible(false);
-      setFinishComment('');
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      Alert.alert('Sucesso', 'Jogo finalizado com sucesso');
-      refetch();
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível finalizar o jogo');
-    },
-  });
-
-  const reportSpotPaymentMutation = useMutation({
-    mutationFn: () => matchApi.reportSpotPayment(matchId!, athleteId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      Alert.alert('Pagamento informado', 'O administrador foi avisado para conferir o Pix.');
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível informar o pagamento.');
-    },
-  });
-
-  const checkInMutation = useMutation({
-    mutationFn: () => matchApi.checkIn(matchId!, athleteId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      Alert.alert('Check-in confirmado', 'Sua presença no local foi registrada.');
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível fazer check-in.');
-    },
-  });
-
-  const respondSpotApplicationMutation = useMutation({
-    mutationFn: ({ applicationId, accept }: { applicationId: string; accept: boolean }) =>
-      matchApi.respondSpotApplication(applicationId, accept),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['spot-applications', matchId] });
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível responder a candidatura.');
-    },
-  });
-
-  const cancelPresenceMutation = useMutation({
-    mutationFn: () => matchApi.cancelPresence(matchId!),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
-      Alert.alert('Check-in cancelado', 'Sua vaga foi aberta e o administrador foi avisado.');
-      router.replace('/' as any);
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível cancelar sua presença.');
-    },
-  });
-
-  function confirmCancelPresence() {
-    Alert.alert(
-      'Cancelar check-in?',
-      'Sua vaga sera aberta para outro atleta e o administrador sera avisado.',
-      [
-        { text: 'Voltar', style: 'cancel' },
-        { text: 'Cancelar check-in', style: 'destructive', onPress: () => cancelPresenceMutation.mutate() },
-      ],
-    );
-  }
-
-  const matchmakingMutation = useMutation({
-    mutationFn: () => matchApi.matchmaking(matchId!, 2),
-    onSuccess: (result) => {
-      setMatchmakingResult(result);
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível montar os times.');
-    },
-  });
-
-  const scoreMutation = useMutation({
-    mutationFn: () => matchApi.registerScore(matchId!, athleteId, [
-      { teamName: 'Time 1', goals: Number(scoreA) || 0 },
-      { teamName: 'Time 2', goals: Number(scoreB) || 0 },
-    ]),
-    onSuccess: () => Alert.alert('Placar registrado', 'O resultado foi salvo no histórico.'),
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível registrar o placar.');
-    },
-  });
-
-  const ratingMutation = useMutation({
-    mutationFn: () => {
-      if (!ratingTarget) throw new Error('Selecione um atleta.');
-      return matchApi.registerRating(matchId!, athleteId, ratingTarget.athleteId, {
-        pace: Number(ratingStats.pace) || 0,
-        shooting: Number(ratingStats.shooting) || 0,
-        passing: Number(ratingStats.passing) || 0,
-        dribbling: Number(ratingStats.dribbling) || 0,
-        defense: Number(ratingStats.defense) || 0,
-        physical: Number(ratingStats.physical) || 0,
-      });
-    },
-    onSuccess: () => {
-      setRatingTarget(null);
-      Alert.alert('Avaliação enviada', 'A avaliação do atleta foi registrada.');
-    },
-    onError: (error: any) => {
-      Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível enviar a avaliação.');
-    },
-  });
+    summary,
+    cancelPresenceMutation,
+    checkInMutation,
+    closeGuestMutation,
+    confirmCancelPresence,
+    finishMatchMutation,
+    goToEdit,
+    matchmakingMutation,
+    openGuestMutation,
+    ratingMutation,
+    reportSpotPaymentMutation,
+    respondSpotApplicationMutation,
+    scoreMutation,
+    setFinishComment,
+    setFinishModalVisible,
+    setGender,
+    setGuestOpen,
+    setGuestVacancies,
+    setMaxAge,
+    setMinAge,
+    setMinOverall,
+    setNameSearch,
+    setPresenceFilter,
+    setRadiusKm,
+    setScoreA,
+    setScoreB,
+    toggleFavoriteMutation,
+    toggleSpotSelection,
+  } = useMatchHomeController();
 
   if (isLoading) {
     return (
@@ -320,7 +98,7 @@ export default function MatchHomeScreen() {
     );
   }
 
-  if (isError || !data) {
+  if (isError || !data || !summary) {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
         <Ionicons name="alert-circle-outline" size={40} color={Colors.error} />
@@ -332,48 +110,43 @@ export default function MatchHomeScreen() {
     );
   }
 
-  const { date, time } = formatDateTime(data.date);
-  const confirmed  = data.presence.filter((p) => p.status === 'CONFIRMED').length;
-  const waitlisted = data.presence.filter((p) => p.status === 'WAITLISTED').length;
-  const declined   = data.presence.filter((p) => p.status === 'DECLINED').length;
-  const pending    = data.presence.filter((p) => p.status === 'PENDING').length;
-  const spotsLeft  = data.totalVacancies - confirmed;
-  const pct        = Math.min((confirmed / data.totalVacancies) * 100, 100);
-  const currentPresence = data.presence.find((p) => p.athleteId === athleteId);
+  const {
+    date,
+    time,
+    confirmed,
+    waitlisted,
+    declined,
+    pending,
+    spotsLeft,
+    pct,
+    currentPresence,
+    ratableAthletes,
+    filteredPresence,
+    visibleMatchmakingResult,
+    hasVisibleMatchmakingResult,
+    minimumConfirmed,
+    phase,
+    canDrawTeams,
+    shouldSuggestSpot,
+    pendingSpotApplications,
+  } = summary;
+  const isFinished = data.status === 'FINISHED';
   const isParticipant = currentPresence?.status === 'CONFIRMED';
   const hasCheckedIn = Boolean(currentPresence?.checkedIn || data.checkedInIds?.includes(athleteId));
-  const ratableAthletes = data.presence.filter((p) => p.status === 'CONFIRMED' && p.athleteId !== athleteId);
-  const filteredPresence = presenceFilter === 'ALL'
-    ? data.presence
-    : data.presence.filter((p) => p.status === presenceFilter);
-  const rawMatchmakingResult = matchmakingResult ?? data.matchmakingResult ?? null;
-  const visibleMatchmakingResult: MatchmakingResult = rawMatchmakingResult ?? { teams: [], overallDifference: 0 };
-  const hasVisibleMatchmakingResult = !!rawMatchmakingResult;
-  const minimumConfirmed = data.minimumConfirmed ?? minimumConfirmedFor(data.type);
-  const phase = data.phase ?? deriveMatchPhase({
-    status: data.status,
-    type: data.type,
-    confirmedCount: confirmed,
-    hasMatchmaking: hasVisibleMatchmakingResult,
-  });
-  const canDrawTeams = isAdmin && phase === 'CONFIRMED_WAITING_DRAW';
-  const shouldSuggestSpot = isAdmin && phase === 'WAITING_CONFIRMATION' && confirmed < minimumConfirmed;
-  const pendingSpotApplications = spotApplications.filter((application) => application.status === 'PENDING');
-
   return (
     <SafeAreaView style={s.safe}>
 
       {/* HEADER */}
       <View style={s.header}>
         <BackButton />
-        <View style={{ flex: 1, minWidth: 0 }}>
-          <Text style={s.headerTitle} numberOfLines={1}>{data.status === 'FINISHED' ? 'Partida encerrada' : 'Próxima partida'}</Text>
-          <Text style={s.headerSub}>{data.location} · {date}</Text>
+        <View style={s.rowContent}>
+          <Text style={s.headerTitle} numberOfLines={1}>{isFinished ? 'Partida encerrada' : 'Proxima partida'}</Text>
+          <Text style={s.headerSub}>{data.location} - {date}</Text>
         </View>
-        {isAdmin && (
+        {isAdmin && !isFinished && (
           <TouchableOpacity
             style={s.editBtn}
-            onPress={() => router.push({ pathname: '/create-match', params: { groupId, matchId } } as any)}
+            onPress={goToEdit}
           >
             <Ionicons name="create-outline" size={20} color={Colors.n700} />
           </TouchableOpacity>
@@ -382,13 +155,13 @@ export default function MatchHomeScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scrollContent}>
 
-        {/* ── INFO CARD ── */}
+        {/* Info card */}
         <View style={s.infoCard}>
           <View style={s.infoRow}>
             <View style={s.infoItem}>
               <Ionicons name="time-outline" size={18} color={Colors.primary} />
               <Text style={s.infoValue}>{time}</Text>
-              <Text style={s.infoLabel}>Horário</Text>
+              <Text style={s.infoLabel}>Horario</Text>
             </View>
             <View style={s.infoDivider} />
             <View style={s.infoItem}>
@@ -411,7 +184,7 @@ export default function MatchHomeScreen() {
           </View>
 
           {/* ADMIN ACTIONS */}
-          {isAdmin && data.status !== 'FINISHED' && data.status !== 'CANCELLED' && (
+          {isAdmin && !isFinished && data.status !== 'CANCELLED' && (
             <View style={s.adminActionsRow}>
               <TouchableOpacity
                 style={[s.actionBtn, s.actionBtnFinish]}
@@ -432,43 +205,45 @@ export default function MatchHomeScreen() {
           )}
         </View>
 
-        {/* ── CONTADOR DE CONFIRMAÇÕES ── */}
-        <View style={s.section}>
-          <Text style={s.sectionTitle}>Confirmações</Text>
-          <View style={s.counterCard}>
-            <CounterBadge value={confirmed} label="Confirmados" color={Colors.success} active={presenceFilter === 'CONFIRMED'} onPress={() => setPresenceFilter(presenceFilter === 'CONFIRMED' ? 'ALL' : 'CONFIRMED')} />
-            <CounterBadge value={pending}   label="Pendentes"   color={Colors.warning} active={presenceFilter === 'PENDING'} onPress={() => setPresenceFilter(presenceFilter === 'PENDING' ? 'ALL' : 'PENDING')} />
-            <CounterBadge value={waitlisted} label="Na fila" color={Colors.primary} active={presenceFilter === 'WAITLISTED'} onPress={() => setPresenceFilter(presenceFilter === 'WAITLISTED' ? 'ALL' : 'WAITLISTED')} />
-            <CounterBadge value={declined}  label="Recusaram"   color={Colors.error} active={presenceFilter === 'DECLINED'} onPress={() => setPresenceFilter(presenceFilter === 'DECLINED' ? 'ALL' : 'DECLINED')} />
-            <CounterBadge value={spotsLeft} label="Vagas livres" color={Colors.n500} active={false} />
-          </View>
-          {/* PROGRESS */}
-          <View style={s.progressBg}>
-            <View style={[s.progressFill, { width: `${pct}%` as any }]} />
-          </View>
-          <Text style={s.progressLabel}>{confirmed} de {data.totalVacancies} vagas preenchidas · mínimo {minimumConfirmed}</Text>
-          {shouldSuggestSpot && (
-            <View style={s.hintBox}>
-              <Ionicons name="person-add-outline" size={16} color={Colors.warningDark} />
-              <Text style={s.hintText}>Faltam {Math.max(minimumConfirmed - confirmed, 0)} atleta(s) para confirmar o jogo. Considere convidar avulsos.</Text>
+        {/* Confirmation counters */}
+        {!isFinished && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Confirmacoes</Text>
+            <View style={s.counterCard}>
+              <CounterBadge value={confirmed} label="Confirmados" color={Colors.success} active={presenceFilter === 'CONFIRMED'} onPress={() => setPresenceFilter(presenceFilter === 'CONFIRMED' ? 'ALL' : 'CONFIRMED')} />
+              <CounterBadge value={pending}   label="Pendentes"   color={Colors.warning} active={presenceFilter === 'PENDING'} onPress={() => setPresenceFilter(presenceFilter === 'PENDING' ? 'ALL' : 'PENDING')} />
+              <CounterBadge value={waitlisted} label="Na fila" color={Colors.primary} active={presenceFilter === 'WAITLISTED'} onPress={() => setPresenceFilter(presenceFilter === 'WAITLISTED' ? 'ALL' : 'WAITLISTED')} />
+              <CounterBadge value={declined}  label="Recusaram"   color={Colors.error} active={presenceFilter === 'DECLINED'} onPress={() => setPresenceFilter(presenceFilter === 'DECLINED' ? 'ALL' : 'DECLINED')} />
+              <CounterBadge value={spotsLeft} label="Vagas livres" color={Colors.n500} active={false} />
             </View>
-          )}
-        </View>
+            {/* PROGRESS */}
+            <View style={s.progressBg}>
+              <View style={[s.progressFill, { width: `${pct}%` as any }]} />
+            </View>
+            <Text style={s.progressLabel}>{confirmed} de {data.totalVacancies} vagas preenchidas - minimo {minimumConfirmed}</Text>
+            {shouldSuggestSpot && (
+              <View style={s.hintBox}>
+                <Ionicons name="person-add-outline" size={16} color={Colors.warningDark} />
+                <Text style={s.hintText}>Faltam {Math.max(minimumConfirmed - confirmed, 0)} atleta(s) para confirmar o jogo. Considere convidar avulsos.</Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {hasVisibleMatchmakingResult && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Escalações</Text>
+            <Text style={s.sectionTitle}>Escalacoes</Text>
             <View style={s.teamsWrap}>
               {visibleMatchmakingResult.teams.map((team) => {
                 const isMyTeam = team.athletes.some((athlete) => athlete.id === athleteId);
                 return (
                   <View key={team.teamNumber} style={[s.teamBox, isMyTeam && s.myTeamBox]}>
                     <Text style={[s.teamTitle, isMyTeam && s.myTeamTitle]}>
-                      {team.name ?? teamNameFallback(team.teamNumber)} · OVR {team.averageOverall}{isMyTeam ? ' · seu time' : ''}
+                      {team.name ?? teamNameFallback(team.teamNumber)} - OVR {team.averageOverall}{isMyTeam ? ' - seu time' : ''}
                     </Text>
                     {team.athletes.map((athlete) => (
                       <Text key={athlete.id} style={[s.teamAthlete, athlete.id === athleteId && s.myTeamTitle]}>
-                        {athlete.name}{athlete.id === athleteId ? ' (você)' : ''} · {posLabel(athlete.position)} · {athlete.overall}
+                        {athlete.name}{athlete.id === athleteId ? ' (voce)' : ''} - {posLabel(athlete.position)} - {athlete.overall}
                       </Text>
                     ))}
                   </View>
@@ -478,11 +253,11 @@ export default function MatchHomeScreen() {
           </View>
         )}
 
-        {(isParticipant || isAdmin) && (
+        {!isFinished && (isParticipant || isAdmin) && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Ações da partida</Text>
+            <Text style={s.sectionTitle}>Acoes da partida</Text>
             <View style={s.matchActionsCard}>
-              {isParticipant && data.status !== 'FINISHED' && data.status !== 'CANCELLED' && (
+              {isParticipant && data.status !== 'CANCELLED' && (
                 <TouchableOpacity
                   style={[s.secondaryActionBtn, s.secondaryActionDanger]}
                   onPress={confirmCancelPresence}
@@ -506,21 +281,21 @@ export default function MatchHomeScreen() {
                       activeOpacity={0.7}
                     >
                       <Ionicons name="shuffle-outline" size={16} color={Colors.primary} />
-                      <Text style={s.secondaryActionText}>{canDrawTeams ? 'Sortear times' : 'Aguardando mínimo'}</Text>
+                      <Text style={s.secondaryActionText}>{canDrawTeams ? 'Sortear times' : 'Aguardando minimo'}</Text>
                     </TouchableOpacity>
                   </View>
 
                   {false && hasVisibleMatchmakingResult && (
                     <View style={s.teamsWrap}>
-                      <Text style={s.teamsDiff}>Diferença OVR: {visibleMatchmakingResult.overallDifference}</Text>
+                      <Text style={s.teamsDiff}>Diferenca OVR: {visibleMatchmakingResult.overallDifference}</Text>
                       {visibleMatchmakingResult!.teams.map((team) => (
                         <View key={team.teamNumber} style={s.teamBox}>
                           <Text style={s.teamTitle}>
-                            {team.name ?? teamNameFallback(team.teamNumber)} · OVR {team.averageOverall}
+                            {team.name ?? teamNameFallback(team.teamNumber)} - OVR {team.averageOverall}
                           </Text>
                           {team.athletes.map((athlete) => (
                             <Text key={athlete.id} style={s.teamAthlete}>
-                              {athlete.name} · {posLabel(athlete.position)} · {athlete.overall}
+                              {athlete.name} - {posLabel(athlete.position)} - {athlete.overall}
                             </Text>
                           ))}
                         </View>
@@ -533,9 +308,9 @@ export default function MatchHomeScreen() {
           </View>
         )}
 
-        {isParticipant && data.status === 'FINISHED' && (
+        {isParticipant && isFinished && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Pós-jogo</Text>
+            <Text style={s.sectionTitle}>Pos-jogo</Text>
             <View style={s.matchActionsCard}>
               <Text style={s.filterLabel}>Registrar placar</Text>
               <View style={s.inlineActionRow}>
@@ -547,55 +322,30 @@ export default function MatchHomeScreen() {
               </View>
 
               <Text style={[s.filterLabel, { marginTop: 12 }]}>Avaliar atletas</Text>
-              {ratableAthletes.map((athlete) => (
-                <TouchableOpacity key={athlete.athleteId} style={s.ratingRow} onPress={() => setRatingTarget(athlete)} activeOpacity={0.7}>
-                  <Text style={s.ratingName}>{athlete.name}</Text>
-                  <Ionicons name="chevron-forward" size={16} color={Colors.n400} />
-                </TouchableOpacity>
-              ))}
+              <FlatList
+                data={ratableAthletes}
+                keyExtractor={(athlete) => athlete.athleteId}
+                scrollEnabled={false}
+                renderItem={({ item: athlete }) => (
+                  <AthleteRatingRow
+                    name={athlete.name}
+                    position={posLabel(athlete.position)}
+                    overall={athlete.overall}
+                    value={ratingStars[athlete.athleteId]}
+                    disabled={ratingMutation.isPending}
+                    onRate={(stars) => ratingMutation.mutate({ evaluatedAthleteId: athlete.athleteId, stars })}
+                  />
+                )}
+              />
 
-              {ratingTarget && (
-                <View style={s.ratingBox}>
-                  <Text style={s.ratingTitle}>Avaliar {ratingTarget.name}</Text>
-                  <View style={s.ratingGrid}>
-                    {([
-                      ['pace', 'Vel.'],
-                      ['shooting', 'Fin.'],
-                      ['passing', 'Pas.'],
-                      ['dribbling', 'Dri.'],
-                      ['defense', 'Def.'],
-                      ['physical', 'Fis.'],
-                    ] as const).map(([key, label]) => (
-                      <View key={key} style={s.ratingInputWrap}>
-                        <Text style={s.ratingLabel}>{label}</Text>
-                        <TextInput
-                          style={s.ratingInput}
-                          value={ratingStats[key]}
-                          onChangeText={(v) => setRatingStats((prev) => ({ ...prev, [key]: v }))}
-                          keyboardType="numeric"
-                          maxLength={3}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                  <View style={s.inlineActionRow}>
-                    <TouchableOpacity style={[s.modalBtn, s.modalBtnSecondary]} onPress={() => setRatingTarget(null)}>
-                      <Text style={s.modalBtnTextSecondary}>Cancelar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[s.modalBtn, s.modalBtnPrimary]} onPress={() => ratingMutation.mutate()} disabled={ratingMutation.isPending}>
-                      <Text style={s.modalBtnTextPrimary}>Enviar</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
             </View>
           </View>
         )}
 
-        {!isAdmin && data.status === 'FINISHED' && data.mySpotPayment?.status === 'PENDING' && (
+        {!isAdmin && isFinished && data.mySpotPayment?.status === 'PENDING' && (
           <View style={s.section}>
             <View style={s.paymentCard}>
-              <View style={{ flex: 1 }}>
+              <View style={s.rowContent}>
                 <Text style={s.paymentTitle}>Pagamento do avulso</Text>
                 <Text style={s.paymentText}>
                   {`Valor: R$ ${data.mySpotPayment.amount.toFixed(2).replace('.', ',')}`}
@@ -618,35 +368,46 @@ export default function MatchHomeScreen() {
           </View>
         )}
 
-        {isAdmin && pendingSpotApplications.length > 0 && (
+        {!isFinished && isAdmin && pendingSpotApplications.length > 0 && (
           <View style={s.section}>
             <Text style={s.sectionTitle}>Candidaturas pendentes</Text>
-            {pendingSpotApplications.map((application) => (
-              <SpotApplicationRow
-                key={application.id}
-                item={application}
-                isPending={respondSpotApplicationMutation.isPending && respondSpotApplicationMutation.variables?.applicationId === application.id}
-                onAccept={() => respondSpotApplicationMutation.mutate({ applicationId: application.id, accept: true })}
-                onDecline={() => respondSpotApplicationMutation.mutate({ applicationId: application.id, accept: false })}
-              />
-            ))}
+            <FlatList
+              data={pendingSpotApplications}
+              keyExtractor={(application) => application.id}
+              scrollEnabled={false}
+              renderItem={({ item: application }) => (
+                <SpotApplicationRow
+                  item={application}
+                  isPending={respondSpotApplicationMutation.isPending && respondSpotApplicationMutation.variables?.applicationId === application.id}
+                  onAccept={() => respondSpotApplicationMutation.mutate({ applicationId: application.id, accept: true })}
+                  onDecline={() => respondSpotApplicationMutation.mutate({ applicationId: application.id, accept: false })}
+                />
+              )}
+            />
           </View>
         )}
 
-        {/* ── LISTA DE PRESENÇA ── */}
-        <View style={s.section}>
-          <Text style={s.sectionTitle}>{presenceFilter === 'ALL' ? 'Lista de presenca' : STATUS_CONFIG[presenceFilter].label}</Text>
-          {filteredPresence.length === 0 ? (
-            <View style={s.emptyCard}>
-              <Text style={s.emptyText}>Nenhum atleta encontrado</Text>
-            </View>
-          ) : (
-            filteredPresence.map((p) => <PresenceRow key={p.athleteId} item={p} />)
-          )}
-        </View>
+        {/* Presence list */}
+        {!isFinished && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>{presenceFilter === 'ALL' ? 'Lista de presenca' : PRESENCE_FILTER_LABEL[presenceFilter]}</Text>
+            {filteredPresence.length === 0 ? (
+              <View style={s.emptyCard}>
+                <Text style={s.emptyText}>Nenhum atleta encontrado</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredPresence}
+                keyExtractor={(item) => item.athleteId}
+                scrollEnabled={false}
+                renderItem={({ item }) => <PresenceRow item={item} />}
+              />
+            )}
+          </View>
+        )}
 
-        {/* ── VAGAS PARA AVULSOS (admin only) ── */}
-        {isAdmin && (
+        {/* Guest slots */}
+        {!isFinished && isAdmin && (
           <View style={s.section}>
             <View style={s.sectionHeader}>
               <Text style={s.sectionTitle}>Vagas para avulsos</Text>
@@ -675,24 +436,24 @@ export default function MatchHomeScreen() {
                       <TextInput style={s.filterInput} value={radiusKm} onChangeText={setRadiusKm} keyboardType="numeric" />
                     </View>
                     <View style={s.flex1}>
-                      <Text style={s.filterLabel}>OVR mín.</Text>
+                      <Text style={s.filterLabel}>OVR min.</Text>
                       <TextInput style={s.filterInput} value={minOverall} onChangeText={setMinOverall} keyboardType="numeric" />
                     </View>
                   </View>
                   <View style={s.filterRow}>
                     <View style={s.flex1}>
-                      <Text style={s.filterLabel}>Idade mín.</Text>
+                      <Text style={s.filterLabel}>Idade min.</Text>
                       <TextInput style={s.filterInput} value={minAge} onChangeText={setMinAge} keyboardType="numeric" />
                     </View>
                     <View style={s.flex1}>
-                      <Text style={s.filterLabel}>Idade máx.</Text>
+                      <Text style={s.filterLabel}>Idade max.</Text>
                       <TextInput style={s.filterInput} value={maxAge} onChangeText={setMaxAge} keyboardType="numeric" />
                     </View>
                     <View style={s.flex1} />
                   </View>
 
-                  {/* GÊNERO */}
-                  <Text style={s.filterLabel}>Gênero</Text>
+                  {/* Gender */}
+                  <Text style={s.filterLabel}>Genero</Text>
                   <View style={s.genderRow}>
                     {GENDER_OPTIONS.map((g) => (
                       <TouchableOpacity
@@ -742,56 +503,60 @@ export default function MatchHomeScreen() {
                   </Text>
                 </View>
 
-                {/* LISTA DE ATLETAS DISPONÍVEIS */}
+                {/* LISTA DE ATLETAS DISPONIVEIS */}
                 {nearby.length === 0 ? (
                   <View style={s.emptyCard}>
                     <Ionicons name="person-outline" size={32} color={Colors.n300} />
                     <Text style={s.emptyText}>Nenhum atleta encontrado com esses filtros</Text>
                   </View>
                 ) : (
-                  nearby.map((a) => {
-                    const isSelected = selectedSpotAthleteIds.includes(a.id);
-                    return (
-                    <TouchableOpacity
-                      key={a.id}
-                      style={[s.guestRow, isSelected && s.guestRowSelected]}
-                      onPress={() => toggleSpotSelection(a.id)}
-                      activeOpacity={0.75}
-                    >
-                      <View style={[s.selectCircle, isSelected && s.selectCircleActive]}>
-                        {isSelected && <Ionicons name="checkmark" size={14} color={Colors.white} />}
-                      </View>
-                      <View style={s.guestAvatar}>
-                        <Text style={s.guestAvatarText}>{(a.name ?? '??').slice(0, 2).toUpperCase()}</Text>
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text style={s.guestName}>{a.name}</Text>
-                        <Text style={s.guestSub}>{posLabel(a.position ?? '')} · {a.age} anos · {a.gender === 'M' ? 'Masc.' : 'Fem.'}</Text>
-                      </View>
-                      <View style={[s.ovrBadge, a.overall >= 70 ? s.ovrHigh : a.overall >= 50 ? s.ovrMid : s.ovrLow]}>
-                        <Text style={s.ovrText}>{a.overall}</Text>
-                      </View>
-                      <TouchableOpacity
-                        style={[s.favoriteBtn, a.isFavorite && s.favoriteBtnActive]}
-                        onPress={(event) => {
-                          event.stopPropagation();
-                          toggleFavoriteMutation.mutate(a);
-                        }}
-                        disabled={toggleFavoriteMutation.isPending}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons
-                          name={a.isFavorite ? 'star' : 'star-outline'}
-                          size={18}
-                          color={a.isFavorite ? Colors.warningDark : Colors.n400}
-                        />
-                      </TouchableOpacity>
-                    </TouchableOpacity>
-                    );
-                  })
+                  <FlatList
+                    data={nearby}
+                    keyExtractor={(item) => item.id}
+                    scrollEnabled={false}
+                    renderItem={({ item: a }) => {
+                      const isSelected = selectedSpotAthleteIds.includes(a.id);
+                      return (
+                        <TouchableOpacity
+                          style={[s.guestRow, isSelected && s.guestRowSelected]}
+                          onPress={() => toggleSpotSelection(a.id)}
+                          activeOpacity={0.75}
+                        >
+                          <View style={[s.selectCircle, isSelected && s.selectCircleActive]}>
+                            {isSelected && <Ionicons name="checkmark" size={14} color={Colors.white} />}
+                          </View>
+                          <View style={s.guestAvatar}>
+                            <Text style={s.guestAvatarText}>{(a.name ?? '??').slice(0, 2).toUpperCase()}</Text>
+                          </View>
+                          <View style={s.rowContent}>
+                            <Text style={s.guestName}>{a.name}</Text>
+                            <Text style={s.guestSub}>{posLabel(a.position ?? '')} - {a.age} anos - {a.gender === 'M' ? 'Masc.' : 'Fem.'}</Text>
+                          </View>
+                          <View style={[s.ovrBadge, a.overall >= 70 ? s.ovrHigh : a.overall >= 50 ? s.ovrMid : s.ovrLow]}>
+                            <Text style={s.ovrText}>{a.overall}</Text>
+                          </View>
+                          <TouchableOpacity
+                            style={[s.favoriteBtn, a.isFavorite && s.favoriteBtnActive]}
+                            onPress={(event) => {
+                              event.stopPropagation();
+                              toggleFavoriteMutation.mutate(a);
+                            }}
+                            disabled={toggleFavoriteMutation.isPending}
+                            activeOpacity={0.7}
+                          >
+                            <Ionicons
+                              name={a.isFavorite ? 'star' : 'star-outline'}
+                              size={18}
+                              color={a.isFavorite ? Colors.warningDark : Colors.n400}
+                            />
+                          </TouchableOpacity>
+                        </TouchableOpacity>
+                      );
+                    }}
+                  />
                 )}
 
-                {/* BOTÃO CONVIDAR */}
+                {/* Invite button */}
                 <TouchableOpacity
                   style={[s.inviteBtn, (openGuestMutation.isPending || selectedSpotAthletesCount === 0) && s.inviteBtnDisabled]}
                   onPress={() => openGuestMutation.mutate()}
@@ -820,11 +585,11 @@ export default function MatchHomeScreen() {
         <View style={s.modalOverlay}>
           <View style={s.modal}>
             <Text style={s.modalTitle}>Finalizar Jogo</Text>
-            <Text style={s.modalSubtitle}>Você pode adicionar uma observação (opcional)</Text>
+            <Text style={s.modalSubtitle}>Voce pode adicionar uma observacao (opcional)</Text>
 
             <TextInput
               style={s.modalInput}
-              placeholder="Observação (máx. 500 caracteres)"
+              placeholder="Observacao (max. 500 caracteres)"
               placeholderTextColor={Colors.n400}
               value={finishComment}
               onChangeText={setFinishComment}
@@ -865,247 +630,3 @@ export default function MatchHomeScreen() {
     </SafeAreaView>
   );
 }
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function SpotApplicationRow({
-  item, isPending, onAccept, onDecline,
-}: {
-  item: SpotApplication;
-  isPending: boolean;
-  onAccept: () => void;
-  onDecline: () => void;
-}) {
-  return (
-    <View style={s.applicationRow}>
-      <View style={s.guestAvatar}>
-        <Text style={s.guestAvatarText}>{item.athleteName.slice(0, 2).toUpperCase()}</Text>
-      </View>
-      <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={s.guestName} numberOfLines={1}>{item.athleteName}</Text>
-        <Text style={s.guestSub}>
-          {posLabel(item.position)} · OVR {item.overall} · {item.age} anos
-        </Text>
-        {!item.isEligibleNow && <Text style={s.applicationWarning}>Atleta indisponível agora</Text>}
-      </View>
-      <View style={s.applicationActions}>
-        <TouchableOpacity
-          style={[s.applicationBtn, s.applicationDecline]}
-          onPress={onDecline}
-          disabled={isPending}
-        >
-          <Ionicons name="close" size={14} color={Colors.errorDark} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[s.applicationBtn, s.applicationAccept, (!item.isEligibleNow || isPending) && s.inviteBtnDisabled]}
-          onPress={onAccept}
-          disabled={!item.isEligibleNow || isPending}
-        >
-          {isPending
-            ? <ActivityIndicator color={Colors.successDark} size="small" />
-            : <Ionicons name="checkmark" size={14} color={Colors.successDark} />
-          }
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-
-function CounterBadge({ value, label, color, active, onPress }: {
-  value: number;
-  label: string;
-  color: string;
-  active: boolean;
-  onPress?: () => void;
-}) {
-  return (
-    <TouchableOpacity
-      style={[s.counterItem, active && { backgroundColor: Colors.primaryLight }]}
-      onPress={onPress}
-      disabled={!onPress}
-      activeOpacity={0.75}
-    >
-      <Text style={[s.counterValue, { color }]}>{value}</Text>
-      <Text style={s.counterLabel}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
-function PresenceRow({ item }: { item: MatchPresence }) {
-  const cfg = STATUS_CONFIG[item.status];
-  return (
-    <View style={s.presenceRow}>
-      <View style={s.presenceAvatar}>
-        <Text style={s.presenceAvatarText}>{item.name.slice(0, 2).toUpperCase()}</Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        <View style={s.presenceNameRow}>
-          <Text style={s.presenceName}>{item.name}</Text>
-          {item.isGuest && (
-            <View style={s.guestTag}><Text style={s.guestTagText}>Avulso</Text></View>
-          )}
-        </View>
-        <Text style={s.presenceSub}>{posLabel(item.position)} · OVR {item.overall}</Text>
-      </View>
-      <View style={[s.presenceBadge, { backgroundColor: cfg.bg }]}>
-        <Ionicons name={cfg.icon as any} size={12} color={cfg.color} />
-        <Text style={[s.presenceBadgeText, { color: cfg.color }]}>{cfg.label}</Text>
-      </View>
-    </View>
-  );
-}
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const s = StyleSheet.create({
-  safe:        { flex: 1, backgroundColor: Colors.n50 },
-  scrollContent: { flexGrow: 1, paddingBottom: 20 },
-  center:      { justifyContent: 'center', alignItems: 'center', gap: 8 },
-  errorText:   { fontSize: 14, color: Colors.n700 },
-  retryBtn:    { marginTop: 8, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: Colors.primary, borderRadius: Radius.r8 },
-  retryText:   { color: Colors.white, fontWeight: '600' },
-
-  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.n200, gap: 12, minHeight: 56 },
-  backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 15, fontWeight: '800', color: Colors.n900 },
-  headerSub:   { fontSize: 11, color: Colors.n500, textTransform: 'capitalize' },
-  editBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
-
-  infoCard:    { backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.n200, padding: Spacing.lg, gap: 12 },
-  infoRow:     { flexDirection: 'row', alignItems: 'center' },
-  infoItem:    { flex: 1, alignItems: 'center', gap: 2 },
-  infoValue:   { fontSize: 15, fontWeight: '800', color: Colors.n900 },
-  infoLabel:   { fontSize: 10, color: Colors.n500 },
-  infoDivider: { width: 1, height: 36, backgroundColor: Colors.n200 },
-  statusBadge: { alignSelf: 'flex-start', borderRadius: Radius.r999, paddingHorizontal: 12, paddingVertical: 4 },
-  statusBadgeText: { fontSize: 12, fontWeight: '700' },
-
-  section:      { marginTop: Spacing.lg, paddingHorizontal: Spacing.lg },
-  sectionHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
-  sectionTitle: { fontSize: 14, fontWeight: '800', color: Colors.n900, marginBottom: 10 },
-
-  counterCard:  { flexDirection: 'row', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, marginBottom: 10 },
-  counterItem:  { flex: 1, alignItems: 'center', paddingVertical: 12, gap: 2 },
-  counterValue: { fontSize: 22, fontWeight: '800' },
-  counterLabel: { fontSize: 10, color: Colors.n500 },
-
-  progressBg:   { height: 6, backgroundColor: Colors.n200, borderRadius: Radius.r999, overflow: 'hidden' },
-  progressFill: { height: '100%', backgroundColor: Colors.primary, borderRadius: Radius.r999 },
-  progressLabel:{ fontSize: 11, color: Colors.n500, marginTop: 6, textAlign: 'right' },
-  hintBox:      { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.warningLight, borderRadius: Radius.r8, padding: 10, marginTop: 10 },
-  hintText:     { flex: 1, fontSize: 12, fontWeight: '700', color: Colors.warningDark },
-
-  emptyCard:    { alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, paddingVertical: 20 },
-  emptyText:    { fontSize: 13, color: Colors.n400 },
-
-  presenceRow:      { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
-  presenceAvatar:   { width: 38, height: 38, borderRadius: 19, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
-  presenceAvatarText:{ fontSize: 12, fontWeight: '800', color: Colors.primary },
-  presenceNameRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  presenceName:     { fontSize: 13, fontWeight: '600', color: Colors.n900 },
-  presenceSub:      { fontSize: 11, color: Colors.n500, marginTop: 2 },
-  presenceBadge:    { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: Radius.r999, paddingHorizontal: 8, paddingVertical: 4 },
-  presenceBadgeText:{ fontSize: 11, fontWeight: '600' },
-  guestTag:         { backgroundColor: Colors.n100, borderRadius: Radius.r4, paddingHorizontal: 5, paddingVertical: 2 },
-  guestTagText:     { fontSize: 10, fontWeight: '600', color: Colors.n700 },
-
-  searchWrap:    { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n300, paddingHorizontal: 10, marginBottom: 8, gap: 6 },
-  searchIcon:    { flexShrink: 0 },
-  searchInput:   { flex: 1, fontSize: 14, color: Colors.n900, paddingVertical: 9 },
-
-  guestFilters:  { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 10 },
-  filterRow:     { flexDirection: 'row', gap: 10, marginBottom: 8 },
-  filterLabel:   { fontSize: 11, fontWeight: '600', color: Colors.n700, marginBottom: 4 },
-  filterInput:   { backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 8, fontSize: 14, color: Colors.n900 },
-  flex1:         { flex: 1 },
-
-  genderRow:         { flexDirection: 'row', gap: 8, marginTop: 4 },
-  genderChip:        { flex: 1, alignItems: 'center', paddingVertical: 7, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n300, backgroundColor: Colors.white },
-  genderChipActive:  { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
-  genderChipText:    { fontSize: 12, fontWeight: '500', color: Colors.n700 },
-  genderChipTextActive: { color: Colors.primary, fontWeight: '700' },
-
-  athleteCounter:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.primaryLight, borderRadius: Radius.r12, padding: Spacing.md, marginBottom: 8 },
-  athleteCounterLeft:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  athleteCounterNum:   { fontSize: 22, fontWeight: '800', color: Colors.primary },
-  athleteCounterLabel: { fontSize: 13, fontWeight: '500', color: Colors.primary },
-  athleteCounterSub:   { fontSize: 12, color: Colors.primaryDark, fontWeight: '600' },
-
-  guestRow:        { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
-  guestRowSelected: { borderColor: Colors.primary, backgroundColor: Colors.primaryLight },
-  applicationRow:  { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, marginBottom: 6, gap: 10 },
-  applicationActions: { flexDirection: 'row', gap: 6 },
-  applicationBtn:  { width: 34, height: 34, borderRadius: Radius.r8, alignItems: 'center', justifyContent: 'center' },
-  applicationAccept: { backgroundColor: Colors.successLight },
-  applicationDecline: { backgroundColor: Colors.errorLight },
-  applicationWarning: { fontSize: 11, color: Colors.errorDark, fontWeight: '700', marginTop: 2 },
-  selectCircle:    { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: Colors.n300, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.white },
-  selectCircleActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
-  guestAvatar:     { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
-  guestAvatarText: { fontSize: 13, fontWeight: '800', color: Colors.primary },
-  guestName:       { fontSize: 13, fontWeight: '600', color: Colors.n900 },
-  guestSub:        { fontSize: 11, color: Colors.n500, marginTop: 2 },
-  ovrBadge:        { borderRadius: Radius.r999, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center' },
-  ovrHigh:         { backgroundColor: Colors.successLight },
-  ovrMid:          { backgroundColor: Colors.warningLight },
-  ovrLow:          { backgroundColor: Colors.errorLight },
-  ovrText:         { fontSize: 12, fontWeight: '800', color: Colors.n900 },
-  favoriteBtn:     { width: 34, height: 34, borderRadius: 17, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
-  favoriteBtnActive: { backgroundColor: Colors.warningLight },
-
-  paymentCard:     { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, gap: 10 },
-  paymentTitle:    { fontSize: 13, fontWeight: '800', color: Colors.n900 },
-  paymentText:     { fontSize: 12, color: Colors.n500, marginTop: 2 },
-  paymentBtn:      { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 9 },
-  paymentBtnText:  { color: Colors.white, fontSize: 12, fontWeight: '700' },
-
-  matchActionsCard: { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, gap: 10 },
-  inlineActionRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  secondaryActionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: Colors.primaryLight, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
-  secondaryActionDone: { backgroundColor: Colors.successLight },
-  secondaryActionDanger: { backgroundColor: Colors.errorLight },
-  secondaryActionText: { fontSize: 12, fontWeight: '700', color: Colors.primary },
-  smallPrimaryBtn: { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
-  smallPrimaryText: { fontSize: 12, fontWeight: '700', color: Colors.white },
-  teamsWrap:       { gap: 8 },
-  teamsDiff:       { fontSize: 11, fontWeight: '700', color: Colors.n500 },
-  teamBox:         { backgroundColor: Colors.n50, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n200, padding: 10 },
-  myTeamBox:       { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
-  teamTitle:       { fontSize: 12, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
-  myTeamTitle:     { color: Colors.primary },
-  teamAthlete:     { fontSize: 11, color: Colors.n600, marginTop: 2 },
-  ratingRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: Colors.n200, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9 },
-  ratingName:      { fontSize: 12, fontWeight: '600', color: Colors.n900 },
-  ratingBox:       { borderWidth: 1, borderColor: Colors.n200, borderRadius: Radius.r8, padding: 10, gap: 10 },
-  ratingTitle:     { fontSize: 13, fontWeight: '800', color: Colors.n900 },
-  ratingGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  ratingInputWrap: { width: '30%' },
-  ratingLabel:     { fontSize: 10, fontWeight: '700', color: Colors.n500, marginBottom: 3 },
-  ratingInput:     { backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 8, paddingVertical: 7, fontSize: 13, color: Colors.n900 },
-
-  inviteBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: Radius.r12, paddingVertical: 13 },
-  inviteBtnDisabled: { opacity: 0.6 },
-  inviteBtnText:     { color: Colors.white, fontSize: 14, fontWeight: '700' },
-
-  adminActionsRow:   { flexDirection: 'row', gap: 10, marginTop: 12 },
-  actionBtn:         { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: Radius.r8, paddingVertical: 10 },
-  actionBtnCancel:   { backgroundColor: Colors.errorLight, borderWidth: 1, borderColor: Colors.error },
-  actionBtnFinish:   { backgroundColor: Colors.successLight, borderWidth: 1, borderColor: Colors.success },
-  actionBtnTextCancel: { fontSize: 12, fontWeight: '700', color: Colors.errorDark },
-  actionBtnTextFinish: { fontSize: 12, fontWeight: '700', color: Colors.successDark },
-
-  modalOverlay:      { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', alignItems: 'center' },
-  modal:             { backgroundColor: Colors.white, borderTopLeftRadius: Radius.r16, borderTopRightRadius: Radius.r16, padding: Spacing.lg, width: '100%', maxHeight: '80%' },
-  modalTitle:        { fontSize: 16, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
-  modalSubtitle:     { fontSize: 13, color: Colors.n500, marginBottom: 16 },
-  modalInput:        { backgroundColor: Colors.n50, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 12, fontSize: 14, color: Colors.n900, marginBottom: 8, maxHeight: 120 },
-  modalCharCount:    { fontSize: 11, color: Colors.n500, marginBottom: 16, textAlign: 'right' },
-  modalButtonRow:    { flexDirection: 'row', gap: 10 },
-  modalBtn:          { flex: 1, paddingVertical: 12, borderRadius: Radius.r8, alignItems: 'center', justifyContent: 'center' },
-  modalBtnPrimary:   { backgroundColor: Colors.primary },
-  modalBtnSecondary: { backgroundColor: Colors.n100, borderWidth: 1, borderColor: Colors.n300 },
-  modalBtnTextPrimary: { color: Colors.white, fontSize: 14, fontWeight: '700' },
-  modalBtnTextSecondary: { color: Colors.n700, fontSize: 14, fontWeight: '700' },
-  modalBtnDisabled:  { opacity: 0.5 },
-});
-

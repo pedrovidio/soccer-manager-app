@@ -1,5 +1,13 @@
 import { httpClient } from '../../../lib/httpClient';
+import { z } from 'zod';
 import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResult, SpotMarketplaceMatch, SpotApplication } from '../types';
+
+export const registerRatingRequestSchema = z.object({
+  evaluatedAthleteId: z.string().uuid(),
+  stars: z.number().int().min(1).max(5),
+});
+
+export type RegisterRatingRequest = z.infer<typeof registerRatingRequestSchema>;
 
 export interface CreateMatchPayload {
   adminId: string;
@@ -59,11 +67,9 @@ export const matchApi = {
 
   registerRating: (
     matchId: string,
-    ratedBy: string,
-    ratedAthlete: string,
-    stats: { pace: number; shooting: number; passing: number; dribbling: number; defense: number; physical: number },
+    payload: RegisterRatingRequest,
   ) =>
-    httpClient.post(`/matches/${matchId}/ratings`, { ratedBy, ratedAthlete, stats }).then((r) => r.data),
+    httpClient.post(`/matches/${matchId}/ratings`, registerRatingRequestSchema.parse(payload)).then((r) => r.data),
 
   registerScore: (matchId: string, registeredBy: string, scores: { teamName: string; goals: number }[]) =>
     httpClient.post(`/matches/${matchId}/score`, { registeredBy, scores }).then((r) => r.data),
