@@ -9,10 +9,11 @@ interface AthleteRatingRowProps {
   overall: number;
   value?: number;
   disabled?: boolean;
+  isSubmitting?: boolean;
   onRate: (stars: number) => void;
 }
 
-export function AthleteRatingRow({ name, position, overall, value = 0, disabled = false, onRate }: AthleteRatingRowProps) {
+export function AthleteRatingRow({ name, position, overall, value = 0, disabled = false, isSubmitting = false, onRate }: AthleteRatingRowProps) {
   return (
     <View style={styles.row}>
       <View style={styles.avatar}>
@@ -28,10 +29,10 @@ export function AthleteRatingRow({ name, position, overall, value = 0, disabled 
             key={stars}
             style={styles.starButton}
             onPress={() => onRate(stars)}
-            disabled={disabled}
+            disabled={disabled || isSubmitting}
             activeOpacity={0.7}
           >
-            {disabled && value === stars ? (
+            {isSubmitting && value === stars ? (
               <ActivityIndicator size="small" color={Colors.warningDark} />
             ) : (
               <Ionicons

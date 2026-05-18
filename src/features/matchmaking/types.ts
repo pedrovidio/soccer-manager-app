@@ -81,6 +81,12 @@ export interface MatchDetail {
     dueDate?: string | null;
     paymentReportedAt?: string | null;
   } | null;
+  score?: {
+    scores: { teamName: string; goals: number }[];
+    registeredBy: string;
+    createdAt: string;
+  } | null;
+  myRatings?: Record<string, number>;
   presence: MatchPresence[];
 }
 

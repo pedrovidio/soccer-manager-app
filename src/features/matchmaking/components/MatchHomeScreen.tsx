@@ -48,9 +48,11 @@ export default function MatchHomeScreen() {
     minOverall,
     nameSearch,
     nearby,
+    pendingRatingsCount,
     presenceFilter,
     radiusKm,
     ratingStars,
+    savedRatingStars,
     refetch,
     scoreA,
     scoreB,
@@ -86,6 +88,7 @@ export default function MatchHomeScreen() {
     setRadiusKm,
     setScoreA,
     setScoreB,
+    setAthleteRating,
     toggleFavoriteMutation,
     toggleSpotSelection,
   } = useMatchHomeController();
@@ -124,6 +127,7 @@ export default function MatchHomeScreen() {
     filteredPresence,
     visibleMatchmakingResult,
     hasVisibleMatchmakingResult,
+    hasRegisteredScore,
     minimumConfirmed,
     phase,
     canDrawTeams,
@@ -312,12 +316,12 @@ export default function MatchHomeScreen() {
           <View style={s.section}>
             <Text style={s.sectionTitle}>Pos-jogo</Text>
             <View style={s.matchActionsCard}>
-              <Text style={s.filterLabel}>Registrar placar</Text>
+              <Text style={s.filterLabel}>{hasRegisteredScore ? 'Placar registrado' : 'Registrar placar'}</Text>
               <View style={s.inlineActionRow}>
-                <TextInput style={[s.filterInput, { flex: 1 }]} value={scoreA} onChangeText={setScoreA} keyboardType="numeric" placeholder="Time 1" />
-                <TextInput style={[s.filterInput, { flex: 1 }]} value={scoreB} onChangeText={setScoreB} keyboardType="numeric" placeholder="Time 2" />
-                <TouchableOpacity style={s.smallPrimaryBtn} onPress={() => scoreMutation.mutate()} disabled={scoreMutation.isPending}>
-                  <Text style={s.smallPrimaryText}>Salvar</Text>
+                <TextInput style={[s.filterInput, { flex: 1 }]} value={scoreA} onChangeText={setScoreA} keyboardType="numeric" placeholder="Time 1" editable={!hasRegisteredScore} />
+                <TextInput style={[s.filterInput, { flex: 1 }]} value={scoreB} onChangeText={setScoreB} keyboardType="numeric" placeholder="Time 2" editable={!hasRegisteredScore} />
+                <TouchableOpacity style={[s.smallPrimaryBtn, (hasRegisteredScore || scoreMutation.isPending) && s.inviteBtnDisabled]} onPress={() => scoreMutation.mutate()} disabled={hasRegisteredScore || scoreMutation.isPending}>
+                  <Text style={s.smallPrimaryText}>{hasRegisteredScore ? 'Salvo' : 'Salvar'}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -332,11 +336,30 @@ export default function MatchHomeScreen() {
                     position={posLabel(athlete.position)}
                     overall={athlete.overall}
                     value={ratingStars[athlete.athleteId]}
-                    disabled={ratingMutation.isPending}
-                    onRate={(stars) => ratingMutation.mutate({ evaluatedAthleteId: athlete.athleteId, stars })}
+                    disabled={savedRatingStars[athlete.athleteId] !== undefined}
+                    isSubmitting={ratingMutation.isPending}
+                    onRate={(stars) => setAthleteRating(athlete.athleteId, stars)}
                   />
                 )}
               />
+
+              <TouchableOpacity
+                style={[s.inviteBtn, (pendingRatingsCount === 0 || ratingMutation.isPending) && s.inviteBtnDisabled]}
+                onPress={() => ratingMutation.mutate()}
+                disabled={pendingRatingsCount === 0 || ratingMutation.isPending}
+                activeOpacity={0.8}
+              >
+                {ratingMutation.isPending ? (
+                  <ActivityIndicator color={Colors.white} size="small" />
+                ) : (
+                  <>
+                    <Ionicons name="star" size={16} color={Colors.white} />
+                    <Text style={s.inviteBtnText}>
+                      {pendingRatingsCount === 0 ? 'Notas salvas' : `Salvar notas (${pendingRatingsCount})`}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
 
             </View>
           </View>

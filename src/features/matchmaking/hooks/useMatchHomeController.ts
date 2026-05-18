@@ -36,6 +36,7 @@ export function useMatchHomeController() {
   const [scoreA, setScoreA] = useState('');
   const [scoreB, setScoreB] = useState('');
   const [ratingStars, setRatingStars] = useState<Record<string, number>>({});
+  const [savedRatingStars, setSavedRatingStars] = useState<Record<string, number>>({});
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['match-detail', matchId],
@@ -55,6 +56,18 @@ export function useMatchHomeController() {
     if (!data?.matchmakingResult) return;
     setMatchmakingResult(data.matchmakingResult);
   }, [data?.matchmakingResult]);
+
+  useEffect(() => {
+    const [firstScore, secondScore] = data?.score?.scores ?? [];
+    setScoreA(firstScore ? String(firstScore.goals) : '');
+    setScoreB(secondScore ? String(secondScore.goals) : '');
+  }, [data?.score]);
+
+  useEffect(() => {
+    const ratings = data?.myRatings ?? {};
+    setSavedRatingStars(ratings);
+    setRatingStars(ratings);
+  }, [data?.myRatings]);
 
   const debouncedConfig = useDebouncedGuestConfig({ radiusKm, minAge, maxAge, gender, minOverall });
 
@@ -216,17 +229,34 @@ export function useMatchHomeController() {
       { teamName: 'Time 1', goals: Number(scoreA) || 0 },
       { teamName: 'Time 2', goals: Number(scoreB) || 0 },
     ]),
-    onSuccess: () => Alert.alert('Placar registrado', 'O resultado foi salvo no historico.'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      Alert.alert('Placar registrado', 'O resultado foi salvo no historico.');
+    },
     onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel registrar o placar.'),
   });
 
+  const setAthleteRating = useCallback((evaluatedAthleteId: string, stars: number) => {
+    if (savedRatingStars[evaluatedAthleteId] !== undefined) return;
+    setRatingStars((current) => ({ ...current, [evaluatedAthleteId]: stars }));
+  }, [savedRatingStars]);
+
+  const pendingRatings = useMemo(() => Object.entries(ratingStars)
+    .filter(([evaluatedAthleteId]) => savedRatingStars[evaluatedAthleteId] === undefined)
+    .map(([evaluatedAthleteId, stars]) => ({ evaluatedAthleteId, stars })), [ratingStars, savedRatingStars]);
+
   const ratingMutation = useMutation({
-    mutationFn: ({ evaluatedAthleteId, stars }: { evaluatedAthleteId: string; stars: number }) => {
-      setRatingStars((current) => ({ ...current, [evaluatedAthleteId]: stars }));
-      return matchApi.registerRating(matchId!, { evaluatedAthleteId, stars });
+    mutationFn: async () => {
+      if (pendingRatings.length === 0) return [];
+      return Promise.all(pendingRatings.map((rating) => matchApi.registerRating(matchId!, rating)));
     },
-    onSuccess: () => Alert.alert('Avaliacao enviada', 'A avaliacao do atleta foi registrada.'),
-    onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel enviar a avaliacao.'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      Alert.alert('Avaliacoes enviadas', 'As notas dos atletas foram registradas.');
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel enviar as avaliacoes.');
+    },
   });
 
   const summary = useMemo(() => {
@@ -257,6 +287,7 @@ export function useMatchHomeController() {
         : data.presence.filter((presence) => presence.status === presenceFilter),
       visibleMatchmakingResult: rawMatchmakingResult ?? { teams: [], overallDifference: 0 },
       hasVisibleMatchmakingResult,
+      hasRegisteredScore: !!data.score,
       minimumConfirmed,
       phase,
       canDrawTeams: isAdmin && phase === 'CONFIRMED_WAITING_DRAW',
@@ -287,6 +318,8 @@ export function useMatchHomeController() {
     presenceFilter,
     radiusKm,
     ratingStars,
+    savedRatingStars,
+    pendingRatingsCount: pendingRatings.length,
     refetch,
     scoreA,
     scoreB,
@@ -322,6 +355,7 @@ export function useMatchHomeController() {
     setRadiusKm,
     setScoreA,
     setScoreB,
+    setAthleteRating,
     toggleFavoriteMutation,
     toggleSpotSelection,
   };
