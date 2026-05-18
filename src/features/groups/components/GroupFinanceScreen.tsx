@@ -14,7 +14,7 @@ import { groupApi } from '../services/groupApi';
 import { GroupFinancePayment, GroupFinanceStatus, GroupFinanceType } from '../groupTypes';
 import { GroupTopMenu } from './GroupTopMenu';
 
-type Tab = 'overview' | 'matches' | 'defaulters' | 'expenses' | 'payments';
+type Tab = 'review' | 'overview' | 'matches' | 'defaulters' | 'expenses' | 'payments';
 type StatusFilter = 'ALL' | GroupFinanceStatus;
 type TypeFilter = 'ALL' | GroupFinanceType;
 type ExpenseKind = 'COURT_RENTAL' | 'PURCHASE';
@@ -48,11 +48,11 @@ function isExpenseType(type: GroupFinanceType) {
 }
 
 export default function GroupFinanceScreen() {
-  const { groupId } = useLocalSearchParams<{ groupId: string }>();
+  const { groupId, tab: initialTab } = useLocalSearchParams<{ groupId: string; tab?: string }>();
   const router = useRouter();
   const qc = useQueryClient();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
-  const [tab, setTab] = useState<Tab>('overview');
+  const [tab, setTab] = useState<Tab>(initialTab === 'review' ? 'review' : 'overview');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('ALL');
   const [expenseKind, setExpenseKind] = useState<ExpenseKind | null>(null);
@@ -75,9 +75,9 @@ export default function GroupFinanceScreen() {
     mutationFn: async () => {
       if (!expenseKind || !groupId) return;
       const amount = Number(expenseAmount.replace(/\./g, '').replace(',', '.'));
-      if (!Number.isFinite(amount) || amount <= 0) throw new Error('Informe um valor valido.');
+      if (!Number.isFinite(amount) || amount <= 0) throw new Error('Informe um valor válido.');
       const description = expenseDescription.trim();
-      if (expenseKind === 'PURCHASE' && description.length < 3) throw new Error('Informe uma descricao para a compra.');
+      if (expenseKind === 'PURCHASE' && description.length < 3) throw new Error('Informe uma descrição para a compra.');
       const payload = {
         adminId: athleteId,
         amount,
@@ -95,7 +95,7 @@ export default function GroupFinanceScreen() {
       qc.invalidateQueries({ queryKey: ['group-finance-report', groupId] });
       qc.invalidateQueries({ queryKey: ['group-home', groupId] });
     },
-    onError: (error: any) => Alert.alert('Erro', error?.message ?? 'Nao foi possivel registrar a saida.'),
+    onError: (error: any) => Alert.alert('Erro', error?.message ?? 'Não foi possível registrar a saída.'),
   });
 
   const confirmPaymentMutation = useMutation({
@@ -103,11 +103,13 @@ export default function GroupFinanceScreen() {
       payment.type === 'MONTHLY'
         ? groupApi.confirmMonthlyPayment(payment.id)
         : groupApi.confirmSpotPayment(payment.id),
-    onSuccess: () => {
+    onSuccess: (_result, payment) => {
       qc.invalidateQueries({ queryKey: ['group-finance-report', groupId] });
       qc.invalidateQueries({ queryKey: ['group-home', groupId] });
+      qc.invalidateQueries({ queryKey: ['athlete-finance-report', payment.athleteId] });
+      qc.invalidateQueries({ queryKey: ['dashboard', payment.athleteId] });
     },
-    onError: () => Alert.alert('Erro', 'Nao foi possivel confirmar o pagamento.'),
+    onError: () => Alert.alert('Erro', 'Não foi possível confirmar o pagamento.'),
   });
 
   if (isLoading) {
@@ -123,7 +125,7 @@ export default function GroupFinanceScreen() {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
         <Ionicons name="alert-circle-outline" size={42} color={Colors.error} />
-        <Text style={s.errorText}>{isForbidden ? 'Voce nao tem acesso a este grupo' : 'Erro ao carregar financeiro'}</Text>
+        <Text style={s.errorText}>{isForbidden ? 'Você não tem acesso a este grupo' : 'Erro ao carregar financeiro'}</Text>
         <TouchableOpacity style={s.primaryBtn} onPress={() => (isForbidden ? router.back() : refetch())}>
           <Text style={s.primaryBtnText}>{isForbidden ? 'Voltar' : 'Tentar novamente'}</Text>
         </TouchableOpacity>
@@ -186,21 +188,32 @@ export default function GroupFinanceScreen() {
         </View>
 
         <View style={s.tabs}>
+          <TabButton label="Conferir" active={tab === 'review'} onPress={() => setTab('review')} />
           <TabButton label="Resumo" active={tab === 'overview'} onPress={() => setTab('overview')} />
           <TabButton label="Jogos" active={tab === 'matches'} onPress={() => setTab('matches')} />
           <TabButton label="Inadimpl." active={tab === 'defaulters'} onPress={() => setTab('defaulters')} />
-          <TabButton label="Saidas" active={tab === 'expenses'} onPress={() => setTab('expenses')} />
+          <TabButton label="Saídas" active={tab === 'expenses'} onPress={() => setTab('expenses')} />
           <TabButton label="Tudo" active={tab === 'payments'} onPress={() => setTab('payments')} />
         </View>
 
+        {tab === 'review' && (
+          <PaymentList
+            title="Pagamentos para conferir"
+            empty="Nenhum pagamento informado aguardando conferência"
+            payments={reportedPayments}
+            onConfirm={(payment) => confirmPaymentMutation.mutate(payment)}
+            confirmingId={confirmPaymentMutation.variables?.id}
+          />
+        )}
+
         {tab === 'overview' && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Movimentacao por tipo</Text>
+            <Text style={s.sectionTitle}>Movimentação por tipo</Text>
             {data.byType.map((item) => (
               <View key={item.type} style={s.reportRow}>
                 <View style={{ flex: 1 }}>
                   <Text style={s.rowTitle}>{typeLabel(item.type)}</Text>
-                  <Text style={s.rowSub}>{item.count} lancamento(s)</Text>
+                  <Text style={s.rowSub}>{item.count} lançamento(s)</Text>
                 </View>
                 <View style={s.amounts}>
                   <Text style={isExpenseType(item.type) ? s.expenseValue : s.paidText}>
@@ -213,22 +226,22 @@ export default function GroupFinanceScreen() {
 
             <Text style={[s.sectionTitle, { marginTop: 18 }]}>Alertas</Text>
             <AlertLine icon="time-outline" label="Pagamentos vencidos" value={`${overduePayments.length}`} tone="error" />
-            <AlertLine icon="receipt-outline" label="Pagamentos informados aguardando conferencia" value={`${reportedPayments.length}`} tone="warning" />
-            <AlertLine icon="trending-down-outline" label="Saidas de caixa registradas" value={formatCurrency(data.summary.totalExpenses)} tone="error" />
+            <AlertLine icon="receipt-outline" label="Pagamentos informados aguardando conferência" value={`${reportedPayments.length}`} tone="warning" />
+            <AlertLine icon="trending-down-outline" label="Saídas de caixa registradas" value={formatCurrency(data.summary.totalExpenses)} tone="error" />
             <AlertLine icon="wallet-outline" label="Total previsto de receitas" value={formatCurrency(data.summary.expectedTotal)} tone="neutral" />
           </View>
         )}
 
         {tab === 'matches' && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Arrecadacao por jogo</Text>
+            <Text style={s.sectionTitle}>Arrecadação por jogo</Text>
             {data.byMatch.length === 0 ? (
               <EmptyState text="Nenhuma receita vinculada a partidas" />
             ) : data.byMatch.map((match) => (
               <View key={match.matchId} style={s.matchCard}>
                 <View style={{ flex: 1 }}>
                   <Text style={s.rowTitle} numberOfLines={1}>{match.matchLocation}</Text>
-                  <Text style={s.rowSub}>{formatDate(match.matchDate)} - {match.transactionCount} cobranca(s)</Text>
+                  <Text style={s.rowSub}>{formatDate(match.matchDate)} - {match.transactionCount} cobrança(s)</Text>
                 </View>
                 <View style={s.amounts}>
                   <Text style={s.paidText}>{formatCurrency(match.paid)}</Text>
@@ -241,15 +254,15 @@ export default function GroupFinanceScreen() {
         )}
 
         {tab === 'defaulters' && (
-          <PaymentList title="Inadimplentes e pendencias" empty="Nenhum pagamento pendente" payments={data.defaulters} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
+          <PaymentList title="Inadimplentes e pendências" empty="Nenhum pagamento pendente" payments={data.defaulters} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
         )}
 
         {tab === 'expenses' && (
-          <PaymentList title="Saidas de caixa" empty="Nenhuma despesa registrada" payments={data.expenses} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
+          <PaymentList title="Saídas de caixa" empty="Nenhuma despesa registrada" payments={data.expenses} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
         )}
 
         {tab === 'payments' && (
-          <PaymentList title="Todos os lancamentos" empty="Nenhum lancamento encontrado" payments={data.payments} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
+          <PaymentList title="Todos os lançamentos" empty="Nenhum lançamento encontrado" payments={data.payments} onConfirm={(payment) => confirmPaymentMutation.mutate(payment)} confirmingId={confirmPaymentMutation.variables?.id} />
         )}
 
         <View style={{ height: 32 }} />
@@ -338,11 +351,11 @@ function PaymentRow({ payment, onConfirm, isConfirming }: { payment: GroupFinanc
         <Text style={s.rowTitle} numberOfLines={1}>{isExpense ? typeLabel(payment.type) : payment.athleteName}</Text>
         <Text style={s.rowSub} numberOfLines={1}>
           {isExpense
-            ? `${payment.description ?? 'Sem descricao'} - ${formatDate(payment.createdAt)}`
+            ? `${payment.description ?? 'Sem descrição'} - ${formatDate(payment.createdAt)}`
             : `${typeLabel(payment.type)} - ${payment.matchLocation ?? 'Sem partida'} - vence ${formatDate(payment.dueDate)}`}
         </Text>
         {payment.paymentReportedAt && payment.status === 'PENDING' && (
-          <Text style={s.reportedText}>Pagamento informado, aguardando confirmacao</Text>
+          <Text style={s.reportedText}>Informado em {formatDate(payment.paymentReportedAt)}, aguardando confirmação</Text>
         )}
       </View>
       <View style={s.amounts}>
@@ -389,7 +402,7 @@ function ExpenseModal({
             placeholder="0,00"
             placeholderTextColor={Colors.n400}
           />
-          <Text style={s.inputLabel}>Descricao</Text>
+          <Text style={s.inputLabel}>Descrição</Text>
           <TextInput
             style={[s.input, s.textArea]}
             value={description}
@@ -399,7 +412,7 @@ function ExpenseModal({
             multiline
           />
           <TouchableOpacity style={[s.saveBtn, isSaving && { opacity: 0.6 }]} onPress={onSave} disabled={isSaving} activeOpacity={0.7}>
-            <Text style={s.saveBtnText}>{isSaving ? 'Salvando...' : 'Registrar saida'}</Text>
+            <Text style={s.saveBtnText}>{isSaving ? 'Salvando...' : 'Registrar saída'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={s.cancelBtn} onPress={onClose} activeOpacity={0.7}>
             <Text style={s.cancelBtnText}>Cancelar</Text>

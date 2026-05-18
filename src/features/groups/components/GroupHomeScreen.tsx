@@ -45,6 +45,13 @@ export default function GroupHomeScreen() {
     refetchInterval: realtime.sharedStateMs,
   });
 
+  const { data: financeReport } = useQuery({
+    queryKey: ['group-finance-report', groupId, athleteId, 'home-review'],
+    queryFn: () => groupApi.financeReport(groupId!, athleteId),
+    enabled: !!groupId && !!athleteId && data?.isAdmin === true,
+    refetchInterval: realtime.financeMs,
+  });
+
   if (isLoading) {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
@@ -58,7 +65,7 @@ export default function GroupHomeScreen() {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
         <Ionicons name="alert-circle-outline" size={40} color={Colors.error} />
-        <Text style={s.errorText}>{isForbidden ? 'Voce nao tem acesso a este grupo' : 'Erro ao carregar o grupo'}</Text>
+        <Text style={s.errorText}>{isForbidden ? 'Você não tem acesso a este grupo' : 'Erro ao carregar o grupo'}</Text>
         <TouchableOpacity style={s.primaryBtn} onPress={() => (isForbidden ? router.back() : refetch())}>
           <Text style={s.primaryBtnText}>{isForbidden ? 'Voltar' : 'Tentar novamente'}</Text>
         </TouchableOpacity>
@@ -69,6 +76,7 @@ export default function GroupHomeScreen() {
   const { group, isAdmin, members, upcomingMatches, balance } = data;
   const blockedCount = members.filter((m) => m.hasDebt || m.isInjured || m.isBlocked).length;
   const nextMatch = upcomingMatches[0];
+  const reviewPaymentsCount = financeReport?.payments.filter((payment) => payment.status === 'PENDING' && !!payment.paymentReportedAt).length ?? 0;
 
   return (
     <SafeAreaView style={s.safe}>
@@ -118,6 +126,25 @@ export default function GroupHomeScreen() {
             />
           )}
         </View>
+
+        {isAdmin && reviewPaymentsCount > 0 && (
+          <TouchableOpacity
+            style={s.reviewCard}
+            onPress={() => router.push({ pathname: '/group-finance', params: { groupId, tab: 'review' } } as any)}
+            activeOpacity={0.8}
+          >
+            <View style={s.reviewIcon}>
+              <Ionicons name="receipt-outline" size={22} color={Colors.warningDark} />
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={s.reviewTitle}>Pagamentos para conferir</Text>
+              <Text style={s.reviewText}>
+                {reviewPaymentsCount} pagamento{reviewPaymentsCount !== 1 ? 's' : ''} informado{reviewPaymentsCount !== 1 ? 's' : ''} aguardando conferência
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={Colors.n400} />
+          </TouchableOpacity>
+        )}
 
         <View style={s.grid}>
           <SummaryCard
@@ -250,6 +277,10 @@ const s = StyleSheet.create({
   quickAction: { alignItems: 'center', gap: 6, minWidth: 76 },
   quickActionIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
   quickActionLabel: { fontSize: 11, fontWeight: '700', color: Colors.n700 },
+  reviewCard: { flexDirection: 'row', alignItems: 'center', gap: 12, marginHorizontal: Spacing.lg, marginTop: Spacing.lg, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.warningLight, borderRadius: Radius.r12, padding: Spacing.md },
+  reviewIcon: { width: 42, height: 42, borderRadius: 21, backgroundColor: Colors.warningLight, alignItems: 'center', justifyContent: 'center' },
+  reviewTitle: { fontSize: 13, fontWeight: '900', color: Colors.n900 },
+  reviewText: { fontSize: 11, color: Colors.n600, marginTop: 2 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, padding: Spacing.lg },
   summaryCard: { width: '48%', minHeight: 118, backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: 14, gap: 4 },
   summaryValue: { fontSize: 19, fontWeight: '800', color: Colors.n900, marginTop: 4 },
