@@ -1,9 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Colors, Radius } from '../../theme';
-
-type AvatarSize = 'xs' | 'sm' | 'md' | 'lg';
-type AvatarColor = 'blue' | 'green' | 'amber';
+import React, { memo, useMemo } from 'react';
+import { View, Text } from 'react-native';
+import { AVATAR_COLOR, AVATAR_FONT_SIZE, AVATAR_SIZE, AvatarColor, AvatarSize } from './options';
+import { styles } from './styles';
 
 interface AvatarProps {
   initials: string;
@@ -11,25 +9,17 @@ interface AvatarProps {
   color?: AvatarColor;
 }
 
-const sizeMap = { xs: 24, sm: 32, md: 40, lg: 56 };
-const fontMap = { xs: 9, sm: 11, md: 14, lg: 20 };
-const colorMap = {
-  blue: { bg: Colors.primaryLight, text: Colors.primaryDark },
-  green: { bg: Colors.successLight, text: Colors.successDark },
-  amber: { bg: Colors.warningLight, text: Colors.warningDark },
-};
+function AvatarComponent({ initials, size = 'md', color = 'blue' }: AvatarProps) {
+  const dim = AVATAR_SIZE[size];
+  const { bg, text } = AVATAR_COLOR[color];
+  const containerStyle = useMemo(() => ({ width: dim, height: dim, backgroundColor: bg }), [bg, dim]);
+  const textStyle = useMemo(() => ({ fontSize: AVATAR_FONT_SIZE[size], color: text }), [size, text]);
 
-export function Avatar({ initials, size = 'md', color = 'blue' }: AvatarProps) {
-  const dim = sizeMap[size];
-  const { bg, text } = colorMap[color];
   return (
-    <View style={[styles.base, { width: dim, height: dim, backgroundColor: bg }]}>
-      <Text style={[styles.text, { fontSize: fontMap[size], color: text }]}>{initials}</Text>
+    <View style={[styles.base, containerStyle]}>
+      <Text style={[styles.text, textStyle]}>{initials}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  base: { borderRadius: Radius.r999, alignItems: 'center', justifyContent: 'center' },
-  text: { fontWeight: '700' },
-});
+export const Avatar = memo(AvatarComponent);
