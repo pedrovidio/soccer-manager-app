@@ -1,231 +1,140 @@
 import React from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity,
-  Image, ActivityIndicator, Alert, StyleSheet,
-} from 'react-native';
+import { ActivityIndicator, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { athleteApi } from '../../services/athleteApi';
-import { queryKeys } from '../../../../lib/queryKeys';
-import { Colors, Radius, Spacing } from '../../../common/theme';
+import { Colors } from '../../../common/theme';
 import { maskCpf, maskPhone } from '../../../common/masks';
-import type { useEditProfileForm } from '../../hooks/useEditProfileForm';
-import { FormField, ChipRow, SwitchRow, UFSelect } from '../../../common/components/form/FormElements';
-import { getFullImageUrl } from '../../../../lib/imageUrl';
+import { FormField, ChipRow, UFSelect } from '../../../common/components/form/FormElements';
+import { GENDERS, POSITIONS } from './options';
+import { styles } from './styles';
+import { StepCadastroProps } from './types';
+import { useStepCadastro } from './useStepCadastro';
 
-type Props = Pick<
-  ReturnType<typeof useEditProfileForm>,
-  | 'name' | 'setName' | 'cpf' | 'setCpf' | 'gender' | 'setGender'
-  | 'phone' | 'setPhone' | 'age' | 'setAge'
-  | 'position' | 'setPosition' | 'pixKey' | 'setPixKey'
-  | 'photoUri' | 'setPhotoUri'
-  | 'cep' | 'setCep' | 'cepLoading' | 'street' | 'setStreet' | 'addrNum' | 'setAddrNum'
-  | 'complement' | 'setComplement' | 'neighborhood' | 'setNeighborhood'
-  | 'city' | 'setCity' | 'addrState' | 'setAddrState'
-  | 'athleteId' | 'dashboard'
->;
-
-const POSITIONS = [
-  { value: 'Goalkeeper', label: 'Goleiro' },
-  { value: 'Defender',   label: 'Zagueiro' },
-  { value: 'Midfielder', label: 'Meia' },
-  { value: 'Forward',    label: 'Atacante' },
-];
-
-const GENDERS = [
-  { value: 'M', label: 'Masculino' },
-  { value: 'F', label: 'Feminino' },
-];
-
-export default function StepCadastro(props: Props) {
-  const {
-    name, setName, cpf, setCpf, gender, setGender,
-    phone, setPhone, age, setAge,
-    position, setPosition, pixKey, setPixKey,
-    photoUri, setPhotoUri,
-    cep, setCep, cepLoading, street, setStreet, addrNum, setAddrNum,
-    complement, setComplement, neighborhood, setNeighborhood,
-    city, setCity, addrState, setAddrState,
-    athleteId, dashboard,
-  } = props;
-
-  const qc = useQueryClient();
-
-  const photoMutation = useMutation({
-    mutationFn: (uri: string) => athleteApi.uploadPhoto(athleteId, uri),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) }),
-    onError: () => Alert.alert('Erro', 'Não foi possível enviar a foto.'),
-  });
-
-  async function pickPhoto() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Permita o acesso à galeria para trocar a foto.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true, aspect: [1, 1], quality: 0.8,
-    });
-    if (!result.canceled && result.assets[0]) {
-      const uri = result.assets[0].uri;
-      setPhotoUri(uri);
-      photoMutation.mutate(uri);
-    }
-  }
-
-  const currentPhoto = photoUri ?? getFullImageUrl(dashboard?.photoUrl) ?? null;
-  const initials = (dashboard?.name ?? '').split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
+export default function StepCadastro(props: StepCadastroProps) {
+  const controller = useStepCadastro(props);
 
   return (
     <View>
-      <Text style={s.stepTitle}>Dados pessoais</Text>
-      <Text style={s.stepSubtitle}>Informações básicas e endereço</Text>
+      <Text style={styles.stepTitle}>Dados pessoais</Text>
+      <Text style={styles.stepSubtitle}>Informacoes basicas e endereco</Text>
 
-      {/* Foto */}
-      <View style={s.photoSection}>
-        <TouchableOpacity style={s.avatarWrap} onPress={pickPhoto} activeOpacity={0.8}>
-          {currentPhoto
-            ? <Image source={{ uri: currentPhoto }} style={s.avatarImg} />
-            : <View style={s.avatarFallback}><Text style={s.avatarInitials}>{initials}</Text></View>
-          }
-          <View style={s.cameraOverlay}>
-            {photoMutation.isPending
+      <View style={styles.photoSection}>
+        <TouchableOpacity style={styles.avatarWrap} onPress={controller.pickPhoto} activeOpacity={0.8}>
+          {controller.currentPhoto
+            ? <Image source={{ uri: controller.currentPhoto }} style={styles.avatarImg} />
+            : <View style={styles.avatarFallback}><Text style={styles.avatarInitials}>{controller.initials}</Text></View>}
+          <View style={styles.cameraOverlay}>
+            {controller.isUploadingPhoto
               ? <ActivityIndicator size="small" color={Colors.white} />
-              : <Ionicons name="camera" size={18} color={Colors.white} />
-            }
+              : <Ionicons name="camera" size={18} color={Colors.white} />}
           </View>
         </TouchableOpacity>
-        <Text style={s.photoHint}>Toque para alterar a foto</Text>
+        <Text style={styles.photoHint}>Toque para alterar a foto</Text>
       </View>
 
-      {/* Dados pessoais */}
       <FormField label="Nome completo">
-        <TextInput style={s.input} value={name} onChangeText={setName} autoCapitalize="words" />
+        <TextInput style={styles.input} value={props.name} onChangeText={props.setName} autoCapitalize="words" />
       </FormField>
       <FormField label="CPF">
         <TextInput
-          style={s.input} value={cpf} keyboardType="numeric"
-          onChangeText={(v) => setCpf(maskCpf(v))}
-          placeholder="000.000.000-00" placeholderTextColor={Colors.n400}
+          style={styles.input}
+          value={props.cpf}
+          keyboardType="numeric"
+          onChangeText={(value) => props.setCpf(maskCpf(value))}
+          placeholder="000.000.000-00"
+          placeholderTextColor={Colors.n400}
         />
       </FormField>
       <FormField label="Sexo">
-        <ChipRow
-          options={GENDERS}
-          selectedValue={gender}
-          onSelect={setGender}
-        />
+        <ChipRow options={GENDERS} selectedValue={props.gender} onSelect={props.setGender} />
       </FormField>
 
-      <View style={s.row}>
-        <View style={s.flex1}>
+      <View style={styles.row}>
+        <View style={styles.flex1}>
           <FormField label="Telefone">
             <TextInput
-              style={s.input} value={phone} keyboardType="phone-pad"
-              onChangeText={(v) => setPhone(maskPhone(v))}
-              placeholder="(00) 00000-0000" placeholderTextColor={Colors.n400}
+              style={styles.input}
+              value={props.phone}
+              keyboardType="phone-pad"
+              onChangeText={(value) => props.setPhone(maskPhone(value))}
+              placeholder="(00) 00000-0000"
+              placeholderTextColor={Colors.n400}
             />
           </FormField>
         </View>
-        <View style={s.flex1}>
+        <View style={styles.flex1}>
           <FormField label="Idade">
-            <TextInput style={s.input} value={age} keyboardType="numeric" onChangeText={(v) => setAge(v.replace(/\D/g, ''))} />
+            <TextInput style={styles.input} value={props.age} keyboardType="numeric" onChangeText={(value) => props.setAge(value.replace(/\D/g, ''))} />
           </FormField>
         </View>
       </View>
 
-      <FormField label="Posição">
-        <ChipRow
-          options={POSITIONS}
-          selectedValue={position}
-          onSelect={setPosition}
-        />
+      <FormField label="Posicao">
+        <ChipRow options={POSITIONS} selectedValue={props.position} onSelect={props.setPosition} />
       </FormField>
 
-      {/* PIX */}
       <FormField label="Chave PIX">
         <TextInput
-          style={s.input} value={pixKey} onChangeText={setPixKey}
-          placeholder="CPF, e-mail, telefone ou chave aleatória"
-          placeholderTextColor={Colors.n400} autoCapitalize="none"
+          style={styles.input}
+          value={props.pixKey ?? ''}
+          onChangeText={props.setPixKey}
+          placeholder="CPF, e-mail, telefone ou chave aleatoria"
+          placeholderTextColor={Colors.n400}
+          autoCapitalize="none"
         />
       </FormField>
 
-      {/* Endereço */}
-      <View style={s.divider} />
-      <Text style={s.sectionLabel}>Endereço</Text>
+      <View style={styles.divider} />
+      <Text style={styles.sectionLabel}>Endereco</Text>
 
-      <View style={s.row}>
-        <View style={s.flex1}>
+      <View style={styles.row}>
+        <View style={styles.flex1}>
           <FormField label="CEP">
-            <View style={s.inputWrap}>
+            <View style={styles.inputWrap}>
               <TextInput
-                style={[s.input, s.inputFlex]} value={cep} keyboardType="numeric"
-                onChangeText={setCep}
-                placeholder="00000-000" placeholderTextColor={Colors.n400}
+                style={[styles.input, styles.inputFlex]}
+                value={props.cep}
+                keyboardType="numeric"
+                onChangeText={props.setCep}
+                placeholder="00000-000"
+                placeholderTextColor={Colors.n400}
               />
-              {cepLoading && <ActivityIndicator size="small" color={Colors.primary} style={s.inputIcon} />}
+              {props.cepLoading && <ActivityIndicator size="small" color={Colors.primary} style={styles.inputIcon} />}
             </View>
           </FormField>
         </View>
-        <View style={s.flex2}>
+        <View style={styles.flex2}>
           <FormField label="Rua">
-            <TextInput style={s.input} value={street} onChangeText={setStreet} autoCapitalize="words" editable={!cepLoading} />
+            <TextInput style={styles.input} value={props.street} onChangeText={props.setStreet} autoCapitalize="words" editable={!props.cepLoading} />
           </FormField>
         </View>
       </View>
 
-      <View style={s.row}>
-        <View style={s.flex1}>
-          <FormField label="Número">
-            <TextInput style={s.input} value={addrNum} onChangeText={setAddrNum} keyboardType="numeric" />
+      <View style={styles.row}>
+        <View style={styles.flex1}>
+          <FormField label="Numero">
+            <TextInput style={styles.input} value={props.addrNum} onChangeText={props.setAddrNum} keyboardType="numeric" />
           </FormField>
         </View>
-        <View style={s.flex2}>
+        <View style={styles.flex2}>
           <FormField label="Complemento">
-            <TextInput style={s.input} value={complement} onChangeText={setComplement} />
+            <TextInput style={styles.input} value={props.complement} onChangeText={props.setComplement} />
           </FormField>
         </View>
       </View>
 
       <FormField label="Bairro">
-        <TextInput style={s.input} value={neighborhood} onChangeText={setNeighborhood} autoCapitalize="words" editable={!cepLoading} />
+        <TextInput style={styles.input} value={props.neighborhood} onChangeText={props.setNeighborhood} autoCapitalize="words" editable={!props.cepLoading} />
       </FormField>
-
-      <View style={s.row}>
-        <View style={s.flex2}>
+      <View style={styles.row}>
+        <View style={styles.flex2}>
           <FormField label="Cidade">
-            <TextInput style={s.input} value={city} onChangeText={setCity} autoCapitalize="words" editable={!cepLoading} />
+            <TextInput style={styles.input} value={props.city} onChangeText={props.setCity} autoCapitalize="words" editable={!props.cepLoading} />
           </FormField>
         </View>
       </View>
-
       <FormField label="UF">
-        <UFSelect value={addrState} onChange={setAddrState} />
+        <UFSelect value={props.addrState} onChange={props.setAddrState} />
       </FormField>
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  stepTitle:       { fontSize: 22, fontWeight: '800', color: Colors.n900, marginBottom: 4 },
-  stepSubtitle:    { fontSize: 13, color: Colors.n500, marginBottom: 20 },
-  photoSection:    { alignItems: 'center', paddingVertical: 12, marginBottom: 20, gap: 8 },
-  avatarWrap:      { position: 'relative' },
-  avatarImg:       { width: 88, height: 88, borderRadius: 44 },
-  avatarFallback:  { width: 88, height: 88, borderRadius: 44, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
-  avatarInitials:  { fontSize: 30, fontWeight: '800', color: Colors.primary },
-  cameraOverlay:   { position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: Colors.white },
-  photoHint:       { fontSize: 12, color: Colors.n400 },
-  input:           { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.n300, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: Colors.n900 },
-  inputWrap:       { flexDirection: 'row', alignItems: 'center' },
-  inputFlex:       { flex: 1 },
-  inputIcon:       { marginLeft: 8 },
-  divider:         { height: 1, backgroundColor: Colors.n200, marginVertical: 16 },
-  sectionLabel:    { fontSize: 13, fontWeight: '700', color: Colors.n700, marginBottom: 10 },
-  row:             { flexDirection: 'row', alignItems: 'flex-start' },
-  flex1:           { flex: 1, marginRight: 8 },
-  flex2:           { flex: 2, marginRight: 8 },
-});
