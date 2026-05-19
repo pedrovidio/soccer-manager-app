@@ -43,6 +43,9 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FCA5A5',
   },
+  headerSpacer: {
+    width: 90,
+  },
 
   // ── Hint ────────────────────────────────────────────────────────────
   hint: {
