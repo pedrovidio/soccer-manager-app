@@ -1,0 +1,50 @@
+import { StyleSheet } from 'react-native';
+import { Colors, Radius, Spacing } from '../../../common/theme';
+
+export const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: Colors.n50 },
+  keyboard: { flex: 1 },
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: 40,
+  },
+  logoWrap: { alignItems: 'center', marginBottom: 40 },
+  logoCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  logoIcon: { fontSize: 32 },
+  appName: { fontSize: 24, fontWeight: '800', color: Colors.n900 },
+  subtitle: { fontSize: 13, color: Colors.n500, marginTop: 4 },
+  form: { gap: Spacing.sm },
+  label: { fontSize: 12, fontWeight: '600', color: Colors.n700 },
+  input: {
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.n300,
+    borderRadius: Radius.r8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: Colors.n900,
+  },
+  btn: {
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.r12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+  },
+  btnDisabled: { opacity: 0.7 },
+  btnText: { color: Colors.white, fontSize: 15, fontWeight: '700' },
+  registerLink: { alignItems: 'center', marginTop: 16 },
+  registerLinkText: { fontSize: 13, color: Colors.n500 },
+  registerLinkHighlight: { color: Colors.primary, fontWeight: '700' },
+});

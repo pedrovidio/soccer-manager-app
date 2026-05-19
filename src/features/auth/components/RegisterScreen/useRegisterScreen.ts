@@ -1,0 +1,147 @@
+import { useCallback, useRef, useState } from 'react';
+import { Alert, Keyboard, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import {
+  FootballLevel,
+  Gender,
+  RegisterFormData,
+  WeeklyFrequency,
+  YearsPlaying,
+} from '../../registerTypes';
+import { registerApi } from '../../services/registerApi';
+import { useAuthStore } from '../../useAuthStore';
+import { INITIAL_REGISTER_FORM, TOTAL_STEPS } from './options';
+import { parseApiError, validatePersonalStep, validateProfileStep } from './registerUtils';
+
+type ViaCepResponse = {
+  erro?: boolean;
+  logradouro?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+};
+
+export function useRegisterScreen() {
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState<RegisterFormData>(INITIAL_REGISTER_FORM);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const scrollRef = useRef<ScrollView>(null);
+  const { login, setAssessmentCompleted } = useAuthStore();
+
+  const setField = useCallback((field: keyof RegisterFormData, value: RegisterFormData[keyof RegisterFormData]) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const resolveCep = useCallback(async (cepDigits: string) => {
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`);
+      const data = (await res.json()) as ViaCepResponse;
+      if (data.erro) return;
+
+      setForm((prev) => ({
+        ...prev,
+        street: data.logradouro ?? '',
+        neighborhood: data.bairro ?? '',
+        city: data.localidade ?? '',
+        state: data.uf ?? '',
+      }));
+    } catch {
+      Alert.alert('Erro', 'Não foi possível buscar o CEP.');
+    }
+  }, []);
+
+  const goBack = useCallback(() => {
+    if (step > 1) {
+      setStep((current) => current - 1);
+      return;
+    }
+    router.back();
+  }, [router, step]);
+
+  const handleNext = useCallback(() => {
+    const error = step === 1 ? validatePersonalStep(form) : step === 2 ? validateProfileStep(form) : null;
+    if (error) {
+      Alert.alert('Atenção', error);
+      return;
+    }
+
+    Keyboard.dismiss();
+    setStep((current) => current + 1);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [form, step]);
+
+  const handleSubmit = useCallback(async () => {
+    setLoading(true);
+    try {
+      const registerPayload = {
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        cpf: form.cpf.replace(/\D/g, ''),
+        phone: form.phone.replace(/\D/g, ''),
+        age: Number(form.age),
+        gender: form.gender as Gender,
+        address: {
+          cep: form.cep.trim(),
+          street: form.street.trim(),
+          number: Number(form.number),
+          complement: form.complement.trim() || undefined,
+          neighborhood: form.neighborhood.trim(),
+          city: form.city.trim(),
+          state: form.state.trim().toUpperCase(),
+        },
+        password: form.password,
+      };
+
+      const athlete = await registerApi.register(registerPayload);
+
+      await login(form.email.trim().toLowerCase(), form.password);
+
+      await registerApi.submitAssessment(athlete.id, {
+        playedProfessionally: form.playedProfessionally,
+        highestLevel: form.highestLevel as FootballLevel,
+        yearsPlaying: form.yearsPlaying as YearsPlaying,
+        weeklyFrequency: form.weeklyFrequency as WeeklyFrequency,
+        selfRatedPace: form.selfRatedPace,
+        selfRatedShooting: form.selfRatedShooting,
+        selfRatedPassing: form.selfRatedPassing,
+        selfRatedDribbling: form.selfRatedDribbling,
+        selfRatedDefense: form.selfRatedDefense,
+        selfRatedPhysical: form.selfRatedPhysical,
+        preferredPosition: form.preferredPosition,
+      });
+
+      if (form.wantsAvailability && form.availabilitySlots.length > 0) {
+        await registerApi.saveAvailability(athlete.id, form.availabilitySlots);
+      }
+
+      setAssessmentCompleted();
+      router.replace('/');
+    } catch (error: any) {
+      Alert.alert('Erro', parseApiError(error));
+    } finally {
+      setLoading(false);
+    }
+  }, [form, login, router, setAssessmentCompleted]);
+
+  const handlePrimaryAction = useCallback(() => {
+    if (step < TOTAL_STEPS) {
+      handleNext();
+      return;
+    }
+
+    handleSubmit();
+  }, [handleNext, handleSubmit, step]);
+
+  return {
+    form,
+    loading,
+    scrollRef,
+    setField,
+    resolveCep,
+    step,
+    totalSteps: TOTAL_STEPS,
+    goBack,
+    handlePrimaryAction,
+  };
+}
