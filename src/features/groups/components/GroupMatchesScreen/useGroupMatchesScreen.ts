@@ -1,0 +1,39 @@
+import { useCallback } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import { realtime } from '../../../../lib/realtime';
+import { useAuthStore } from '../../../auth/useAuthStore';
+import { groupApi } from '../../services/groupApi';
+
+export function useGroupMatchesScreen() {
+  const { groupId } = useLocalSearchParams<{ groupId: string }>();
+  const router = useRouter();
+  const athleteId = useAuthStore((state) => state.athleteId) ?? '';
+
+  const query = useQuery({
+    queryKey: ['group-home', groupId],
+    queryFn: () => groupApi.getHome(groupId!, athleteId),
+    enabled: !!groupId && !!athleteId,
+    refetchInterval: realtime.sharedStateMs,
+  });
+
+  const goCreateMatch = useCallback(() => {
+    router.push({ pathname: '/create-match', params: { groupId } } as any);
+  }, [groupId, router]);
+
+  const goMatch = useCallback((matchId: string, isAdmin: boolean) => {
+    router.push({ pathname: '/match-home', params: { matchId, groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
+  }, [groupId, router]);
+
+  return {
+    data: query.data,
+    error: query.error,
+    goCreateMatch,
+    goMatch,
+    groupId,
+    isError: query.isError,
+    isLoading: query.isLoading,
+    refetch: query.refetch,
+    router,
+  };
+}
