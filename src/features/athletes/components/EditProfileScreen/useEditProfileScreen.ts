@@ -1,0 +1,38 @@
+import { useCallback, useRef } from 'react';
+import { Keyboard, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useEditProfileForm } from '../../hooks/useEditProfileForm';
+
+const TOTAL_STEPS = 3;
+
+export function useEditProfileScreen() {
+  const router = useRouter();
+  const form = useEditProfileForm();
+  const scrollRef = useRef<ScrollView>(null);
+
+  const handleNext = useCallback(() => {
+    Keyboard.dismiss();
+    if (form.step < TOTAL_STEPS - 1) {
+      form.setStep((form.step + 1) as 0 | 1 | 2);
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+      return;
+    }
+    form.saveAndNext();
+  }, [form]);
+
+  const handleBack = useCallback(() => {
+    if (form.step > 0) {
+      form.setStep((form.step - 1) as 0 | 1 | 2);
+      return;
+    }
+    router.back();
+  }, [form, router]);
+
+  return {
+    form,
+    handleBack,
+    handleNext,
+    scrollRef,
+    totalSteps: TOTAL_STEPS,
+  };
+}
