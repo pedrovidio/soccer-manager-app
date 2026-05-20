@@ -19,7 +19,7 @@ export interface RegisterPayload {
     city: string;
     state: string;
   };
-  password: string;
+  password?: string;
 }
 
 export interface AssessmentPayload {

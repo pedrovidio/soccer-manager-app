@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { realtime } from '../../../../lib/realtime';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { GroupFinancePayment } from '../../groupTypes';
 import { groupApi } from '../../services/groupApi';
@@ -31,7 +30,6 @@ export function useGroupFinanceScreen() {
     queryKey: ['group-finance-report', groupId, athleteId, filters],
     queryFn: () => groupApi.financeReport(groupId!, athleteId, filters),
     enabled: !!groupId && !!athleteId,
-    refetchInterval: realtime.financeMs,
   });
 
   const invalidateFinance = useCallback((payment?: GroupFinancePayment) => {

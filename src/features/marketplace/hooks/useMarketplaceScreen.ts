@@ -3,7 +3,6 @@ import { Alert } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { queryKeys } from '../../../lib/queryKeys';
-import { realtime } from '../../../lib/realtime';
 import { athleteApi } from '../../athletes/services/athleteApi';
 import { useAthleteLocationSync } from '../../athletes/hooks/useAthleteLocationSync';
 import { financialBlockMessage, hasFinancialBlock } from '../../athletes/utils/financialAccess';
@@ -31,14 +30,12 @@ export function useMarketplaceScreen() {
     queryKey: queryKeys.invites(athleteId),
     queryFn: () => athleteApi.invites(athleteId),
     enabled: !!athleteId,
-    refetchInterval: realtime.notificationsMs,
   });
 
   const spotMatchesQuery = useQuery({
     queryKey: queryKeys.marketplace(athleteId),
     queryFn: () => matchApi.listMarketplaceSpotMatches(),
     enabled: !!athleteId && !blockedByDebt,
-    refetchInterval: realtime.discoveryMs,
   });
 
   const opportunities = useMemo(() => (

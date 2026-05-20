@@ -1,4 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
+import { uploadImageToSupabaseStorage } from '../../../lib/supabase';
 import { AthleteDashboard, AthleteFinanceReport, Invite } from '../athleteTypes';
 import { Notification } from '../../notifications/types';
 import { AssessmentPayload, AvailabilitySlot } from '../../auth/registerTypes';
@@ -68,12 +69,13 @@ export const athleteApi = {
   }) =>
     httpClient.patch(`/athletes/${athleteId}`, data).then((r) => r.data),
 
-  uploadPhoto: (athleteId: string, uri: string) => {
-    const form = new FormData();
-    form.append('photo', { uri, name: 'photo.jpg', type: 'image/jpeg' } as any);
-    return httpClient.patch(`/athletes/${athleteId}/photo`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((r) => r.data as { photoUrl: string });
+  uploadPhoto: async (athleteId: string, uri: string) => {
+    const photoUrl = await uploadImageToSupabaseStorage({
+      bucket: 'athlete-photos',
+      ownerId: athleteId,
+      uri,
+    });
+    return httpClient.patch(`/athletes/${athleteId}/photo-url`, { photoUrl }).then((r) => r.data as { photoUrl: string });
   },
 
   getAssessment: (athleteId: string) =>

@@ -27,7 +27,7 @@ export function useRegisterScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
-  const { login, setAssessmentCompleted } = useAuthStore();
+  const { setAssessmentCompleted } = useAuthStore();
 
   const setField = useCallback((field: keyof RegisterFormData, value: RegisterFormData[keyof RegisterFormData]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -74,6 +74,12 @@ export function useRegisterScreen() {
   const handleSubmit = useCallback(async () => {
     setLoading(true);
     try {
+      const authSession = await registerApi.signUp({
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+        name: form.name.trim(),
+      });
+
       const registerPayload = {
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
@@ -90,12 +96,9 @@ export function useRegisterScreen() {
           city: form.city.trim(),
           state: form.state.trim().toUpperCase(),
         },
-        password: form.password,
       };
 
       const athlete = await registerApi.register(registerPayload);
-
-      await login(form.email.trim().toLowerCase(), form.password);
 
       await registerApi.submitAssessment(athlete.id, {
         playedProfessionally: form.playedProfessionally,
@@ -116,13 +119,19 @@ export function useRegisterScreen() {
       }
 
       setAssessmentCompleted();
+      useAuthStore.setState({
+        token: authSession.token,
+        athleteId: authSession.athleteId,
+        name: authSession.name,
+        isAuthenticated: true,
+      });
       router.replace('/');
     } catch (error: any) {
       Alert.alert('Erro', parseApiError(error));
     } finally {
       setLoading(false);
     }
-  }, [form, login, router, setAssessmentCompleted]);
+  }, [form, router, setAssessmentCompleted]);
 
   const handlePrimaryAction = useCallback(() => {
     if (step < TOTAL_STEPS) {

@@ -22,7 +22,6 @@ import { styles } from './HomeScreen.styles';
 import { formatPositionLabel } from '../athletes/utils/positionLabel';
 import { useAthleteLocationSync } from '../athletes/hooks/useAthleteLocationSync';
 import { financialBlockMessage, hasFinancialBlock } from '../athletes/utils/financialAccess';
-import { realtime } from '../../lib/realtime';
 
 export default function HomeScreen() {
   const [activeTab] = useState<NavTab>('home');
@@ -59,7 +58,6 @@ export default function HomeScreen() {
     },
     enabled: !!favoriteId,
     retry: false,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   // Prefer fresh dashboard data, fall back to auth store values while loading

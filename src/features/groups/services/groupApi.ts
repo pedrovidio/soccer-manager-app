@@ -1,4 +1,5 @@
 import { httpClient } from '../../../lib/httpClient';
+import { uploadImageToSupabaseStorage } from '../../../lib/supabase';
 import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult, FavoriteSpotAthlete, GroupFinanceFilters, GroupFinanceReport, GroupExpensePayload } from '../groupTypes';
 
 export const groupApi = {
@@ -34,6 +35,15 @@ export const groupApi = {
 
   update: (groupId: string, payload: UpdateGroupPayload) =>
     httpClient.patch(`/groups/${groupId}`, payload).then((r) => r.data),
+
+  uploadPhoto: async (groupId: string, uri: string) => {
+    const photoUrl = await uploadImageToSupabaseStorage({
+      bucket: 'group-photos',
+      ownerId: groupId,
+      uri,
+    });
+    return httpClient.patch(`/groups/${groupId}/photo-url`, { photoUrl }).then((r) => r.data as { photoUrl: string });
+  },
 
   listByAthlete: (athleteId: string) =>
     httpClient.get<GroupResponse[]>(`/athletes/${athleteId}/groups`).then((r) => r.data),

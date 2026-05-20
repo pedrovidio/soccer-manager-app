@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { realtime } from '../../../../lib/realtime';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { groupApi } from '../../services/groupApi';
 
@@ -14,7 +13,6 @@ export function useGroupMatchesScreen() {
     queryKey: ['group-home', groupId],
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   const goCreateMatch = useCallback(() => {

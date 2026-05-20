@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { realtime } from '../../../lib/realtime';
 import { useAuthStore } from '../../auth/useAuthStore';
 import { groupApi } from '../../groups/services/groupApi';
 import { deriveMatchPhase, minimumConfirmedFor } from '../utils/matchPhase';
@@ -42,14 +41,12 @@ export function useMatchHomeController() {
     queryKey: ['match-detail', matchId],
     queryFn: () => matchApi.getDetail(matchId!, athleteId),
     enabled: !!matchId,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   const { data: spotApplications = [] } = useQuery<SpotApplication[]>({
     queryKey: ['spot-applications', matchId],
     queryFn: () => matchApi.listSpotApplications(matchId!),
     enabled: !!matchId && isAdmin && data?.status !== 'FINISHED',
-    refetchInterval: realtime.notificationsMs,
   });
 
   useEffect(() => {
@@ -85,7 +82,6 @@ export function useMatchHomeController() {
     },
     enabled: !!matchId && guestOpen,
     staleTime: 30_000,
-    refetchInterval: realtime.discoveryMs,
   });
 
   const nearby = useMemo(() => allAthletes.filter((athlete) => {

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { realtime } from '../../../../lib/realtime';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { athleteApi } from '../../services/athleteApi';
 import { AthleteFinancePayment } from '../../athleteTypes';
@@ -27,7 +26,6 @@ export function useAthleteFinanceScreen() {
     queryKey: ['athlete-finance-report', athleteId, filters],
     queryFn: () => athleteApi.financeReport(athleteId, filters),
     enabled: !!athleteId,
-    refetchInterval: realtime.financeMs,
   });
 
   const reportPaymentMutation = useMutation({

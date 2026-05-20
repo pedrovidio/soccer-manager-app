@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { realtime } from '../../../../lib/realtime';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { AthleteSearchResult, GroupInviteItem } from '../../groupTypes';
 import { groupApi } from '../../services/groupApi';
@@ -34,8 +33,6 @@ export function useInviteAthleteScreen() {
 
   useEffect(() => {
     loadInvites();
-    const interval = setInterval(loadInvites, realtime.notificationsMs);
-    return () => clearInterval(interval);
   }, [loadInvites]);
 
   const handleSearch = useCallback((text: string) => {

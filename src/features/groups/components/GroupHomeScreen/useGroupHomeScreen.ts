@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { realtime } from '../../../../lib/realtime';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { groupApi } from '../../services/groupApi';
 
@@ -14,21 +13,18 @@ export function useGroupHomeScreen() {
     queryKey: ['group-home', groupId],
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   const favoriteQuery = useQuery({
     queryKey: ['favorite-spot-athletes', groupId],
     queryFn: () => groupApi.listFavoriteSpotAthletes(groupId!, athleteId),
     enabled: !!groupId && !!athleteId && groupQuery.data?.isAdmin === true,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   const financeQuery = useQuery({
     queryKey: ['group-finance-report', groupId, athleteId, 'home-review'],
     queryFn: () => groupApi.financeReport(groupId!, athleteId),
     enabled: !!groupId && !!athleteId && groupQuery.data?.isAdmin === true,
-    refetchInterval: realtime.financeMs,
   });
 
   const blockedCount = useMemo(

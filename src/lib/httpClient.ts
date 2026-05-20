@@ -1,5 +1,6 @@
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { getSupabaseAccessToken } from './supabase';
+import { appLogger } from './logger';
 
 export const TOKEN_KEY = 'auth_token';
 
@@ -15,25 +16,47 @@ export const httpClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/social', '/athletes'];
-
 httpClient.interceptors.request.use(async (config) => {
-  const path = config.url ?? '';
-  const isPublicAuthRequest = PUBLIC_AUTH_PATHS.some((publicPath) => path === publicPath);
-  if (!isPublicAuthRequest) {
-    const token = _memoryToken ?? await SecureStore.getItemAsync(TOKEN_KEY);
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  }
+  (config as any).metadata = { startedAt: Date.now() };
+  const token = _memoryToken ?? await getSupabaseAccessToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  appLogger.debug('[HTTP] -> request', {
+    method: config.method?.toUpperCase(),
+    url: `${config.baseURL ?? ''}${config.url ?? ''}`,
+    params: config.params,
+    data: config.data,
+    hasAuth: !!token,
+  });
   return config;
 });
 
 httpClient.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const startedAt = (res.config as any).metadata?.startedAt;
+    const durationMs = typeof startedAt === 'number' ? Date.now() - startedAt : undefined;
+    appLogger.debug('[HTTP] <- response', {
+      method: res.config.method?.toUpperCase(),
+      url: res.config.url,
+      status: res.status,
+      durationMs,
+      requestId: res.headers?.['x-request-id'],
+    });
+    return res;
+  },
   (error) => {
     const status = error.response?.status;
+    const startedAt = (error.config as any)?.metadata?.startedAt;
+    const durationMs = typeof startedAt === 'number' ? Date.now() - startedAt : undefined;
+    appLogger.error('[HTTP] <- error', error, {
+      method: error.config?.method?.toUpperCase(),
+      url: error.config?.url,
+      status,
+      durationMs,
+      requestId: error.response?.headers?.['x-request-id'],
+      response: error.response?.data,
+    });
     if (status === 401) {
       _memoryToken = null;
-      SecureStore.deleteItemAsync(TOKEN_KEY);
       _onUnauthorized?.();
     }
     return Promise.reject(error);

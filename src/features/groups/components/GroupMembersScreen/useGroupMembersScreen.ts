@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { realtime } from '../../../../lib/realtime';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { GroupMember } from '../../groupTypes';
 import { groupApi } from '../../services/groupApi';
@@ -22,14 +21,12 @@ export function useGroupMembersScreen() {
     queryKey: ['group-home', groupId],
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   const favoriteQuery = useQuery({
     queryKey: ['favorite-spot-athletes', groupId],
     queryFn: () => groupApi.listFavoriteSpotAthletes(groupId!, athleteId),
     enabled: !!groupId && !!athleteId && groupQuery.data?.isAdmin === true,
-    refetchInterval: realtime.sharedStateMs,
   });
 
   const removeFavoriteMutation = useMutation({
