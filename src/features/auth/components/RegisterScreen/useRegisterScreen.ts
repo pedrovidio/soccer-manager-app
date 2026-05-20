@@ -83,6 +83,7 @@ export function useRegisterScreen() {
       const registerPayload = {
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
+        password: form.password,
         cpf: form.cpf.replace(/\D/g, ''),
         phone: form.phone.replace(/\D/g, ''),
         age: Number(form.age),
@@ -121,7 +122,7 @@ export function useRegisterScreen() {
       setAssessmentCompleted();
       useAuthStore.setState({
         token: authSession.token,
-        athleteId: authSession.athleteId,
+        athleteId: athlete.id,
         name: authSession.name,
         isAuthenticated: true,
       });
