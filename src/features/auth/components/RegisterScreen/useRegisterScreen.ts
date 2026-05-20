@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { Alert, Keyboard, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import { setMemoryToken } from '../../../../lib/httpClient';
 import {
   FootballLevel,
   Gender,
@@ -120,6 +122,12 @@ export function useRegisterScreen() {
       }
 
       setAssessmentCompleted();
+      setMemoryToken(authSession.token);
+      await Promise.all([
+        SecureStore.setItemAsync('athlete_id', athlete.id),
+        SecureStore.setItemAsync('athlete_name', authSession.name),
+        SecureStore.setItemAsync('has_assessment', 'true'),
+      ]);
       useAuthStore.setState({
         token: authSession.token,
         athleteId: athlete.id,

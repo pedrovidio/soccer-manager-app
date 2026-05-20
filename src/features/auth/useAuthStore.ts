@@ -86,6 +86,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
 setUnauthorizedHandler(() => {
   setMemoryToken(null);
+  void supabase.auth.signOut();
+  void Promise.all([
+    SecureStore.deleteItemAsync('athlete_id'),
+    SecureStore.deleteItemAsync('athlete_name'),
+    SecureStore.deleteItemAsync('has_assessment'),
+  ]);
   queryClient.clear();
   useAuthStore.setState({
     token: null,

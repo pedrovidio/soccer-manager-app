@@ -47,14 +47,19 @@ httpClient.interceptors.response.use(
     const status = error.response?.status;
     const startedAt = (error.config as any)?.metadata?.startedAt;
     const durationMs = typeof startedAt === 'number' ? Date.now() - startedAt : undefined;
-    appLogger.error('[HTTP] <- error', error, {
+    const logData = {
       method: error.config?.method?.toUpperCase(),
       url: error.config?.url,
       status,
       durationMs,
       requestId: error.response?.headers?.['x-request-id'],
       response: error.response?.data,
-    });
+    };
+    if (status === 401) {
+      appLogger.warn('[HTTP] <- unauthorized', logData);
+    } else {
+      appLogger.error('[HTTP] <- error', error, logData);
+    }
     if (status === 401) {
       _memoryToken = null;
       _onUnauthorized?.();
