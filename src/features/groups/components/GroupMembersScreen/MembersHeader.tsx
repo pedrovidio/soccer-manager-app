@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { BackButton } from '../../../common/components/BackButton';
+import { GroupHomeShortcut } from '../GroupHomeShortcut';
 import { styles } from './styles';
 
 function MembersHeaderComponent({ groupName }: { groupName: string }) {
@@ -11,6 +12,7 @@ function MembersHeaderComponent({ groupName }: { groupName: string }) {
         <Text style={styles.headerTitle}>Membros</Text>
         <Text style={styles.headerSub} numberOfLines={1}>{groupName}</Text>
       </View>
+      <GroupHomeShortcut />
     </View>
   );
 }

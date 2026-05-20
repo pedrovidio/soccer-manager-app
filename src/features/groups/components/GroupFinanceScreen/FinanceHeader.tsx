@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { BackButton } from '../../../common/components/BackButton';
+import { GroupHomeShortcut } from '../GroupHomeShortcut';
 import { styles } from './styles';
 
 type Props = {
@@ -15,6 +16,7 @@ function FinanceHeaderComponent({ groupName }: Props) {
         <Text style={styles.headerTitle}>Financeiro</Text>
         <Text style={styles.headerSub} numberOfLines={1}>{groupName}</Text>
       </View>
+      <GroupHomeShortcut />
     </View>
   );
 }

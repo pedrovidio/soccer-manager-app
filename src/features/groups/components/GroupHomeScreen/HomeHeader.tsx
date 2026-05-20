@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../common/theme';
 import { BackButton } from '../../../common/components/BackButton';
+import { GroupHomeShortcut } from '../GroupHomeShortcut';
 import { styles } from './styles';
 
 type Props = {
@@ -20,11 +21,14 @@ function HomeHeaderComponent({ groupName, membersCount, isAdmin, onEdit }: Props
         <Text style={styles.headerTitle} numberOfLines={1}>{groupName}</Text>
         <Text style={styles.headerSub}>{membersCount} membros</Text>
       </View>
-      {isAdmin && (
-        <TouchableOpacity style={styles.iconBtn} onPress={onEdit}>
-          <Ionicons name="settings-outline" size={20} color={Colors.n700} />
-        </TouchableOpacity>
-      )}
+      <View style={styles.headerActions}>
+        <GroupHomeShortcut />
+        {isAdmin && (
+          <TouchableOpacity accessibilityLabel="Editar grupo" accessibilityRole="button" style={styles.iconBtn} onPress={onEdit}>
+            <Ionicons name="settings-outline" size={20} color={Colors.n700} />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }

@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
   headerBody: { flex: 1, minWidth: 0 },
   headerTitle: { fontSize: 16, fontWeight: '800', color: Colors.n900 },
   headerSub: { fontSize: 11, color: Colors.n500 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.n100, alignItems: 'center', justifyContent: 'center' },
   listContent: { padding: Spacing.lg, paddingBottom: 28 },
   separator: { height: 8 },
