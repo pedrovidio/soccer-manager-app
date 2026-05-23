@@ -1,6 +1,17 @@
 import { httpClient } from '../../../lib/httpClient';
-import { uploadImageToSupabaseStorage } from '../../../lib/supabase';
 import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult, FavoriteSpotAthlete, GroupFinanceFilters, GroupFinanceReport, GroupExpensePayload } from '../groupTypes';
+
+function buildPhotoFormData(uri: string) {
+  const extension = uri.split('.').pop()?.split('?')[0]?.toLowerCase() || 'jpg';
+  const mimeType = extension === 'png' ? 'image/png' : extension === 'webp' ? 'image/webp' : 'image/jpeg';
+  const formData = new FormData();
+  formData.append('photo', {
+    uri,
+    name: `photo.${extension}`,
+    type: mimeType,
+  } as any);
+  return formData;
+}
 
 export const groupApi = {
   create: (payload: CreateGroupPayload) =>
@@ -37,12 +48,11 @@ export const groupApi = {
     httpClient.patch(`/groups/${groupId}`, payload).then((r) => r.data),
 
   uploadPhoto: async (groupId: string, uri: string) => {
-    const photoUrl = await uploadImageToSupabaseStorage({
-      bucket: 'group-photos',
-      ownerId: groupId,
-      uri,
-    });
-    return httpClient.patch(`/groups/${groupId}/photo-url`, { photoUrl }).then((r) => r.data as { photoUrl: string });
+    return httpClient
+      .patch(`/groups/${groupId}/photo`, buildPhotoFormData(uri), {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((r) => r.data as { photoUrl: string });
   },
 
   listByAthlete: (athleteId: string) =>

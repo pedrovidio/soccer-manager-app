@@ -22,11 +22,22 @@
     ],
     "android": {
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.anonymous.soccermanagerapp"
+      "package": "com.anonymous.soccermanagerapp",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "androidNavigationBar": {
       "visible": "leanback",
       "barStyle": "dark-content"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8be8d74e-d19a-4efe-822a-888ee14b83f8"
+      }
+    },
+    "owner": "pedrovidio"
   }
 }
