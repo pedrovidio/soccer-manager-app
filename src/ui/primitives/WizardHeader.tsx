@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { BackButton } from '../../BackButton';
+import { BackButton } from '../composites/BackButton';
 import { styles } from './styles';
 import { WizardHeaderProps } from './types';
 

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { AthleteFinancePayment } from '../../athleteTypes';
 import { formatCurrency, formatDate, statusLabel, typeLabel } from '../../utils/athleteFinanceFormatters';
 import { styles } from './styles';

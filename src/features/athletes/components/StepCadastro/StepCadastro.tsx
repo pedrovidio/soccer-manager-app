@@ -1,9 +1,9 @@
 import React from 'react';
 import { ActivityIndicator, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
-import { maskCpf, maskPhone } from '../../../common/masks';
-import { FormField, ChipRow, UFSelect } from '../../../common/components/form/FormElements';
+import { Colors } from '../../../../ui/tokens/theme';
+import { maskCpf, maskPhone } from '../../../../ui/utils/masks';
+import { FormField, ChipRow, UFSelect } from '../../../../ui/primitives';
 import { GENDERS, POSITIONS } from './options';
 import { styles } from './styles';
 import { StepCadastroProps } from './types';

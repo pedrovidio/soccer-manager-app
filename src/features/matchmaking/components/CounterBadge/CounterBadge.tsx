@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { s } from '../MatchHomeScreen.styles';
 
 interface CounterBadgeProps {

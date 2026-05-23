@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { AthleteStats } from '../../athleteTypes';
 import { ATTRS } from './profileData';
 import { styles } from './styles';

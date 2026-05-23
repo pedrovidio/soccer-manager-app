@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { posLabel } from '../../utils/formatters';
 import { AthleteRatingRow } from '../AthleteRatingRow';
 import { s } from '../MatchHomeScreen.styles';

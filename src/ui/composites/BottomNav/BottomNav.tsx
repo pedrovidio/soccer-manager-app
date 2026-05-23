@@ -3,7 +3,7 @@ import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '../../theme';
+import { Colors } from '../../tokens/theme';
 import { NAV_ITEMS, NAV_ROUTES, NavItem, NavTab } from './options';
 import { styles } from './styles';
 

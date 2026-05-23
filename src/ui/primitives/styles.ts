@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '../../../theme';
+import { Colors, Radius, Spacing } from '../tokens/theme';
 
 export const styles = StyleSheet.create({
   header: {

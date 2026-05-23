@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Switch, Text, View } from 'react-native';
-import { Colors } from '../../../theme';
+import { Colors } from '../tokens/theme';
 import { styles } from './styles';
 import { SwitchRowProps } from './types';
 

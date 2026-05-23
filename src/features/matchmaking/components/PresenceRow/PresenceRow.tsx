@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { MatchPresence, PresenceStatus } from '../../types';
 import { posLabel } from '../../utils/formatters';
 import { s } from '../MatchHomeScreen.styles';

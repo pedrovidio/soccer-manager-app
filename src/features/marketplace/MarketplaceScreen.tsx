@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import { BottomNav } from '../common/components/BottomNav';
+import { BottomNav } from '../../ui/composites/BottomNav';
 import { MarketplaceHeader } from './components/MarketplaceHeader';
 import { MarketplaceList } from './components/MarketplaceList';
 import { MarketplaceTabs } from './components/MarketplaceTabs';

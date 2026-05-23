@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
-import { BackButton } from '../../../common/components/BackButton';
+import { Colors } from '../../../../ui/tokens/theme';
+import { BackButton } from '../../../../ui/composites/BackButton';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 

@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '../../../common/theme';
+import { Colors, Radius, Spacing } from '../../../../ui/tokens/theme';
 
 const MENU_PADDING = 3;
 const MENU_HEIGHT = 40;

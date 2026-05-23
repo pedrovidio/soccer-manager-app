@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { AttributeSlider } from '../../../common/components/AttributeSlider';
-import { Colors } from '../../../common/theme';
+import { AttributeSlider } from '../../../athletes/components/AttributeSlider';
+import { Colors } from '../../../../ui/tokens/theme';
 import { ATTRIBUTES } from './options';
 import { styles } from './styles';
 import { RegisterStepProps } from './types';

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ConfirmedMatch } from '../../../athletes/athleteTypes';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { styles } from './MatchCard.styles';
 import { deriveMatchPhase, phaseLabel } from '../../../matchmaking/utils/matchPhase';
 

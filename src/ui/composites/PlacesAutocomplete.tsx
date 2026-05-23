@@ -4,7 +4,7 @@ import {
   StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius } from './theme';
+import { Colors, Radius } from '../tokens/theme';
 
 export interface PlaceResult {
   description: string;

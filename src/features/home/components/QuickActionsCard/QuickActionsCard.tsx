@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Notification } from '../../../notifications/types';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { styles } from './QuickActionsCard.styles';
 
 const INVITE_TYPES = ['MATCH_INVITE', 'GROUP_INVITE'];

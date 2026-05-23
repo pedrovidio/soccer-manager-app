@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomNav } from '../../../common/components/BottomNav/BottomNav';
-import { Colors } from '../../../common/theme';
+import { BottomNav } from '../../../../ui/composites/BottomNav/BottomNav';
+import { Colors } from '../../../../ui/tokens/theme';
 import { styles } from './styles';
 
 export const AthleteFinanceLoadingState = memo(function AthleteFinanceLoadingState() {

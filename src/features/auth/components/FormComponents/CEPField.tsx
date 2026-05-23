@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity } from 'react-native';
-import { Colors } from '../../../common/theme';
-import { maskCep } from '../../../common/masks';
+import { Colors } from '../../../../ui/tokens/theme';
+import { maskCep } from '../../../../ui/utils/masks';
 import { styles } from './styles';
 
 type CepResponse = {

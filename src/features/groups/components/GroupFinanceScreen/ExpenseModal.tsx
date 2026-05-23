@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Modal, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { ExpenseKind } from './types';
 import { styles } from './styles';
 

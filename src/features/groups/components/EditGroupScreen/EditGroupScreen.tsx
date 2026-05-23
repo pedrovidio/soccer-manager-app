@@ -8,7 +8,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { GroupForm } from '../GroupForm/GroupForm';
 import { EditGroupHeader } from './EditGroupHeader';
 import { GroupMemberStats } from './GroupMemberStats';

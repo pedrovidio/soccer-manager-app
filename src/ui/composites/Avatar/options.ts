@@ -1,4 +1,4 @@
-import { Colors } from '../../theme';
+import { Colors } from '../../tokens/theme';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg';
 export type AvatarColor = 'blue' | 'green' | 'amber';

@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { GroupFinanceByType } from '../../groupTypes';
 import { formatCurrency, isExpenseType, typeLabel } from '../../utils/financeFormatters';
 import { styles } from './styles';

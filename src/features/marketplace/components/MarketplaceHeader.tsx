@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { Colors } from '../../common/theme';
+import { Colors } from '../../../ui/tokens/theme';
 import { MarketplaceTab } from './types';
 import { styles } from './styles';
 

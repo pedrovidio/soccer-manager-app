@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { PlaceResult } from '../../../common/PlacesAutocomplete';
+import { PlaceResult } from '../../../../ui/composites/PlacesAutocomplete';
 import { useAuthStore } from '../../../auth/useAuthStore';
 import { matchApi } from '../../services/matchApi';
 import { MATCH_TYPES } from './options';

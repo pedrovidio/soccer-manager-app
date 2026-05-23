@@ -1,7 +1,7 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
-import { BottomNav } from '../../../common/components/BottomNav/BottomNav';
-import { Colors } from '../../../common/theme';
+import { BottomNav } from '../../../../ui/composites/BottomNav/BottomNav';
+import { Colors } from '../../../../ui/tokens/theme';
 import { AthleteFinanceErrorState, AthleteFinanceLoadingState } from './LoadingErrorState';
 import { FinanceFilters, FinanceTabs } from './FilterTabs';
 import { FinanceHeader } from './FinanceHeader';

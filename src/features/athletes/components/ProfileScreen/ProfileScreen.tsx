@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { BottomNav, NavTab } from '../../../common/components/BottomNav';
-import { Colors } from '../../../common/theme';
+import { BottomNav, NavTab } from '../../../../ui/composites/BottomNav';
+import { Colors } from '../../../../ui/tokens/theme';
 import { AttributesCard } from './AttributesCard';
 import { ProfileActions } from './ProfileActions';
 import { ProfileHero } from './ProfileHero';

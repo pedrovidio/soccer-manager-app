@@ -1,4 +1,4 @@
-import { maskCurrency, parseCurrency } from '../../common/masks';
+import { maskCurrency, parseCurrency } from '../../../ui/utils/masks';
 import { CreateGroupFormData, CreateGroupPayload, GroupResponse, UpdateGroupPayload } from '../groupTypes';
 
 export const INITIAL_GROUP_FORM: CreateGroupFormData = {

@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { ActivityIndicator, FlatList, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { NearbyAthlete } from '../../types';
 import { s } from '../MatchHomeScreen.styles';
 import { GENDER_OPTIONS } from './options';

@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '../../common/theme';
+import { Colors } from '../../../ui/tokens/theme';
 
 function GroupHomeShortcutComponent() {
   const router = useRouter();

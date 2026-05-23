@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl, Text } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { GroupMember } from '../../groupTypes';
 import { MemberRow } from './MemberRow';
 import { MemberListItem } from './types';

@@ -11,13 +11,13 @@ import { useNotificationActions } from '../notifications/hooks/useNotifications'
 import { useFavoriteGroup } from '../groups/hooks/useFavoriteGroup';
 import { groupApi } from '../groups/services/groupApi';
 import { useQuery } from '@tanstack/react-query';
-import { OverallBadge } from '../common/components/OverallBadge';
-import { Badge } from '../common/components/Badge';
-import { BottomNav, NavTab } from '../common/components/BottomNav';
+import { OverallBadge } from '../athletes/components/OverallBadge';
+import { Badge } from '../../ui/composites/Badge';
+import { BottomNav, NavTab } from '../../ui/composites/BottomNav';
 import { MatchCard } from './components/MatchCard';
 import { QuickActionsCard } from './components/QuickActionsCard';
 import { NotificationsSheet } from '../notifications/components/NotificationsSheet';
-import { Colors } from '../common/theme';
+import { Colors } from '../../ui/tokens/theme';
 import { styles } from './HomeScreen.styles';
 import { formatPositionLabel } from '../athletes/utils/positionLabel';
 import { useAthleteLocationSync } from '../athletes/hooks/useAthleteLocationSync';

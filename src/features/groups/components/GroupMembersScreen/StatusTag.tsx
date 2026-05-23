@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { styles } from './styles';
 
 type Props = {

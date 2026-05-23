@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../common/theme';
+import { Colors } from '../../../ui/tokens/theme';
 import { s } from './MatchHomeScreen.styles';
 import { useMatchHomeController } from '../hooks/useMatchHomeController';
 import { ConfirmationSection } from './MatchHomeScreen/ConfirmationSection';

@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { AthleteSearchResult } from '../../groupTypes';
 import { AthleteResultRow } from './AthleteResultRow';
 import { SelectedAthleteChip } from './SelectedAthleteChip';

@@ -9,8 +9,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../src/features/auth/useAuthStore';
 import { groupApi } from '../src/features/groups/services/groupApi';
 import { useFavoriteGroup } from '../src/features/groups/hooks/useFavoriteGroup';
-import { BottomNav, NavTab } from '../src/features/common/components/BottomNav';
-import { Colors, Radius, Spacing } from '../src/features/common/theme';
+import { BottomNav, NavTab } from '../src/ui/composites/BottomNav';
+import { Colors, Radius, Spacing } from '../src/ui/tokens/theme';
 import { GroupResponse } from '../src/features/groups/groupTypes';
 
 export default function GroupsScreen() {

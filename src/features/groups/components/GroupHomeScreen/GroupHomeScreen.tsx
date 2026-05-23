@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { GroupTopMenu } from '../GroupTopMenu';
 import { HomeHeader } from './HomeHeader';
 import { HomeErrorState, HomeLoadingState } from './LoadingErrorState';

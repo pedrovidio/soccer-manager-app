@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '../../../common/theme';
+import { Colors } from '../../../../ui/tokens/theme';
 import { GroupUpcomingMatch } from '../../groupTypes';
 import { formatMatchDate, formatMatchTime } from '../../utils/matchFormatters';
 import { styles } from './styles';

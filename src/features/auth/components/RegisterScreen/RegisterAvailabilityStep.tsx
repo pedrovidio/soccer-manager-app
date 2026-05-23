@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { SwitchRow, TimeSelect } from '../../../common/components/form/FormElements';
+import { SwitchRow, TimeSelect } from '../../../../ui/primitives';
 import { AvailabilitySlot } from '../../registerTypes';
 import { DAYS } from './options';
 import { addOneHour } from './registerUtils';
