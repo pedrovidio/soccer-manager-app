@@ -56,7 +56,7 @@ export function useMarketplaceScreen() {
 
       if (variables.accept && variables.invite.matchId) {
         router.push({
-          pathname: '/match-home',
+          pathname: '/matches/match-home',
           params: { matchId: variables.invite.matchId, groupId: '', isAdmin: '0' },
         } as any);
       }
@@ -86,7 +86,7 @@ export function useMarketplaceScreen() {
   }, [invitesQuery, spotMatchesQuery]);
 
   const goFinance = useCallback(() => {
-    router.push('/athlete-finance' as any);
+    router.push('/athletes/athlete-finance' as any);
   }, [router]);
 
   const acceptInvite = useCallback((invite: Invite) => {

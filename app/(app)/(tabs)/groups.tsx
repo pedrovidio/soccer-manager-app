@@ -6,15 +6,13 @@ import {
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuthStore } from '../src/features/auth/useAuthStore';
-import { groupApi } from '../src/features/groups/services/groupApi';
-import { useFavoriteGroup } from '../src/features/groups/hooks/useFavoriteGroup';
-import { BottomNav, NavTab } from '../src/ui/composites/BottomNav';
-import { Colors, Radius, Spacing } from '../src/ui/tokens/theme';
-import { GroupResponse } from '../src/features/groups/groupTypes';
+import { useAuthStore } from '../../../src/features/auth/useAuthStore';
+import { groupApi } from '../../../src/features/groups/services/groupApi';
+import { useFavoriteGroup } from '../../../src/features/groups/hooks/useFavoriteGroup';
+import { Colors, Radius, Spacing } from '../../../src/ui/tokens/theme';
+import { GroupResponse } from '../../../src/features/groups/groupTypes';
 
 export default function GroupsScreen() {
-  const activeTab: NavTab = 'groups';
   const router = useRouter();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const { favoriteId, toggle } = useFavoriteGroup();
@@ -32,7 +30,7 @@ export default function GroupsScreen() {
       {/* ── HEADER ── */}
       <View style={s.header}>
         <Text style={s.title}>Meus Grupos</Text>
-        <TouchableOpacity style={s.addBtn} onPress={() => router.push('/create-group')}>
+        <TouchableOpacity style={s.addBtn} onPress={() => router.push('/groups/create-group')}>
           <Ionicons name="add" size={22} color={Colors.white} />
         </TouchableOpacity>
       </View>
@@ -65,7 +63,7 @@ export default function GroupsScreen() {
               <Ionicons name="people-outline" size={48} color={Colors.n300} />
               <Text style={s.emptyTitle}>Nenhum grupo ainda</Text>
               <Text style={s.emptyText}>Crie um grupo ou aguarde um convite</Text>
-              <TouchableOpacity style={s.createBtn} onPress={() => router.push('/create-group')}>
+              <TouchableOpacity style={s.createBtn} onPress={() => router.push('/groups/create-group')}>
                 <Ionicons name="add-circle-outline" size={18} color={Colors.white} />
                 <Text style={s.createBtnText}>Criar grupo</Text>
               </TouchableOpacity>
@@ -76,14 +74,13 @@ export default function GroupsScreen() {
               group={item}
               isFavorite={favoriteId === item.id}
               onFavorite={() => toggle(item.id)}
-              onPress={() => router.push({ pathname: '/group-home', params: { groupId: item.id } } as any)}
+              onPress={() => router.push({ pathname: '/groups/group-home', params: { groupId: item.id } } as any)}
             />
           )}
         />
       )}
 
       {/* ── BOTTOM NAV ── */}
-      <BottomNav active={activeTab} />
     </SafeAreaView>
   );
 }

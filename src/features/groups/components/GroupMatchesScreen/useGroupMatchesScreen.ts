@@ -16,11 +16,11 @@ export function useGroupMatchesScreen() {
   });
 
   const goCreateMatch = useCallback(() => {
-    router.push({ pathname: '/create-match', params: { groupId } } as any);
+    router.push({ pathname: '/matches/create-match', params: { groupId } } as any);
   }, [groupId, router]);
 
   const goMatch = useCallback((matchId: string, isAdmin: boolean) => {
-    router.push({ pathname: '/match-home', params: { matchId, groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
+    router.push({ pathname: '/matches/match-home', params: { matchId, groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
   }, [groupId, router]);
 
   return {

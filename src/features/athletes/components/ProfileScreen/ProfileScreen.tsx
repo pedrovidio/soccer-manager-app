@@ -1,6 +1,5 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { BottomNav, NavTab } from '../../../../ui/composites/BottomNav';
 import { Colors } from '../../../../ui/tokens/theme';
 import { AttributesCard } from './AttributesCard';
 import { ProfileActions } from './ProfileActions';
@@ -37,7 +36,6 @@ export function ProfileScreen() {
         <AttributesCard stats={profile.stats} />
         <ProfileActions onGroups={controller.goGroups} onLogout={controller.confirmLogout} />
       </ScrollView>
-      <BottomNav active={'profile' as NavTab} />
     </View>
   );
 }

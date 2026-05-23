@@ -13,7 +13,6 @@ import { groupApi } from '../groups/services/groupApi';
 import { useQuery } from '@tanstack/react-query';
 import { OverallBadge } from '../athletes/components/OverallBadge';
 import { Badge } from '../../ui/composites/Badge';
-import { BottomNav, NavTab } from '../../ui/composites/BottomNav';
 import { MatchCard } from './components/MatchCard';
 import { QuickActionsCard } from './components/QuickActionsCard';
 import { NotificationsSheet } from '../notifications/components/NotificationsSheet';
@@ -24,7 +23,6 @@ import { useAthleteLocationSync } from '../athletes/hooks/useAthleteLocationSync
 import { financialBlockMessage, hasFinancialBlock } from '../athletes/utils/financialAccess';
 
 export default function HomeScreen() {
-  const [activeTab] = useState<NavTab>('home');
   const [matchTab, setMatchTab] = useState<'upcoming' | 'past'>('upcoming');
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -118,7 +116,7 @@ export default function HomeScreen() {
         {favoriteGroup && (
           <TouchableOpacity
             style={styles.favoriteCard}
-            onPress={() => router.push({ pathname: '/group-home', params: { groupId: favoriteGroup.id } } as any)}
+            onPress={() => router.push({ pathname: '/groups/group-home', params: { groupId: favoriteGroup.id } } as any)}
             activeOpacity={0.7}
           >
             <View style={styles.favoriteCardLeft}>
@@ -134,7 +132,7 @@ export default function HomeScreen() {
         {blockedByDebt && (
           <TouchableOpacity
             style={styles.debtCard}
-            onPress={() => router.push('/athlete-finance' as any)}
+            onPress={() => router.push('/athletes/athlete-finance' as any)}
             activeOpacity={0.7}
           >
             <Ionicons name="lock-closed-outline" size={18} color={Colors.errorDark} />
@@ -197,7 +195,6 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* ── BOTTOM NAV ── */}
-      <BottomNav active={activeTab} />
 
       {/* ── NOTIFICATIONS SHEET ── */}
       <NotificationsSheet

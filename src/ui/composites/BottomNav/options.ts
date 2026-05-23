@@ -6,7 +6,7 @@ export const NAV_ROUTES: Record<NavTab, string> = {
   home: '/',
   groups: '/groups',
   marketplace: '/marketplace',
-  financial: '/athlete-finance',
+  financial: '/athletes/athlete-finance',
   profile: '/profile',
 };
 

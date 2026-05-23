@@ -42,7 +42,7 @@ export function useAthleteFinanceScreen() {
     setSelectedPayment(null);
     if (payment.match?.id) {
       router.push({
-        pathname: '/match-home',
+        pathname: '/matches/match-home',
         params: { matchId: payment.match.id, groupId: payment.group?.id ?? '', isAdmin: '0' },
       } as any);
     }

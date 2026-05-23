@@ -31,7 +31,7 @@ export function useProfileScreen() {
     };
   }, [authName, dashboard]);
 
-  const goEditProfile = useCallback(() => router.push('/edit-profile' as any), [router]);
+  const goEditProfile = useCallback(() => router.push('/athletes/edit-profile' as any), [router]);
   const goGroups = useCallback(() => router.push('/groups' as any), [router]);
 
   const confirmLogout = useCallback(() => {

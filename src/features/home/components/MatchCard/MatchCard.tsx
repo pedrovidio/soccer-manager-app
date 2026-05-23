@@ -42,7 +42,7 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.8}
-      onPress={() => router.push({ pathname: '/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: isAdmin ? '1' : '0' } } as any)}
+      onPress={() => router.push({ pathname: '/matches/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: isAdmin ? '1' : '0' } } as any)}
     >
       {/* HEADER: data + badge confirmado */}
       <View style={styles.header}>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import { BottomNav } from '../../ui/composites/BottomNav';
 import { MarketplaceHeader } from './components/MarketplaceHeader';
 import { MarketplaceList } from './components/MarketplaceList';
 import { MarketplaceTabs } from './components/MarketplaceTabs';
@@ -31,7 +30,6 @@ export default function MarketplaceScreen() {
         onDeclineInvite={marketplace.declineInvite}
         onApply={marketplace.applyToMatch}
       />
-      <BottomNav active="marketplace" />
     </SafeAreaView>
   );
 }

@@ -39,14 +39,14 @@ export function useGroupHomeScreen() {
     [financeQuery.data?.payments],
   );
 
-  const goEditGroup = useCallback(() => router.push({ pathname: '/edit-group', params: { groupId } } as any), [groupId, router]);
-  const goInviteAthlete = useCallback((groupName: string) => router.push({ pathname: '/invite-athlete', params: { groupId, groupName } } as any), [groupId, router]);
-  const goCreateMatch = useCallback(() => router.push({ pathname: '/create-match', params: { groupId } } as any), [groupId, router]);
-  const goFinance = useCallback((tab?: string) => router.push({ pathname: '/group-finance', params: { groupId, ...(tab && { tab }) } } as any), [groupId, router]);
-  const goMembers = useCallback((tab: string) => router.push({ pathname: '/group-members', params: { groupId, tab } } as any), [groupId, router]);
-  const goMatches = useCallback(() => router.push({ pathname: '/group-matches', params: { groupId } } as any), [groupId, router]);
+  const goEditGroup = useCallback(() => router.push({ pathname: '/groups/edit-group', params: { groupId } } as any), [groupId, router]);
+  const goInviteAthlete = useCallback((groupName: string) => router.push({ pathname: '/groups/invite-athlete', params: { groupId, groupName } } as any), [groupId, router]);
+  const goCreateMatch = useCallback(() => router.push({ pathname: '/matches/create-match', params: { groupId } } as any), [groupId, router]);
+  const goFinance = useCallback((tab?: string) => router.push({ pathname: '/groups/group-finance', params: { groupId, ...(tab && { tab }) } } as any), [groupId, router]);
+  const goMembers = useCallback((tab: string) => router.push({ pathname: '/groups/group-members', params: { groupId, tab } } as any), [groupId, router]);
+  const goMatches = useCallback(() => router.push({ pathname: '/groups/group-matches', params: { groupId } } as any), [groupId, router]);
   const goMatch = useCallback((matchId: string, isAdmin: boolean) => {
-    router.push({ pathname: '/match-home', params: { matchId, groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
+    router.push({ pathname: '/matches/match-home', params: { matchId, groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
   }, [groupId, router]);
 
   return {

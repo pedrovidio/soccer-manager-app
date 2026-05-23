@@ -293,7 +293,7 @@ export function useMatchHomeController() {
   }, [athleteId, data, isAdmin, matchmakingResult, presenceFilter, spotApplications]);
 
   const goToEdit = useCallback(() => {
-    router.push({ pathname: '/create-match', params: { groupId, matchId } } as any);
+    router.push({ pathname: '/matches/create-match', params: { groupId, matchId } } as any);
   }, [groupId, matchId, router]);
 
   return {
