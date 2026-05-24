@@ -296,6 +296,10 @@ export function useMatchHomeController() {
     router.push({ pathname: '/matches/create-match', params: { groupId, matchId } } as any);
   }, [groupId, matchId, router]);
 
+  const goToLiveMatch = useCallback(() => {
+    router.push(`/matches/live/${matchId}` as any);
+  }, [matchId, router]);
+
   return {
     athleteId,
     data,
@@ -332,6 +336,7 @@ export function useMatchHomeController() {
     confirmCancelPresence,
     finishMatchMutation,
     goToEdit,
+    goToLiveMatch,
     matchmakingMutation,
     openGuestMutation,
     ratingMutation,

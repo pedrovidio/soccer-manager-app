@@ -11,10 +11,11 @@ type MatchInfoCardProps = {
 };
 
 function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
-  const { data, finishMatchMutation, isAdmin, setFinishModalVisible, summary } = controller;
+  const { data, finishMatchMutation, goToLiveMatch, isAdmin, setFinishModalVisible, summary } = controller;
   if (!data || !summary) return null;
 
   const isFinished = data.status === 'FINISHED';
+  const canOpenLiveMatch = data.status !== 'FINISHED' && data.status !== 'CANCELLED';
   const waiting = summary.phase === 'WAITING_CONFIRMATION';
 
   return (
@@ -44,6 +45,13 @@ function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
           {phaseLabel(summary.phase)}
         </Text>
       </View>
+
+      {canOpenLiveMatch && (
+        <TouchableOpacity style={s.liveMatchBtn} onPress={goToLiveMatch} activeOpacity={0.8}>
+          <Ionicons name="radio-outline" size={18} color={Colors.white} />
+          <Text style={s.liveMatchBtnText}>Transmissao ao Vivo</Text>
+        </TouchableOpacity>
+      )}
 
       {isAdmin && !isFinished && data.status !== 'CANCELLED' && (
         <View style={s.adminActionsRow}>

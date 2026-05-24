@@ -24,6 +24,8 @@ export const s = StyleSheet.create({
   infoDivider: { width: 1, height: 36, backgroundColor: Colors.n200 },
   statusBadge: { alignSelf: 'flex-start', borderRadius: Radius.r999, paddingHorizontal: 12, paddingVertical: 4 },
   statusBadgeText: { fontSize: 12, fontWeight: '700' },
+  liveMatchBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.error, borderRadius: Radius.r12, paddingVertical: 13 },
+  liveMatchBtnText: { color: Colors.white, fontSize: 14, fontWeight: '800' },
 
   section:      { marginTop: Spacing.lg, paddingHorizontal: Spacing.lg },
   sectionHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
