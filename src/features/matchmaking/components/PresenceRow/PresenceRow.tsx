@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../../ui/tokens/theme';
 import { MatchPresence, PresenceStatus } from '../../types';
 import { posLabel } from '../../utils/formatters';
-import { s } from '../MatchHomeScreen.styles';
+import { s } from '../../screens/MatchHomeScreen.styles';
 
 const STATUS_CONFIG: Record<PresenceStatus, { label: string; bg: string; color: string; icon: string }> = {
   CONFIRMED: { label: 'Confirmado', bg: Colors.successLight, color: Colors.successDark, icon: 'checkmark-circle' },

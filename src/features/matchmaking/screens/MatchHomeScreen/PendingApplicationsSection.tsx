@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { SpotApplicationRow } from '../SpotApplicationRow';
+import { SpotApplicationRow } from '../../components/SpotApplicationRow';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 

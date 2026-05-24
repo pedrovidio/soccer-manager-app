@@ -1,3 +1,5 @@
-import GroupFinanceScreen from '../../../src/features/groups/components/GroupFinanceScreen';
+import GroupFinanceScreen from '../../../src/features/groups/screens/GroupFinanceScreen';
 
-export default GroupFinanceScreen;
+export default function Page() {
+  return <GroupFinanceScreen />;
+}

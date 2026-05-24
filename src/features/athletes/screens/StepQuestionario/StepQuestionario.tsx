@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { Colors } from '../../../../ui/tokens/theme';
-import { AttributeSlider } from '../AttributeSlider';
+import { AttributeSlider } from '../../components/AttributeSlider';
 import { ChipRow, LevelCard } from '../../../../ui/primitives';
 import { ATTRIBUTES, FREQUENCY, LEVELS, YEARS } from './options';
 import { styles } from './styles';

@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } 
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../../ui/tokens/theme';
 import { posLabel } from '../../utils/formatters';
-import { AthleteRatingRow } from '../AthleteRatingRow';
+import { AthleteRatingRow } from '../../components/AthleteRatingRow';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 

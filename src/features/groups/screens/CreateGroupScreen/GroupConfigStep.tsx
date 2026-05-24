@@ -3,7 +3,7 @@ import { ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../../ui/tokens/theme';
 import { CreateGroupFormData } from '../../groupTypes';
-import { GroupForm } from '../GroupForm/GroupForm';
+import { GroupForm } from '../../components/GroupForm/GroupForm';
 import { styles } from './styles';
 
 type Props = {

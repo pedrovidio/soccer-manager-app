@@ -1,11 +1,5 @@
-import React from 'react';
-import HomeScreen from '../../../src/features/home/HomeScreen';
-import { useAuthStore } from '../../../src/features/auth/useAuthStore';
+import HomeScreen from '../../../src/features/home/screens/HomeScreen';
 
 export default function Page() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  
-  if (!isAuthenticated) return null;
-  
   return <HomeScreen />;
 }

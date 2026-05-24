@@ -1,3 +1,5 @@
-import GroupMatchesScreen from '../../../src/features/groups/components/GroupMatchesScreen';
+import GroupMatchesScreen from '../../../src/features/groups/screens/GroupMatchesScreen';
 
-export default GroupMatchesScreen;
+export default function Page() {
+  return <GroupMatchesScreen />;
+}

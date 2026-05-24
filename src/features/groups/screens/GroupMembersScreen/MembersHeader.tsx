@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { BackButton } from '../../../../ui/composites/BackButton';
-import { GroupHomeShortcut } from '../GroupHomeShortcut';
+import { GroupHomeShortcut } from '../../components/GroupHomeShortcut';
 import { styles } from './styles';
 
 function MembersHeaderComponent({ groupName }: { groupName: string }) {

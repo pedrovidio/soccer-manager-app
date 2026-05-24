@@ -1,3 +1,5 @@
-import AthleteFinanceScreen from '../../../src/features/athletes/components/AthleteFinanceScreen';
+import AthleteFinanceScreen from '../../../src/features/athletes/screens/AthleteFinanceScreen';
 
-export default AthleteFinanceScreen;
+export default function Page() {
+  return <AthleteFinanceScreen />;
+}

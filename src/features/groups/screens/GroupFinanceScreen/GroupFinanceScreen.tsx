@@ -1,7 +1,7 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
 import { Colors } from '../../../../ui/tokens/theme';
-import { GroupTopMenu } from '../GroupTopMenu';
+import { GroupTopMenu } from '../../components/GroupTopMenu';
 import { ExpenseModal } from './ExpenseModal';
 import { FinanceActions } from './FinanceActions';
 import { FinanceErrorState, FinanceLoadingState } from './LoadingErrorState';

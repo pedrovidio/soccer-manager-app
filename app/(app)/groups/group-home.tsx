@@ -1,2 +1,5 @@
-import GroupHomeScreen from '../../../src/features/groups/components/GroupHomeScreen';
-export default GroupHomeScreen;
+import GroupHomeScreen from '../../../src/features/groups/screens/GroupHomeScreen';
+
+export default function Page() {
+  return <GroupHomeScreen />;
+}

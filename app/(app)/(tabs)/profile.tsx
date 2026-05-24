@@ -1,2 +1,5 @@
-import ProfileScreen from '../../../src/features/athletes/components/ProfileScreen';
-export default ProfileScreen;
+import ProfileScreen from '../../../src/features/athletes/screens/ProfileScreen';
+
+export default function Page() {
+  return <ProfileScreen />;
+}

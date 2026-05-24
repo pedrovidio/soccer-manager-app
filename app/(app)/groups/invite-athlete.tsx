@@ -1,2 +1,5 @@
-import InviteAthleteScreen from '../../../src/features/groups/components/InviteAthleteScreen';
-export default InviteAthleteScreen;
+import InviteAthleteScreen from '../../../src/features/groups/screens/InviteAthleteScreen';
+
+export default function Page() {
+  return <InviteAthleteScreen />;
+}

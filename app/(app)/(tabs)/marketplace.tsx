@@ -1,3 +1,5 @@
-import MarketplaceScreen from '../../../src/features/marketplace/MarketplaceScreen';
+import MarketplaceScreen from '../../../src/features/marketplace/screens/MarketplaceScreen';
 
-export default MarketplaceScreen;
+export default function Page() {
+  return <MarketplaceScreen />;
+}

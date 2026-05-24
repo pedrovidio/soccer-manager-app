@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../../ui/tokens/theme';
 import { BackButton } from '../../../../ui/composites/BackButton';
-import { GroupHomeShortcut } from '../GroupHomeShortcut';
+import { GroupHomeShortcut } from '../../components/GroupHomeShortcut';
 import { styles } from './styles';
 
 type Props = {

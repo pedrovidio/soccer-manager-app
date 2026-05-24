@@ -5,22 +5,22 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../auth/useAuthStore';
-import { useHomeDashboard } from './hooks/useHomeDashboard';
-import { useNotificationActions } from '../notifications/hooks/useNotifications';
-import { useFavoriteGroup } from '../groups/hooks/useFavoriteGroup';
-import { groupApi } from '../groups/services/groupApi';
+import { useAuthStore } from '../../auth/useAuthStore';
+import { useHomeDashboard } from '../hooks/useHomeDashboard';
+import { useNotificationActions } from '../../notifications/hooks/useNotifications';
+import { useFavoriteGroup } from '../../groups/hooks/useFavoriteGroup';
+import { groupApi } from '../../groups/services/groupApi';
 import { useQuery } from '@tanstack/react-query';
-import { OverallBadge } from '../athletes/components/OverallBadge';
-import { Badge } from '../../ui/composites/Badge';
-import { MatchCard } from './components/MatchCard';
-import { QuickActionsCard } from './components/QuickActionsCard';
-import { NotificationsSheet } from '../notifications/components/NotificationsSheet';
-import { Colors } from '../../ui/tokens/theme';
-import { styles } from './HomeScreen.styles';
-import { formatPositionLabel } from '../athletes/utils/positionLabel';
-import { useAthleteLocationSync } from '../athletes/hooks/useAthleteLocationSync';
-import { financialBlockMessage, hasFinancialBlock } from '../athletes/utils/financialAccess';
+import { OverallBadge } from '../../athletes/components/OverallBadge';
+import { Badge } from '../../../ui/composites/Badge';
+import { MatchCard } from '../components/MatchCard';
+import { QuickActionsCard } from '../components/QuickActionsCard';
+import { NotificationsSheet } from '../../notifications/components/NotificationsSheet';
+import { Colors } from '../../../ui/tokens/theme';
+import { styles } from '../HomeScreen.styles';
+import { formatPositionLabel } from '../../athletes/utils/positionLabel';
+import { useAthleteLocationSync } from '../../athletes/hooks/useAthleteLocationSync';
+import { financialBlockMessage, hasFinancialBlock } from '../../athletes/utils/financialAccess';
 
 export default function HomeScreen() {
   const [matchTab, setMatchTab] = useState<'upcoming' | 'past'>('upcoming');

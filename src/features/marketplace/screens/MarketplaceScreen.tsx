@@ -1,10 +1,10 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import { MarketplaceHeader } from './components/MarketplaceHeader';
-import { MarketplaceList } from './components/MarketplaceList';
-import { MarketplaceTabs } from './components/MarketplaceTabs';
-import { styles } from './components/styles';
-import { useMarketplaceScreen } from './hooks/useMarketplaceScreen';
+import { MarketplaceHeader } from '../components/MarketplaceHeader';
+import { MarketplaceList } from '../components/MarketplaceList';
+import { MarketplaceTabs } from '../components/MarketplaceTabs';
+import { styles } from '../components/styles';
+import { useMarketplaceScreen } from '../hooks/useMarketplaceScreen';
 
 export default function MarketplaceScreen() {
   const marketplace = useMarketplaceScreen();

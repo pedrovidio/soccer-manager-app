@@ -1,2 +1,5 @@
-import EditGroupScreen from '../../../src/features/groups/components/EditGroupScreen';
-export default EditGroupScreen;
+import EditGroupScreen from '../../../src/features/groups/screens/EditGroupScreen';
+
+export default function Page() {
+  return <EditGroupScreen />;
+}

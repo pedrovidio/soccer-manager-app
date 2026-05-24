@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { PresenceRow } from '../PresenceRow';
+import { PresenceRow } from '../../components/PresenceRow';
 import { s } from '../MatchHomeScreen.styles';
 import { PRESENCE_FILTER_LABEL } from './options';
 import { MatchHomeController } from './types';

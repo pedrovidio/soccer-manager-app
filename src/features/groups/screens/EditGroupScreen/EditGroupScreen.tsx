@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Colors } from '../../../../ui/tokens/theme';
-import { GroupForm } from '../GroupForm/GroupForm';
+import { GroupForm } from '../../components/GroupForm/GroupForm';
 import { EditGroupHeader } from './EditGroupHeader';
 import { GroupMemberStats } from './GroupMemberStats';
 import { styles } from './styles';
