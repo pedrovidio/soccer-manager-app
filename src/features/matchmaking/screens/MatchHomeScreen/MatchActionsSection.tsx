@@ -21,7 +21,7 @@ function MatchActionsSectionComponent({ controller }: MatchActionsSectionProps) 
     <View style={s.section}>
       <Text style={s.sectionTitle}>Acoes da partida</Text>
       <View style={s.matchActionsCard}>
-        {isParticipant && data.status !== 'CANCELLED' && (
+        {isParticipant && data.status !== 'CANCELLED' && summary.phase !== 'TEAMS_DRAWN' && (
           <TouchableOpacity
             style={[s.secondaryActionBtn, s.secondaryActionDanger]}
             onPress={confirmCancelPresence}

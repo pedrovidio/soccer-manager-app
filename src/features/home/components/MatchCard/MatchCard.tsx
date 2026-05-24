@@ -33,6 +33,7 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
     status: match.status,
     type: match.type,
     confirmedCount: match.confirmedSlots,
+    isDrafted: match.isDrafted,
     hasMatchmaking,
   });
   const myTeam = hasMatchmaking

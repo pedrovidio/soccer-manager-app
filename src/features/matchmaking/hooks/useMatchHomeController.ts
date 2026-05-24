@@ -265,6 +265,7 @@ export function useMatchHomeController() {
       status: data.status,
       type: data.type,
       confirmedCount: confirmed,
+      isDrafted: data.isDrafted,
       hasMatchmaking: hasVisibleMatchmakingResult,
     });
 

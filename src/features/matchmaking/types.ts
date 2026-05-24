@@ -15,6 +15,7 @@ export interface Match {
   city?: string;
   type: MatchType;
   status: MatchStatus;
+  isDrafted?: boolean;
   phase?: MatchPhase;
   displayStatus?: string;
   minimumConfirmed?: number;
@@ -61,6 +62,7 @@ export interface MatchDetail {
   longitude: number;
   type: MatchType;
   status: MatchStatus;
+  isDrafted?: boolean;
   phase?: MatchPhase;
   displayStatus?: string;
   minimumConfirmed?: number;

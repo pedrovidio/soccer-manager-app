@@ -14,13 +14,15 @@ export function deriveMatchPhase(input: {
   status: MatchStatus | string;
   type: MatchType | string;
   confirmedCount: number;
+  isDrafted?: boolean;
   hasMatchmaking?: boolean;
 }): MatchPhase {
   if (input.status === 'CANCELLED') return 'CANCELLED';
   if (input.status === 'FINISHED') return 'FINISHED';
+  if (input.status === 'IN_PROGRESS') return 'IN_PROGRESS';
+  if (input.isDrafted) return 'TEAMS_DRAWN';
   if (input.hasMatchmaking) return 'TEAMS_DRAWN';
   if (input.confirmedCount >= minimumConfirmedFor(input.type)) return 'CONFIRMED_WAITING_DRAW';
-  if (input.status === 'IN_PROGRESS') return 'IN_PROGRESS';
   return 'WAITING_CONFIRMATION';
 }
 
