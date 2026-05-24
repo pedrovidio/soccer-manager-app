@@ -9,6 +9,20 @@ export interface LoginResponse {
   name: string;
 }
 
+export interface RequestPasswordResetPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  tokenOrCode: string;
+  newPassword: string;
+}
+
+export interface PasswordResetResponse {
+  success: true;
+}
+
 export interface AuthState {
   token: string | null;
   athleteId: string | null;

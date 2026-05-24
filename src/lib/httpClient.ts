@@ -10,6 +10,18 @@ export function setMemoryToken(t: string | null) { _memoryToken = t; }
 export function getMemoryToken() { return _memoryToken; }
 export function setUnauthorizedHandler(handler: (() => void) | null) { _onUnauthorized = handler; }
 
+function redactSensitiveValues(value: unknown): unknown {
+  if (!value || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map(redactSensitiveValues);
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, nestedValue]) => [
+      key,
+      /password|token|secret|authorization|key/i.test(key) ? '[REDACTED]' : redactSensitiveValues(nestedValue),
+    ]),
+  );
+}
+
 export const httpClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
   timeout: 10_000,
@@ -24,7 +36,7 @@ httpClient.interceptors.request.use(async (config) => {
     method: config.method?.toUpperCase(),
     url: `${config.baseURL ?? ''}${config.url ?? ''}`,
     params: config.params,
-    data: config.data,
+    data: redactSensitiveValues(config.data),
     hasAuth: !!token,
   });
   return config;

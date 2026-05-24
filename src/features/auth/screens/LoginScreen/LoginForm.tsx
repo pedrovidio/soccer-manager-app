@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Button } from '@ui/primitives';
 import { Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
@@ -10,6 +11,7 @@ type LoginFormProps = {
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onSubmit: () => void;
+  onForgotPasswordPress: () => void;
   onRegisterPress: () => void;
 };
 
@@ -20,6 +22,7 @@ function LoginFormComponent({
   onEmailChange,
   onPasswordChange,
   onSubmit,
+  onForgotPasswordPress,
   onRegisterPress,
 }: LoginFormProps) {
   return (
@@ -52,6 +55,8 @@ function LoginFormComponent({
       >
         {loading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.btnText}>Entrar</Text>}
       </TouchableOpacity>
+
+      <Button title="Esqueci minha senha" variant="text" onPress={onForgotPasswordPress} />
 
       <TouchableOpacity onPress={onRegisterPress} style={styles.registerLink}>
         <Text style={styles.registerLinkText}>

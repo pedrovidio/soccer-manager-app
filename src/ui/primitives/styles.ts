@@ -2,6 +2,49 @@ import { StyleSheet } from 'react-native';
 import { Colors, Radius, Spacing } from '../tokens/theme';
 
 export const styles = StyleSheet.create({
+  input: {
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.n300,
+    borderRadius: Radius.r8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: Colors.n900,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.r12,
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.lg,
+  },
+  buttonPrimary: {
+    backgroundColor: Colors.primary,
+  },
+  buttonSecondary: {
+    borderWidth: 1,
+    borderColor: Colors.n300,
+    backgroundColor: Colors.white,
+  },
+  buttonText: {
+    backgroundColor: 'transparent',
+    paddingVertical: Spacing.md,
+  },
+  buttonDisabled: {
+    opacity: 0.65,
+  },
+  buttonLabel: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  buttonSecondaryLabel: {
+    color: Colors.n700,
+  },
+  buttonTextLabel: {
+    color: Colors.primary,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

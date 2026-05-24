@@ -31,6 +31,10 @@ export function useLoginScreen() {
     router.push('/register');
   }, [router]);
 
+  const goToForgotPassword = useCallback(() => {
+    router.push('/forgot-password');
+  }, [router]);
+
   return {
     email,
     password,
@@ -39,5 +43,6 @@ export function useLoginScreen() {
     setPassword,
     handleLogin,
     goToRegister,
+    goToForgotPassword,
   };
 }

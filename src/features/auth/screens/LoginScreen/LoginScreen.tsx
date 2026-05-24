@@ -30,6 +30,7 @@ export default function LoginScreen() {
             onEmailChange={loginScreen.setEmail}
             onPasswordChange={loginScreen.setPassword}
             onSubmit={loginScreen.handleLogin}
+            onForgotPasswordPress={loginScreen.goToForgotPassword}
             onRegisterPress={loginScreen.goToRegister}
           />
         </ScrollView>
