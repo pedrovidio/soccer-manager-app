@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { GroupFinanceByMatch } from '../../groupTypes';
-import { formatCurrency, formatDate } from '../../utils/financeFormatters';
+import { GroupFinanceByMatch } from '@features/groups/groupTypes';
+import { formatCurrency, formatDate } from '@features/groups/utils/financeFormatters';
 import { EmptyState } from './EmptyState';
 import { styles } from './styles';
 

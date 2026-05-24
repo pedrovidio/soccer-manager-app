@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { s } from '../../screens/MatchHomeScreen.styles';
+import { Colors } from '@ui/tokens/theme';
+import { s } from '@features/matchmaking/screens/MatchHomeScreen.styles';
 
 interface CounterBadgeProps {
   value: number;

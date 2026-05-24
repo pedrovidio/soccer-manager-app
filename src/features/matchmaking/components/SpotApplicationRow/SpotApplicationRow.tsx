@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { SpotApplication } from '../../types';
-import { posLabel } from '../../utils/formatters';
-import { s } from '../../screens/MatchHomeScreen.styles';
+import { Colors } from '@ui/tokens/theme';
+import { SpotApplication } from '@features/matchmaking/types';
+import { posLabel } from '@features/matchmaking/utils/formatters';
+import { s } from '@features/matchmaking/screens/MatchHomeScreen.styles';
 
 interface SpotApplicationRowProps {
   item: SpotApplication;

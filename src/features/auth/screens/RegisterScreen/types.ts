@@ -1,4 +1,4 @@
-import { RegisterFormData } from '../../registerTypes';
+import { RegisterFormData } from '@features/auth/registerTypes';
 
 export type RegisterFieldSetter = (
   field: keyof RegisterFormData,

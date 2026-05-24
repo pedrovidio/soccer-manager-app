@@ -4,8 +4,8 @@ import * as Haptics from 'expo-haptics';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '../../../lib/queryKeys';
-import { useAuthStore } from '../../auth/useAuthStore';
+import { queryKeys } from '@lib/queryKeys';
+import { useAuthStore } from '@features/auth/useAuthStore';
 import { athleteApi } from '../services/athleteApi';
 import { availabilitySchema, AvailabilityFormData } from '../schemas/availabilitySchema';
 

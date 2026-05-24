@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
-import { BackButton } from '../../../../ui/composites/BackButton';
+import { BackButton } from '@ui/composites/BackButton';
 import { styles } from './styles';
 
 type Props = {

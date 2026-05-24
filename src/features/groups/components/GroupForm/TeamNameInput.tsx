@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { TextInput } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { Field } from './Field';
 import { styles } from './styles';
 

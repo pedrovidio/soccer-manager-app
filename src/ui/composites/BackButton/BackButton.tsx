@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '../../tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 interface Props {

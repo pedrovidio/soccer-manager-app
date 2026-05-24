@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { GroupFinancePayment } from '../../groupTypes';
+import { GroupFinancePayment } from '@features/groups/groupTypes';
 import { EmptyState } from './EmptyState';
 import { PaymentRow } from './PaymentRow';
 import { styles } from './styles';

@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupUpcomingMatch } from '../../groupTypes';
+import { Colors } from '@ui/tokens/theme';
+import { GroupUpcomingMatch } from '@features/groups/groupTypes';
 import { EmptyMatches } from './EmptyMatches';
 import { MatchRow } from './MatchRow';
 import { styles } from './styles';

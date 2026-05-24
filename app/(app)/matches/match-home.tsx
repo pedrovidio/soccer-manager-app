@@ -1,4 +1,4 @@
-import MatchHomeScreen from '../../../src/features/matchmaking/screens/MatchHomeScreen';
+import MatchHomeScreen from '@features/matchmaking/screens/MatchHomeScreen';
 
 export default function Page() {
   return <MatchHomeScreen />;

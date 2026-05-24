@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { Invite } from '../../athletes/athleteTypes';
-import { Colors } from '../../../ui/tokens/theme';
+import type { Invite } from '@features/athletes/athleteTypes';
+import { Colors } from '@ui/tokens/theme';
 import { InfoLine } from './InfoLine';
 import { formatMarketplaceDate } from './marketplaceFormatters';
 import { styles } from './styles';

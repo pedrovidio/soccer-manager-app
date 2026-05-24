@@ -1,4 +1,4 @@
-import { httpClient } from '../../../lib/httpClient';
+import { httpClient } from '@lib/httpClient';
 import { CreateGroupPayload, UpdateGroupPayload, GroupResponse, GroupHomeData, GroupInviteItem, AthleteSearchResult, FavoriteSpotAthlete, GroupFinanceFilters, GroupFinanceReport, GroupExpensePayload } from '../groupTypes';
 
 function buildPhotoFormData(uri: string) {

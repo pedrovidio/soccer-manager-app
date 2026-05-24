@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { CounterBadge } from '../../components/CounterBadge';
+import { Colors } from '@ui/tokens/theme';
+import { CounterBadge } from '@features/matchmaking/components/CounterBadge';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 

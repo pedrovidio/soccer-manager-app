@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, TextInput, View } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { AssessmentFormData } from '../../schemas/assessmentSchema';
+import { AssessmentFormData } from '@features/athletes/schemas/assessmentSchema';
 import { STAT_FIELDS } from './options';
 import { styles } from './styles';
 

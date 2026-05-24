@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 function SubmitButtonComponent({ isPending, isLastStep, onPress }: { isPending: boolean; isLastStep: boolean; onPress: () => void }) {

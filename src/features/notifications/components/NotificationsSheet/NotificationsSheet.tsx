@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Modal, StatusBar, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { EmptyNotifications } from './EmptyNotifications';
 import { MarkAllReadButton } from './MarkAllReadButton';
 import { NotificationsHeader } from './NotificationsHeader';

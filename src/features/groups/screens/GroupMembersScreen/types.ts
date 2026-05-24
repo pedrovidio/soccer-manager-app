@@ -1,4 +1,4 @@
-import { GroupMember } from '../../groupTypes';
+import { GroupMember } from '@features/groups/groupTypes';
 
 export type MembersTab = 'members' | 'spot';
 

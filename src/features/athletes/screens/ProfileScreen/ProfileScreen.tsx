@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { AttributesCard } from './AttributesCard';
 import { ProfileActions } from './ProfileActions';
 import { ProfileHero } from './ProfileHero';

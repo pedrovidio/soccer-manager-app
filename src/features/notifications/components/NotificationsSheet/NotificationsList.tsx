@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, View } from 'react-native';
-import { Notification } from '../../types';
+import { Notification } from '@features/notifications/types';
 import { NotificationCard } from './NotificationCard';
 import { NotificationActionProps } from './types';
 import { styles } from './styles';

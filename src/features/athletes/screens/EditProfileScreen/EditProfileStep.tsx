@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import StepCadastro from '../StepCadastro';
 import StepDisponibilidade from '../StepDisponibilidade';
 import StepQuestionario from '../StepQuestionario';
-import { useEditProfileForm } from '../../hooks/useEditProfileForm';
+import { useEditProfileForm } from '@features/athletes/hooks/useEditProfileForm';
 
 type Props = {
   form: ReturnType<typeof useEditProfileForm>;

@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../auth/useAuthStore';
-import { useHomeDashboard } from '../../home/hooks/useHomeDashboard';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
 import { athleteApi } from '../services/athleteApi';
-import { httpClient } from '../../../lib/httpClient';
-import { queryKeys } from '../../../lib/queryKeys';
-import { maskCpf, maskPhone, maskCep, digitsOnly } from '../../../ui/utils/masks';
-import type { FootballLevel, YearsPlaying, WeeklyFrequency, AvailabilitySlot } from '../../auth/registerTypes';
+import { httpClient } from '@lib/httpClient';
+import { queryKeys } from '@lib/queryKeys';
+import { maskCpf, maskPhone, maskCep, digitsOnly } from '@ui/utils/masks';
+import type { FootballLevel, YearsPlaying, WeeklyFrequency, AvailabilitySlot } from '@features/auth/registerTypes';
 
 export type Step = 0 | 1 | 2;
 

@@ -1,4 +1,4 @@
-import { GroupFinanceStatus, GroupFinanceType } from '../../groupTypes';
+import { GroupFinanceStatus, GroupFinanceType } from '@features/groups/groupTypes';
 
 export type FinanceTab = 'review' | 'overview' | 'matches' | 'defaulters' | 'expenses' | 'payments';
 export type StatusFilter = 'ALL' | GroupFinanceStatus;

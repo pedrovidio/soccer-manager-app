@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ConfirmedMatch } from '../../../athletes/athleteTypes';
-import { Colors } from '../../../../ui/tokens/theme';
+import { ConfirmedMatch } from '@features/athletes/athleteTypes';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from './MatchCard.styles';
-import { deriveMatchPhase, phaseLabel } from '../../../matchmaking/utils/matchPhase';
+import { deriveMatchPhase, phaseLabel } from '@features/matchmaking/utils/matchPhase';
 
 const TYPE_STYLE: Record<string, object> = {
   CAMPO:   styles.tagCampo,

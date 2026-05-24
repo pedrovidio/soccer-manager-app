@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 export const FinanceLoadingState = memo(function FinanceLoadingState() {

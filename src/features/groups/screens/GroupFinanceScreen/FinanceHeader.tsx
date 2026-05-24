@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
-import { BackButton } from '../../../../ui/composites/BackButton';
-import { GroupHomeShortcut } from '../../components/GroupHomeShortcut';
+import { BackButton } from '@ui/composites/BackButton';
+import { GroupHomeShortcut } from '@features/groups/components/GroupHomeShortcut';
 import { styles } from './styles';
 
 type Props = {

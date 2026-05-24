@@ -1,6 +1,6 @@
 import React from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView } from 'react-native';
-import { WizardHeader } from '../../../../ui/primitives';
+import { WizardHeader } from '@ui/primitives';
 import { RegisterAttributesStep } from './RegisterAttributesStep';
 import { RegisterAvailabilityStep } from './RegisterAvailabilityStep';
 import { RegisterPersonalStep } from './RegisterPersonalStep';

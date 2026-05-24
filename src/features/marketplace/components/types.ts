@@ -1,5 +1,5 @@
-import type { Invite } from '../../athletes/athleteTypes';
-import type { SpotMarketplaceMatch } from '../../matchmaking/types';
+import type { Invite } from '@features/athletes/athleteTypes';
+import type { SpotMarketplaceMatch } from '@features/matchmaking/types';
 
 export type MarketplaceTab = 'invites' | 'search';
 

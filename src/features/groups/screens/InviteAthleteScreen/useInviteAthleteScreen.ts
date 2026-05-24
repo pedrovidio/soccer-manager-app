@@ -1,93 +1,93 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { AthleteSearchResult, GroupInviteItem } from '../../groupTypes';
-import { groupApi } from '../../services/groupApi';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { AthleteSearchResult, GroupInviteItem } from '@features/groups/groupTypes';
+import { groupApi } from '@features/groups/services/groupApi';
 import { InviteSection, InviteState, ResendState } from './types';
 
 export function useInviteAthleteScreen() {
   const { groupId, groupName } = useLocalSearchParams<{ groupId: string; groupName: string }>();
   const adminId = useAuthStore((state) => state.athleteId) ?? '';
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const queryClient = useQueryClient();
 
-  const [pendingInvites, setPendingInvites] = useState<GroupInviteItem[]>([]);
-  const [loadingInvites, setLoadingInvites] = useState(true);
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<AthleteSearchResult[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [noResults, setNoResults] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [inviteMap, setInviteMap] = useState<Record<string, InviteState>>({});
   const [resendMap, setResendMap] = useState<Record<string, ResendState>>({});
 
-  const loadInvites = useCallback(async () => {
-    if (!groupId) return;
-    try {
-      const data = await groupApi.listGroupInvites(groupId);
-      setPendingInvites(data.filter((invite) => invite.status === 'PENDING'));
-    } catch {
-      setPendingInvites([]);
-    } finally {
-      setLoadingInvites(false);
-    }
-  }, [groupId]);
-
   useEffect(() => {
-    loadInvites();
-  }, [loadInvites]);
+    const timer = setTimeout(() => setDebouncedQuery(query.trim()), 400);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const pendingInvitesQuery = useQuery({
+    queryKey: ['group-invites', groupId],
+    queryFn: () => groupApi.listGroupInvites(groupId!),
+    enabled: !!groupId,
+  });
+
+  const searchQuery = useQuery({
+    queryKey: ['group-athlete-search', groupId, adminId, debouncedQuery],
+    queryFn: () => groupApi.searchAthletes(debouncedQuery, groupId, adminId),
+    enabled: debouncedQuery.length >= 2,
+  });
+
+  const pendingInvites = useMemo(
+    () => (pendingInvitesQuery.data ?? []).filter((invite) => invite.status === 'PENDING'),
+    [pendingInvitesQuery.data],
+  );
+  const results = useMemo(
+    () => (searchQuery.data ?? []).filter((athlete) => inviteMap[athlete.id] !== 'sent'),
+    [inviteMap, searchQuery.data],
+  );
+
+  const inviteMutation = useMutation({
+    mutationFn: (athlete: AthleteSearchResult) => groupApi.inviteAthlete(groupId!, adminId, athlete.id),
+    onMutate: (athlete) => {
+      setInviteMap((prev) => ({ ...prev, [athlete.id]: 'sending' }));
+    },
+    onSuccess: (_response, athlete) => {
+      setInviteMap((prev) => ({ ...prev, [athlete.id]: 'sent' }));
+      queryClient.setQueryData<GroupInviteItem[]>(['group-invites', groupId], (current = []) => [
+        buildPendingInvite(athlete),
+        ...current,
+      ]);
+    },
+    onError: (_error, athlete) => {
+      setInviteMap((prev) => ({ ...prev, [athlete.id]: 'error' }));
+    },
+  });
+
+  const resendMutation = useMutation({
+    mutationFn: (invite: GroupInviteItem) => groupApi.inviteAthlete(groupId!, adminId, invite.athleteId),
+    onMutate: (invite) => {
+      setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'sending' }));
+    },
+    onSuccess: (_response, invite) => {
+      setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'sent' }));
+      setTimeout(() => setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'idle' })), 2000);
+    },
+    onError: (_error, invite) => {
+      setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'error' }));
+    },
+  });
 
   const handleSearch = useCallback((text: string) => {
     setQuery(text);
-    setNoResults(false);
+    if (text.trim().length < 2) setDebouncedQuery('');
+  }, []);
 
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+  const handleInvite = useCallback((athlete: AthleteSearchResult) => {
+    if (groupId) inviteMutation.mutate(athlete);
+  }, [groupId, inviteMutation]);
 
-    if (text.trim().length < 2) {
-      setResults([]);
-      return;
-    }
-
-    debounceRef.current = setTimeout(async () => {
-      setSearching(true);
-      try {
-        const data = await groupApi.searchAthletes(text.trim(), groupId, adminId);
-        setResults(data);
-        setNoResults(data.length === 0);
-      } catch {
-        setResults([]);
-        setNoResults(true);
-      } finally {
-        setSearching(false);
-      }
-    }, 400);
-  }, [adminId, groupId]);
-
-  const handleInvite = useCallback(async (athlete: AthleteSearchResult) => {
-    if (!groupId) return;
-    setInviteMap((prev) => ({ ...prev, [athlete.id]: 'sending' }));
-    try {
-      await groupApi.inviteAthlete(groupId, adminId, athlete.id);
-      setInviteMap((prev) => ({ ...prev, [athlete.id]: 'sent' }));
-      setResults((prev) => prev.filter((item) => item.id !== athlete.id));
-      setPendingInvites((prev) => [buildPendingInvite(athlete), ...prev]);
-    } catch {
-      setInviteMap((prev) => ({ ...prev, [athlete.id]: 'error' }));
-    }
-  }, [adminId, groupId]);
-
-  const handleResend = useCallback(async (invite: GroupInviteItem) => {
-    if (!groupId) return;
-    setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'sending' }));
-    try {
-      await groupApi.inviteAthlete(groupId, adminId, invite.athleteId);
-      setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'sent' }));
-      setTimeout(() => setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'idle' })), 2000);
-    } catch {
-      setResendMap((prev) => ({ ...prev, [invite.athleteId]: 'error' }));
-    }
-  }, [adminId, groupId]);
+  const handleResend = useCallback((invite: GroupInviteItem) => {
+    if (groupId) resendMutation.mutate(invite);
+  }, [groupId, resendMutation]);
 
   const sections = useMemo<InviteSection[]>(() => {
-    const showResults = query.length >= 2;
+    const showResults = query.trim().length >= 2;
     const showPending = pendingInvites.length > 0;
 
     return [
@@ -104,7 +104,7 @@ export function useInviteAthleteScreen() {
         type: 'pending' as const,
       }] : []),
     ];
-  }, [pendingInvites, query.length, results]);
+  }, [pendingInvites, query, results]);
 
   return {
     groupName,
@@ -112,11 +112,10 @@ export function useInviteAthleteScreen() {
     handleResend,
     handleSearch,
     inviteMap,
-    loadingInvites,
-    noResults,
+    noResults: debouncedQuery.length >= 2 && !searchQuery.isFetching && results.length === 0,
     query,
     resendMap,
-    searching,
+    searching: searchQuery.isFetching,
     sections,
   };
 }

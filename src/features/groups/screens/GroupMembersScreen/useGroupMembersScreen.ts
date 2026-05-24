@@ -2,9 +2,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { GroupMember } from '../../groupTypes';
-import { groupApi } from '../../services/groupApi';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { GroupMember } from '@features/groups/groupTypes';
+import { groupApi } from '@features/groups/services/groupApi';
 import { MemberListItem, MembersTab } from './types';
 
 export function useGroupMembersScreen() {

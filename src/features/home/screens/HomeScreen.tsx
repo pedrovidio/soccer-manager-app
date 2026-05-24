@@ -5,22 +5,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../auth/useAuthStore';
+import { useAuthStore } from '@features/auth/useAuthStore';
 import { useHomeDashboard } from '../hooks/useHomeDashboard';
-import { useNotificationActions } from '../../notifications/hooks/useNotifications';
-import { useFavoriteGroup } from '../../groups/hooks/useFavoriteGroup';
-import { groupApi } from '../../groups/services/groupApi';
-import { useQuery } from '@tanstack/react-query';
-import { OverallBadge } from '../../athletes/components/OverallBadge';
-import { Badge } from '../../../ui/composites/Badge';
+import { useNotificationActions } from '@features/notifications/hooks/useNotifications';
+import { useFavoriteGroup } from '@features/groups/hooks/useFavoriteGroup';
+import { useFavoriteGroupDetails } from '@features/groups/hooks/useGroupQueries';
+import { OverallBadge } from '@features/athletes/components/OverallBadge';
+import { Badge } from '@ui/composites/Badge';
 import { MatchCard } from '../components/MatchCard';
 import { QuickActionsCard } from '../components/QuickActionsCard';
-import { NotificationsSheet } from '../../notifications/components/NotificationsSheet';
-import { Colors } from '../../../ui/tokens/theme';
+import { NotificationsSheet } from '@features/notifications/components/NotificationsSheet';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from '../HomeScreen.styles';
-import { formatPositionLabel } from '../../athletes/utils/positionLabel';
-import { useAthleteLocationSync } from '../../athletes/hooks/useAthleteLocationSync';
-import { financialBlockMessage, hasFinancialBlock } from '../../athletes/utils/financialAccess';
+import { formatPositionLabel } from '@features/athletes/utils/positionLabel';
+import { useAthleteLocationSync } from '@features/athletes/hooks/useAthleteLocationSync';
+import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
 
 export default function HomeScreen() {
   const [matchTab, setMatchTab] = useState<'upcoming' | 'past'>('upcoming');
@@ -41,22 +40,7 @@ export default function HomeScreen() {
     useNotificationActions(athleteId, notifications);
 
   const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup();
-  const { data: favoriteGroup } = useQuery({
-    queryKey: ['group', favoriteId],
-    queryFn: async () => {
-      try {
-        return await groupApi.findById(favoriteId!);
-      } catch (e: any) {
-        if (e.response?.status === 403 || e.response?.status === 404) {
-          await clearFavoriteGroup();
-          return null;
-        }
-        throw e;
-      }
-    },
-    enabled: !!favoriteId,
-    retry: false,
-  });
+  const { data: favoriteGroup } = useFavoriteGroupDetails(favoriteId, clearFavoriteGroup);
 
   // Prefer fresh dashboard data, fall back to auth store values while loading
   const name     = dashboard?.name     ?? authName     ?? '—';

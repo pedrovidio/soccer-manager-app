@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { GroupFinanceStatus, GroupFinanceType } from '../../groupTypes';
+import { GroupFinanceStatus, GroupFinanceType } from '@features/groups/groupTypes';
 import { FinanceTab, StatusFilter, TypeFilter } from './types';
 import { styles } from './styles';
 

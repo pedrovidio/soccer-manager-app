@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { Notification } from '../../types';
+import { Colors } from '@ui/tokens/theme';
+import { Notification } from '@features/notifications/types';
 
 export const INVITE_TYPES = ['MATCH_INVITE', 'GROUP_INVITE'];
 

@@ -1,5 +1,5 @@
 import { LoginPayload, LoginResponse } from '../authTypes';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '@lib/supabase';
 
 export const authApi = {
   login: async (payload: LoginPayload): Promise<LoginResponse> => {

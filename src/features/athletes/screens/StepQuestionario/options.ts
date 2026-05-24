@@ -1,4 +1,4 @@
-import type { FootballLevel, WeeklyFrequency, YearsPlaying } from '../../../auth/registerTypes';
+import type { FootballLevel, WeeklyFrequency, YearsPlaying } from '@features/auth/registerTypes';
 
 export const LEVELS: { value: FootballLevel; label: string; desc: string; icon: string }[] = [
   { value: 'PROFESSIONAL', label: 'Profissional', desc: 'Jogou em clube ou competicao oficial', icon: '🏆' },

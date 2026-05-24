@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { AthleteFinanceReport } from '../../athleteTypes';
-import { formatCurrency, typeLabel } from '../../utils/athleteFinanceFormatters';
+import { AthleteFinanceReport } from '@features/athletes/athleteTypes';
+import { formatCurrency, typeLabel } from '@features/athletes/utils/athleteFinanceFormatters';
 import { EmptyState } from './EmptyState';
 import { styles } from './styles';
 

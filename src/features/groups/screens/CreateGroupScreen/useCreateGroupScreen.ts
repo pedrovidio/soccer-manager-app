@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { AthleteSearchResult, CreateGroupFormData } from '../../groupTypes';
-import { groupApi } from '../../services/groupApi';
-import { buildCreateGroupPayload, INITIAL_GROUP_FORM, parseApiError, validateGroupForm } from '../../utils/groupForm';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { AthleteSearchResult, CreateGroupFormData } from '@features/groups/groupTypes';
+import { groupApi } from '@features/groups/services/groupApi';
+import { buildCreateGroupPayload, INITIAL_GROUP_FORM, parseApiError, validateGroupForm } from '@features/groups/utils/groupForm';
 
 export function useCreateGroupScreen() {
   const router = useRouter();

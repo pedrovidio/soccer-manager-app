@@ -1,4 +1,4 @@
-import { FootballLevel, Gender, RegisterFormData, WeeklyFrequency, YearsPlaying } from '../../registerTypes';
+import { FootballLevel, Gender, RegisterFormData, WeeklyFrequency, YearsPlaying } from '@features/auth/registerTypes';
 
 export const TOTAL_STEPS = 4;
 

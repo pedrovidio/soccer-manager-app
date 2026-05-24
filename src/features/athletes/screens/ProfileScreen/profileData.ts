@@ -1,4 +1,4 @@
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 
 export const ATTRS = [
   { key: 'pace', label: 'Velocidade' },

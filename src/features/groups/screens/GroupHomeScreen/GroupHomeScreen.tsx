@@ -1,7 +1,7 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupTopMenu } from '../../components/GroupTopMenu';
+import { Colors } from '@ui/tokens/theme';
+import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { HomeHeader } from './HomeHeader';
 import { HomeErrorState, HomeLoadingState } from './LoadingErrorState';
 import { NextMatchSection } from './NextMatchSection';

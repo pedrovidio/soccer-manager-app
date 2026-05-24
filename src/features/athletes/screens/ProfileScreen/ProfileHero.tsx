@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { formatPositionLabel } from '../../utils/positionLabel';
+import { Colors } from '@ui/tokens/theme';
+import { formatPositionLabel } from '@features/athletes/utils/positionLabel';
 import { styles } from './styles';
 
 type Props = {

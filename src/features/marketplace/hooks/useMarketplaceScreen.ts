@@ -2,14 +2,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { queryKeys } from '../../../lib/queryKeys';
-import { athleteApi } from '../../athletes/services/athleteApi';
-import { useAthleteLocationSync } from '../../athletes/hooks/useAthleteLocationSync';
-import { financialBlockMessage, hasFinancialBlock } from '../../athletes/utils/financialAccess';
-import type { Invite } from '../../athletes/athleteTypes';
-import { useAuthStore } from '../../auth/useAuthStore';
-import { useHomeDashboard } from '../../home/hooks/useHomeDashboard';
-import { matchApi } from '../../matchmaking/services/matchApi';
+import { queryKeys } from '@lib/queryKeys';
+import { athleteApi } from '@features/athletes/services/athleteApi';
+import { useAthleteLocationSync } from '@features/athletes/hooks/useAthleteLocationSync';
+import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
+import type { Invite } from '@features/athletes/athleteTypes';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
+import { matchApi } from '@features/matchmaking/services/matchApi';
 import { MarketplaceListItem, MarketplaceTab } from '../components/types';
 
 export function useMarketplaceScreen() {

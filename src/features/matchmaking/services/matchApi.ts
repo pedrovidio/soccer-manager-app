@@ -1,4 +1,4 @@
-import { httpClient } from '../../../lib/httpClient';
+import { httpClient } from '@lib/httpClient';
 import { z } from 'zod';
 import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResult, SpotMarketplaceMatch, SpotApplication } from '../types';
 

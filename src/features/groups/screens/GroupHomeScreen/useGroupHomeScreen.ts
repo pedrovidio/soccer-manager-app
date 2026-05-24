@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { groupApi } from '../../services/groupApi';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { groupApi } from '@features/groups/services/groupApi';
 
 export function useGroupHomeScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();

@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { ChipRow, LevelCard } from '../../../../ui/primitives';
+import { ChipRow, LevelCard } from '@ui/primitives';
 import { FREQUENCIES, LEVELS, POSITIONS, YEARS } from './options';
 import { styles } from './styles';
 import { RegisterStepProps } from './types';

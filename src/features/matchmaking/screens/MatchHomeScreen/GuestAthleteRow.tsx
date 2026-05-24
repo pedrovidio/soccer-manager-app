@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { NearbyAthlete } from '../../types';
-import { posLabel } from '../../utils/formatters';
+import { Colors } from '@ui/tokens/theme';
+import { NearbyAthlete } from '@features/matchmaking/types';
+import { posLabel } from '@features/matchmaking/utils/formatters';
 import { s } from '../MatchHomeScreen.styles';
 
 type GuestAthleteRowProps = {

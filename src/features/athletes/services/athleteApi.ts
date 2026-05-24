@@ -1,7 +1,7 @@
-import { httpClient } from '../../../lib/httpClient';
+import { httpClient } from '@lib/httpClient';
 import { AthleteDashboard, AthleteFinanceReport, Invite } from '../athleteTypes';
-import { Notification } from '../../notifications/types';
-import { AssessmentPayload, AvailabilitySlot } from '../../auth/registerTypes';
+import { Notification } from '@features/notifications/types';
+import { AssessmentPayload, AvailabilitySlot } from '@features/auth/registerTypes';
 
 export type AssessmentData = AssessmentPayload;
 

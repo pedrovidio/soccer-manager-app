@@ -1,4 +1,4 @@
-import { AthleteFinanceStatus, AthleteFinanceType } from '../../athleteTypes';
+import { AthleteFinanceStatus, AthleteFinanceType } from '@features/athletes/athleteTypes';
 
 export type AthleteFinanceTab = 'due' | 'history' | 'reports';
 export type StatusFilter = 'ALL' | AthleteFinanceStatus;

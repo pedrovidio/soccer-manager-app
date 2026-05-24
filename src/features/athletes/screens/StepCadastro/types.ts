@@ -1,4 +1,4 @@
-import type { useEditProfileForm } from '../../hooks/useEditProfileForm';
+import type { useEditProfileForm } from '@features/athletes/hooks/useEditProfileForm';
 
 export type StepCadastroProps = Pick<
   ReturnType<typeof useEditProfileForm>,

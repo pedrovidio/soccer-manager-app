@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius } from '../../../../ui/tokens/theme';
+import { Colors, Radius } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
   wrap: { marginBottom: 20 },

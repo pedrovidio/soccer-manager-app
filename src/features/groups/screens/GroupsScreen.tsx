@@ -4,12 +4,11 @@ import {
   StyleSheet, SafeAreaView, ActivityIndicator, RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuthStore } from '../../auth/useAuthStore';
-import { groupApi } from '../services/groupApi';
+import { useAuthStore } from '@features/auth/useAuthStore';
 import { useFavoriteGroup } from '../hooks/useFavoriteGroup';
-import { Colors, Radius, Spacing } from '../../../ui/tokens/theme';
+import { useGroups } from '../hooks/useGroupQueries';
+import { Colors, Radius, Spacing } from '@ui/tokens/theme';
 import { GroupResponse } from '../groupTypes';
 
 export default function GroupsScreen() {
@@ -17,11 +16,7 @@ export default function GroupsScreen() {
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const { favoriteId, toggle } = useFavoriteGroup();
 
-  const { data: groups = [], isLoading, isError, refetch } = useQuery<GroupResponse[]>({
-    queryKey: ['groups', athleteId],
-    queryFn: () => groupApi.listByAthlete(athleteId),
-    enabled: !!athleteId,
-  });
+  const { data: groups = [], isLoading, isError, refetch } = useGroups(athleteId);
 
 
 

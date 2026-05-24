@@ -1,4 +1,4 @@
-import { AthleteSearchResult, GroupInviteItem } from '../../groupTypes';
+import { AthleteSearchResult, GroupInviteItem } from '@features/groups/groupTypes';
 
 export type ResendState = 'idle' | 'sending' | 'sent' | 'error';
 export type InviteState = 'idle' | 'sending' | 'sent' | 'error';

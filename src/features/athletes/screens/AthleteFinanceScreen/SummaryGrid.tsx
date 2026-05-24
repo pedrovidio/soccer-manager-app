@@ -1,8 +1,8 @@
 import React, { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { AthleteFinanceReport } from '../../athleteTypes';
-import { formatCurrency } from '../../utils/athleteFinanceFormatters';
+import { Colors } from '@ui/tokens/theme';
+import { AthleteFinanceReport } from '@features/athletes/athleteTypes';
+import { formatCurrency } from '@features/athletes/utils/athleteFinanceFormatters';
 import { styles } from './styles';
 import { Tone } from './types';
 

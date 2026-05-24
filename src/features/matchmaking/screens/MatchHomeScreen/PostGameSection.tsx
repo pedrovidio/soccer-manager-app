@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { posLabel } from '../../utils/formatters';
-import { AthleteRatingRow } from '../../components/AthleteRatingRow';
+import { Colors } from '@ui/tokens/theme';
+import { posLabel } from '@features/matchmaking/utils/formatters';
+import { AthleteRatingRow } from '@features/matchmaking/components/AthleteRatingRow';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 

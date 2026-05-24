@@ -2,9 +2,9 @@ import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getFullImageUrl } from '../../../../lib/imageUrl';
-import { queryKeys } from '../../../../lib/queryKeys';
-import { athleteApi } from '../../services/athleteApi';
+import { getFullImageUrl } from '@lib/imageUrl';
+import { queryKeys } from '@lib/queryKeys';
+import { athleteApi } from '@features/athletes/services/athleteApi';
 import { StepCadastroProps } from './types';
 
 export function useStepCadastro(props: StepCadastroProps) {

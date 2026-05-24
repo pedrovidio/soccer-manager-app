@@ -1,4 +1,4 @@
-import { Notification } from '../../types';
+import { Notification } from '@features/notifications/types';
 
 export type NotificationActionProps = {
   item: Notification;

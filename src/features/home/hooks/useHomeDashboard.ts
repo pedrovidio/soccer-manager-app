@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { athleteApi } from '../../athletes/services/athleteApi';
-import { queryKeys } from '../../../lib/queryKeys';
-import { AthleteDashboard, ConfirmedMatch, Invite } from '../../athletes/athleteTypes';
-import { Notification } from '../../notifications/types';
+import { athleteApi } from '@features/athletes/services/athleteApi';
+import { queryKeys } from '@lib/queryKeys';
+import { AthleteDashboard, ConfirmedMatch, Invite } from '@features/athletes/athleteTypes';
+import { Notification } from '@features/notifications/types';
 
 interface HomeDashboardResult {
   dashboard: AthleteDashboard | undefined;

@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { AthleteFinancePayment } from '../../athleteTypes';
-import { formatCurrency, formatDate } from '../../utils/athleteFinanceFormatters';
+import { Colors } from '@ui/tokens/theme';
+import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
+import { formatCurrency, formatDate } from '@features/athletes/utils/athleteFinanceFormatters';
 import { styles } from './styles';
 
 type Props = {

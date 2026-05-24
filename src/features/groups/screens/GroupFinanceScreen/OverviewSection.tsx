@@ -1,9 +1,9 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupFinanceByType } from '../../groupTypes';
-import { formatCurrency, isExpenseType, typeLabel } from '../../utils/financeFormatters';
+import { Colors } from '@ui/tokens/theme';
+import { GroupFinanceByType } from '@features/groups/groupTypes';
+import { formatCurrency, isExpenseType, typeLabel } from '@features/groups/utils/financeFormatters';
 import { styles } from './styles';
 
 type Props = {

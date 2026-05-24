@@ -1,4 +1,4 @@
-import GroupsScreen from '../../../src/features/groups/screens/GroupsScreen';
+import GroupsScreen from '@features/groups/screens/GroupsScreen';
 
 export default function Page() {
   return <GroupsScreen />;

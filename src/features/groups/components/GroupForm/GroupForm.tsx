@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { FlatList, Text, TextInput, View } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { maskCurrency } from '../../../../ui/utils/masks';
-import { CreateGroupFormData } from '../../groupTypes';
+import { Colors } from '@ui/tokens/theme';
+import { maskCurrency } from '@ui/utils/masks';
+import { CreateGroupFormData } from '@features/groups/groupTypes';
 import { Field } from './Field';
 import { TeamNameInput } from './TeamNameInput';
 import { styles } from './styles';

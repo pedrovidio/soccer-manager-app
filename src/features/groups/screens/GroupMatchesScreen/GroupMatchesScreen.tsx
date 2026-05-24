@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import { GroupTopMenu } from '../../components/GroupTopMenu';
+import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { MatchesErrorState, MatchesLoadingState } from './LoadingErrorState';
 import { MatchesHeader } from './MatchesHeader';
 import { MatchesList } from './MatchesList';

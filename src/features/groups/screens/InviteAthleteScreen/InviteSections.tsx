@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { SectionList } from 'react-native';
-import { AthleteSearchResult, GroupInviteItem } from '../../groupTypes';
+import { AthleteSearchResult, GroupInviteItem } from '@features/groups/groupTypes';
 import { EmptySearchResult } from './EmptySearchResult';
 import { PendingRow } from './PendingRow';
 import { SearchResultRow } from './SearchResultRow';

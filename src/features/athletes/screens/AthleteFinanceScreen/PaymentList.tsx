@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { AthleteFinancePayment } from '../../athleteTypes';
+import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
 import { EmptyState } from './EmptyState';
 import { PaymentRow } from './PaymentRow';
 import { styles } from './styles';

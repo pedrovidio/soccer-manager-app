@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { View, Text, PanResponder, LayoutChangeEvent } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 interface Props {

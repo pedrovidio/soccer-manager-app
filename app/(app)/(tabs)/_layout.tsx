@@ -1,5 +1,5 @@
 import { Tabs, usePathname } from 'expo-router';
-import { BottomNav, NavTab } from '../../../src/ui/composites/BottomNav';
+import { BottomNav, NavTab } from '@ui/composites/BottomNav';
 
 const TAB_BY_PATH: Record<string, NavTab> = {
   '/': 'home',

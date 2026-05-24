@@ -1,4 +1,4 @@
-import { httpClient } from '../../../lib/httpClient';
+import { httpClient } from '@lib/httpClient';
 import { RegisterPayload, AssessmentPayload, AvailabilitySlot } from '../registerTypes';
 import { authApi } from './authApi';
 

@@ -6,8 +6,8 @@ import * as Haptics from 'expo-haptics';
 import { Alert } from 'react-native';
 import { assessmentSchema, AssessmentFormData } from '../schemas/assessmentSchema';
 import { calculateWeightedOverall } from '../utils/overallCalculator';
-import { httpClient as api } from '../../../lib/httpClient';
-import { useAuthStore } from '../../auth/useAuthStore';
+import { httpClient as api } from '@lib/httpClient';
+import { useAuthStore } from '@features/auth/useAuthStore';
 
 export const useAssessmentLogic = () => {
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';

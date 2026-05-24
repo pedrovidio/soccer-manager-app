@@ -1,4 +1,4 @@
-import { RegisterFormData } from '../../registerTypes';
+import { RegisterFormData } from '@features/auth/registerTypes';
 
 export function validatePersonalStep(form: RegisterFormData) {
   if (!form.name.trim()) return 'Informe seu nome.';

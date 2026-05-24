@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { GroupFinancePayment } from '../../groupTypes';
-import { groupApi } from '../../services/groupApi';
-import { parseMoneyInput } from '../../utils/financeFormatters';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { GroupFinancePayment } from '@features/groups/groupTypes';
+import { groupApi } from '@features/groups/services/groupApi';
+import { parseMoneyInput } from '@features/groups/utils/financeFormatters';
 import { ExpenseKind, FinanceTab, StatusFilter, TypeFilter } from './types';
 
 export function useGroupFinanceScreen() {

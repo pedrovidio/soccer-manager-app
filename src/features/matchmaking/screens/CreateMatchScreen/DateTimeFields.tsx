@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { formatDate, formatTime } from './createMatchFormatters';
 import { styles } from './styles';
 

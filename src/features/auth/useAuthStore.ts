@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { setMemoryToken, setUnauthorizedHandler } from '../../lib/httpClient';
+import { setMemoryToken, setUnauthorizedHandler } from '@lib/httpClient';
 import { AuthState } from './authTypes';
 import { authApi } from './services/authApi';
-import { queryClient } from '../../lib/queryClient';
-import { supabase } from '../../lib/supabase';
+import { queryClient } from '@lib/queryClient';
+import { supabase } from '@lib/supabase';
 
 interface AuthStore extends AuthState {
   login: (email: string, password: string) => Promise<void>;

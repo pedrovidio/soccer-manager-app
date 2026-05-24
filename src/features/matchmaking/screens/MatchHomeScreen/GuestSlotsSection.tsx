@@ -1,8 +1,8 @@
 import React, { memo, useCallback } from 'react';
 import { ActivityIndicator, FlatList, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { NearbyAthlete } from '../../types';
+import { Colors } from '@ui/tokens/theme';
+import { NearbyAthlete } from '@features/matchmaking/types';
 import { s } from '../MatchHomeScreen.styles';
 import { GENDER_OPTIONS } from './options';
 import { GuestAthleteRow } from './GuestAthleteRow';

@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupMember } from '../../groupTypes';
-import { positionLabel } from '../../utils/athleteLabels';
+import { Colors } from '@ui/tokens/theme';
+import { GroupMember } from '@features/groups/groupTypes';
+import { positionLabel } from '@features/groups/utils/athleteLabels';
 import { StatusTag } from './StatusTag';
 import { styles } from './styles';
 

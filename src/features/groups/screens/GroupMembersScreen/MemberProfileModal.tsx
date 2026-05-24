@@ -1,8 +1,8 @@
 import React, { memo, useMemo } from 'react';
 import { FlatList, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import { GroupMember } from '../../groupTypes';
-import { positionLabel } from '../../utils/athleteLabels';
-import { normalizeStat } from '../../utils/memberStats';
+import { GroupMember } from '@features/groups/groupTypes';
+import { positionLabel } from '@features/groups/utils/athleteLabels';
+import { normalizeStat } from '@features/groups/utils/memberStats';
 import { styles } from './styles';
 
 type Props = {

@@ -1,4 +1,4 @@
-import { AssessmentFormData } from '../../schemas/assessmentSchema';
+import { AssessmentFormData } from '@features/athletes/schemas/assessmentSchema';
 
 export const STAT_FIELDS: Array<{ key: keyof AssessmentFormData; label: string }> = [
   { key: 'selfRatedPace', label: 'Ritmo (Pace)' },

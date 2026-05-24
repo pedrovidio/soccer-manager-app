@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
-import { GroupFinanceReport } from '../../groupTypes';
-import { formatCurrency } from '../../utils/financeFormatters';
+import { GroupFinanceReport } from '@features/groups/groupTypes';
+import { formatCurrency } from '@features/groups/utils/financeFormatters';
 import { MetricCard } from './MetricCard';
 import { styles } from './styles';
 

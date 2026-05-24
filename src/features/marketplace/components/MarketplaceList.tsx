@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
-import type { Invite } from '../../athletes/athleteTypes';
-import { Colors } from '../../../ui/tokens/theme';
+import type { Invite } from '@features/athletes/athleteTypes';
+import { Colors } from '@ui/tokens/theme';
 import { DebtLockCard, EmptyState, LocationWarningCard } from './MarketplaceStateCards';
 import { InviteCard } from './InviteCard';
 import { SpotMatchCard } from './SpotMatchCard';

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../../lib/supabase';
-import { queryKeys } from '../../../lib/queryKeys';
+import { supabase } from '@lib/supabase';
+import { queryKeys } from '@lib/queryKeys';
 
 export function useGroupRealtime(athleteId: string | null) {
   const queryClient = useQueryClient();

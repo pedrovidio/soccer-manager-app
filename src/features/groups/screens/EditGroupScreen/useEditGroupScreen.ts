@@ -1,26 +1,32 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { CreateGroupFormData, GroupResponse } from '../../groupTypes';
-import { groupApi } from '../../services/groupApi';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { CreateGroupFormData } from '@features/groups/groupTypes';
+import { groupApi } from '@features/groups/services/groupApi';
 import {
   buildUpdateGroupPayload,
   groupToForm,
   INITIAL_GROUP_FORM,
   parseApiError,
   validateGroupForm,
-} from '../../utils/groupForm';
+} from '@features/groups/utils/groupForm';
 
 export function useEditGroupScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
   const athleteId = useAuthStore((state) => state.athleteId) ?? '';
+  const queryClient = useQueryClient();
 
-  const [group, setGroup] = useState<GroupResponse | null>(null);
   const [form, setForm] = useState<CreateGroupFormData>(INITIAL_GROUP_FORM);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const groupQuery = useQuery({
+    queryKey: ['group', groupId],
+    queryFn: () => groupApi.findById(groupId!),
+    enabled: !!groupId,
+    retry: false,
+  });
+  const group = groupQuery.data ?? null;
 
   const isAdmin = useMemo(() => !!group?.adminIds.includes(athleteId), [athleteId, group?.adminIds]);
 
@@ -29,31 +35,32 @@ export function useEditGroupScreen() {
   }, []);
 
   useEffect(() => {
-    let active = true;
-
-    async function loadGroup() {
-      if (!groupId) return;
-      setLoading(true);
-      try {
-        const nextGroup = await groupApi.findById(groupId);
-        if (!active) return;
-        setGroup(nextGroup);
-        setForm(groupToForm(nextGroup));
-      } catch {
-        if (!active) return;
-        Alert.alert('Erro', 'Nao foi possivel carregar o grupo.', [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
-      } finally {
-        if (active) setLoading(false);
-      }
+    if (group) {
+      setForm(groupToForm(group));
     }
+  }, [group]);
 
-    loadGroup();
-    return () => {
-      active = false;
-    };
-  }, [groupId, router]);
+  useEffect(() => {
+    if (groupQuery.isError) {
+      Alert.alert('Erro', 'Nao foi possivel carregar o grupo.', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    }
+  }, [groupQuery.isError, router]);
+
+  const updateMutation = useMutation({
+    mutationFn: () => groupApi.update(groupId!, buildUpdateGroupPayload(form, athleteId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
+      Alert.alert('Salvo!', 'As alteracoes foram salvas com sucesso.', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    },
+    onError: (error: any) => {
+      Alert.alert('Erro', parseApiError(error, 'Nao foi possivel salvar as alteracoes.'));
+    },
+  });
 
   const handleSave = useCallback(async () => {
     const error = validateGroupForm(form);
@@ -62,26 +69,15 @@ export function useEditGroupScreen() {
       return;
     }
     if (!groupId) return;
-
-    setSaving(true);
-    try {
-      await groupApi.update(groupId, buildUpdateGroupPayload(form, athleteId));
-      Alert.alert('Salvo!', 'As alteracoes foram salvas com sucesso.', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
-    } catch (error: any) {
-      Alert.alert('Erro', parseApiError(error, 'Nao foi possivel salvar as alteracoes.'));
-    } finally {
-      setSaving(false);
-    }
-  }, [athleteId, form, groupId, router]);
+    updateMutation.mutate();
+  }, [form, groupId, updateMutation]);
 
   return {
     form,
     group,
     isAdmin,
-    loading,
-    saving,
+    loading: groupQuery.isLoading,
+    saving: updateMutation.isPending,
     handleSave,
     updateField,
   };

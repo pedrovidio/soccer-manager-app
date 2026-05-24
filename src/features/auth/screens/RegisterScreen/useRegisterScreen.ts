@@ -2,16 +2,16 @@ import { useCallback, useRef, useState } from 'react';
 import { Alert, Keyboard, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { setMemoryToken } from '../../../../lib/httpClient';
+import { setMemoryToken } from '@lib/httpClient';
 import {
   FootballLevel,
   Gender,
   RegisterFormData,
   WeeklyFrequency,
   YearsPlaying,
-} from '../../registerTypes';
-import { registerApi } from '../../services/registerApi';
-import { useAuthStore } from '../../useAuthStore';
+} from '@features/auth/registerTypes';
+import { registerApi } from '@features/auth/services/registerApi';
+import { useAuthStore } from '@features/auth/useAuthStore';
 import { INITIAL_REGISTER_FORM, TOTAL_STEPS } from './options';
 import { parseApiError, validatePersonalStep, validateProfileStep } from './registerUtils';
 

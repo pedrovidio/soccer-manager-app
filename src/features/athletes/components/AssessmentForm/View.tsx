@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useAssessmentLogic } from '../../hooks/useAssessmentLogic';
-import { AssessmentFormData } from '../../schemas/assessmentSchema';
+import { useAssessmentLogic } from '@features/athletes/hooks/useAssessmentLogic';
+import { AssessmentFormData } from '@features/athletes/schemas/assessmentSchema';
 import { FREQ_OPTIONS, LEVEL_OPTIONS, POSITION_OPTIONS, YEARS_OPTIONS } from './options';
 import { OptionGroup } from './OptionGroup';
 import { OverallCard } from './OverallCard';

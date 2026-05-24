@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupHomeData } from '../../groupTypes';
-import { formatCurrency } from '../../utils/financeFormatters';
-import { formatMatchDate } from '../../utils/matchFormatters';
+import { Colors } from '@ui/tokens/theme';
+import { GroupHomeData } from '@features/groups/groupTypes';
+import { formatCurrency } from '@features/groups/utils/financeFormatters';
+import { formatMatchDate } from '@features/groups/utils/matchFormatters';
 import { styles } from './styles';
 
 type Props = {

@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupUpcomingMatch } from '../../groupTypes';
-import { formatMatchDate, formatMatchTime } from '../../utils/matchFormatters';
+import { Colors } from '@ui/tokens/theme';
+import { GroupUpcomingMatch } from '@features/groups/groupTypes';
+import { formatMatchDate, formatMatchTime } from '@features/groups/utils/matchFormatters';
 import { styles } from './styles';
 
 type Props = {

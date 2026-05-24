@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { athleteApi } from '../../athletes/services/athleteApi';
-import { matchApi } from '../../matchmaking/services/matchApi';
-import { groupApi } from '../../groups/services/groupApi';
-import { queryKeys } from '../../../lib/queryKeys';
+import { athleteApi } from '@features/athletes/services/athleteApi';
+import { matchApi } from '@features/matchmaking/services/matchApi';
+import { groupApi } from '@features/groups/services/groupApi';
+import { queryKeys } from '@lib/queryKeys';
 import { Notification } from '../types';
 
 export function useNotificationActions(athleteId: string, notifications: Notification[]) {

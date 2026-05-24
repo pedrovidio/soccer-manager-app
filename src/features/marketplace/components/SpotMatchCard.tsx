@@ -1,8 +1,8 @@
 import React, { memo, useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../ui/tokens/theme';
-import type { SpotMarketplaceMatch } from '../../matchmaking/types';
+import { Colors } from '@ui/tokens/theme';
+import type { SpotMarketplaceMatch } from '@features/matchmaking/types';
 import { InfoLine } from './InfoLine';
 import { formatMarketplaceCurrency, formatMarketplaceDate } from './marketplaceFormatters';
 import { styles } from './styles';

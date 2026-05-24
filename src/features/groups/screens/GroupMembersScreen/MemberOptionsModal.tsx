@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import { GroupMember } from '../../groupTypes';
-import { groupApi } from '../../services/groupApi';
+import { GroupMember } from '@features/groups/groupTypes';
+import { groupApi } from '@features/groups/services/groupApi';
 import { ConfirmState } from './types';
 import { styles } from './styles';
 

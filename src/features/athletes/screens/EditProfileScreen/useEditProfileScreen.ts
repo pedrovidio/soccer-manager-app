@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useEditProfileForm } from '../../hooks/useEditProfileForm';
+import { useEditProfileForm } from '@features/athletes/hooks/useEditProfileForm';
 
 const TOTAL_STEPS = 3;
 

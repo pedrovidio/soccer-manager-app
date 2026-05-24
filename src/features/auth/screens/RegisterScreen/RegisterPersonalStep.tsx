@@ -1,8 +1,8 @@
 import React, { memo, useCallback } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { FormField, UFSelect, ChipRow } from '../../../../ui/primitives';
-import { maskCep, maskCpf, maskPhone } from '../../../../ui/utils/masks';
+import { Colors } from '@ui/tokens/theme';
+import { FormField, UFSelect, ChipRow } from '@ui/primitives';
+import { maskCep, maskCpf, maskPhone } from '@ui/utils/masks';
 import { GENDERS } from './options';
 import { styles } from './styles';
 import { RegisterStepProps } from './types';

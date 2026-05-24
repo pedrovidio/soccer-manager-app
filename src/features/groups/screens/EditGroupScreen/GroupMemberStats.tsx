@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
-import { GroupResponse } from '../../groupTypes';
+import { GroupResponse } from '@features/groups/groupTypes';
 import { styles } from './styles';
 
 type Props = {

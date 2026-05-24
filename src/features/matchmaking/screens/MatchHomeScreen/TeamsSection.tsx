@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { posLabel } from '../../utils/formatters';
+import { posLabel } from '@features/matchmaking/utils/formatters';
 import { s } from '../MatchHomeScreen.styles';
 import { teamNameFallback } from './options';
 import { MatchHomeController } from './types';

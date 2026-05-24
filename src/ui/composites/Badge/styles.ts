@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Radius } from '../../tokens/theme';
+import { Radius } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
   base: {

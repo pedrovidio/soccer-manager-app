@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { SwitchRow, TimeSelect } from '../../../../ui/primitives';
-import { AvailabilitySlot } from '../../registerTypes';
+import { SwitchRow, TimeSelect } from '@ui/primitives';
+import { AvailabilitySlot } from '@features/auth/registerTypes';
 import { DAYS } from './options';
 import { addOneHour } from './registerUtils';
 import { styles } from './styles';

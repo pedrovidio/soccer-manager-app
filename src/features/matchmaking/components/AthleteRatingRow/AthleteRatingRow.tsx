@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../../ui/tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 interface AthleteRatingRowProps {

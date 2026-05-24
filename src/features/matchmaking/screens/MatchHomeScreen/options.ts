@@ -1,4 +1,4 @@
-import { Gender, PresenceStatus } from '../../types';
+import { Gender, PresenceStatus } from '@features/matchmaking/types';
 
 export const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: 'ANY', label: 'Qualquer' },

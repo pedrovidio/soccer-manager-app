@@ -1,6 +1,6 @@
 import React from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView } from 'react-native';
-import { WizardHeader } from '../../../../ui/primitives';
+import { WizardHeader } from '@ui/primitives';
 import { EditProfileStep } from './EditProfileStep';
 import { styles } from './styles';
 import { SubmitButton } from './SubmitButton';

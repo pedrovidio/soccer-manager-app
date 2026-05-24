@@ -1,4 +1,4 @@
-import { Colors } from '../../tokens/theme';
+import { Colors } from '@ui/tokens/theme';
 
 export type BadgeVariant = 'ok' | 'warn' | 'err' | 'inf' | 'neutral' | 'gold' | 'silver';
 

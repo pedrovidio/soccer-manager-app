@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl, Text } from 'react-native';
-import { Colors } from '../../../../ui/tokens/theme';
-import { GroupMember } from '../../groupTypes';
+import { Colors } from '@ui/tokens/theme';
+import { GroupMember } from '@features/groups/groupTypes';
 import { MemberRow } from './MemberRow';
 import { MemberListItem } from './types';
 import { styles } from './styles';

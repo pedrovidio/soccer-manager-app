@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getFullImageUrl } from '../../../../lib/imageUrl';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { useHomeDashboard } from '../../../home/hooks/useHomeDashboard';
+import { getFullImageUrl } from '@lib/imageUrl';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
 import { STATUS_STYLE, overallColor } from './profileData';
 
 export function useProfileScreen() {

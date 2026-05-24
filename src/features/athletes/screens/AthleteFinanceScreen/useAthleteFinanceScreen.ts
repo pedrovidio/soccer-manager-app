@@ -2,9 +2,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../../../auth/useAuthStore';
-import { athleteApi } from '../../services/athleteApi';
-import { AthleteFinancePayment } from '../../athleteTypes';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { athleteApi } from '@features/athletes/services/athleteApi';
+import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
 import { AthleteFinanceTab, StatusFilter, TypeFilter } from './types';
 
 export function useAthleteFinanceScreen() {
