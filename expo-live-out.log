@@ -1,0 +1,84 @@
+
+> soccer-manager-app@1.0.0 dev
+> expo start --port 8081 --lan --clear
+
+env: load .env
+env: export EXPO_PUBLIC_API_URL EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+Starting project at D:\Documentos\projetos\nao-fico-sem-jogar\soccer-manager-app
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Android node_modules\expo-router\entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Android node_modules\expo-router\entry.js ▓▓░░░░░░░░░░░░░░ 18.1% (107/279)
+Android node_modules\expo-router\entry.js ▓▓▓▓▓░░░░░░░░░░░ 37.4% (319/522)
+Android node_modules\expo-router\entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 68.7% (648/807)
+Android node_modules\expo-router\entry.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 74.5% ( 876/1053)
+Android node_modules\expo-router\entry.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 78.0% (1232/1395)
+Android node_modules\expo-router\entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.6% (1671/1700)
+Android Bundled 21920ms node_modules\expo-router\entry.js (1709 modules)
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/dashboard"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/notifications"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/invites"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/groups/55e97c94-d5c8-4cac-ac09-8aad8a03b147"}
+ LOG  [HTTP] -> request {"data": {"latitude": -30.0417708, "longitude": -51.1694898}, "hasAuth": true, "method": "PATCH", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/location"}
+ LOG  [HTTP] <- response {"durationMs": 279, "method": "GET", "requestId": "affb7851-1e18-4bfa-9708-9d4a8e7e05f9", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/notifications"}
+ LOG  [HTTP] <- response {"durationMs": 490, "method": "GET", "requestId": "daf92efc-a254-4778-bfbe-4622527e6b8e", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/invites"}
+ LOG  [HTTP] <- response {"durationMs": 495, "method": "GET", "requestId": "df6e1777-447b-457a-a743-7704889c0aac", "status": 200, "url": "/groups/55e97c94-d5c8-4cac-ac09-8aad8a03b147"}
+ LOG  [HTTP] <- response {"durationMs": 562, "method": "PATCH", "requestId": "467c15e8-3c94-4c1c-9655-ff3b30e79e14", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/location"}
+ LOG  [HTTP] <- response {"durationMs": 855, "method": "GET", "requestId": "88c075cf-de97-41fe-a36f-fc79b2f6591f", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/dashboard"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 512, "method": "GET", "requestId": "86f89d9b-1b29-49ff-8a0e-3f230311bfdb", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 8326, "method": "GET", "requestId": "14080485-361c-48ec-ad9a-9ddd0c3bcc1f", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 541, "method": "GET", "requestId": "b87e63f5-ed15-4844-a60e-8a2730899939", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": {"athleteId": "09276a3e-501d-43f4-b8ee-c9e91d4cfc1b", "minute": 13, "teamType": "AWAY", "type": "GOAL"}, "hasAuth": true, "method": "POST", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/events"}
+ LOG  [HTTP] <- response {"durationMs": 544, "method": "POST", "requestId": "72b00264-ae4d-4de1-961a-753b66cbc451", "status": 201, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/events"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 612, "method": "GET", "requestId": "834f9315-e1e8-4609-83af-4af859a35f4b", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 803, "method": "GET", "requestId": "0e7236a7-6abd-47ef-8d14-c0148385cbeb", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 803, "method": "GET", "requestId": "2d78967e-c835-44b6-9d0d-1a2a2c48665d", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": {"athleteId": "4e665de5-d620-4c70-9d22-a39bf24934dd", "minute": 13, "teamType": "HOME", "type": "GOAL"}, "hasAuth": true, "method": "POST", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/events"}
+ LOG  [HTTP] <- response {"durationMs": 489, "method": "POST", "requestId": "3abd044c-7e54-4ece-8cc9-0093a17a8385", "status": 201, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/events"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 645, "method": "GET", "requestId": "aecbeebc-343b-4294-a8b4-088eca083eed", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 611, "method": "GET", "requestId": "213812fb-150d-4424-878c-b7b2881f44e6", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 737, "method": "GET", "requestId": "ce9c2997-72d8-49ad-b472-1fb17ef9d8e0", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": {"athleteId": "09276a3e-501d-43f4-b8ee-c9e91d4cfc1b", "minute": 13, "teamType": "AWAY", "type": "GOAL"}, "hasAuth": true, "method": "POST", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/events"}
+ LOG  [HTTP] <- response {"durationMs": 550, "method": "POST", "requestId": "fdf8079b-a5b1-4207-a66d-7f0e66925ff4", "status": 201, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/events"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 564, "method": "GET", "requestId": "83f91ae6-89f3-42d0-a61e-f5e467ee918a", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 527, "method": "GET", "requestId": "d6437aad-7117-4589-9f7d-e72b6705f4e8", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 527, "method": "GET", "requestId": "546eff02-be43-403d-a1ea-9f67cebe1a63", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": {}, "hasAuth": true, "method": "POST", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/finish"}
+ LOG  [HTTP] <- response {"durationMs": 813, "method": "POST", "requestId": "27f10dd1-9b07-48f9-b94d-68979c4a7f34", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live/finish"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 576, "method": "GET", "requestId": "9e14e55a-3dfb-4b33-b6d3-7a2c332f53db", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ LOG  [HTTP] <- response {"durationMs": 604, "method": "GET", "requestId": "1e160415-0b96-490a-b807-6c6f5730bbb9", "status": 200, "url": "/matches/99e9e04f-47ca-4579-ba45-37a5e822640f/live"}
+ WARN  SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/th3rdwave/react-native-safe-area-context
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": {"requesterId": "09276a3e-501d-43f4-b8ee-c9e91d4cfc1b"}, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/finance/report"}
+ LOG  [HTTP] <- response {"durationMs": 1528, "method": "GET", "requestId": "1ab9dbf2-9f89-4791-8df6-f74f770143e5", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/finance/report"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/groups"}
+ LOG  [HTTP] <- response {"durationMs": 431, "method": "GET", "requestId": "5a5ddc83-37db-4167-afe5-b370c6feb4e7", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/groups"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": {"requesterId": "09276a3e-501d-43f4-b8ee-c9e91d4cfc1b"}, "url": "http://192.168.1.8:3333/groups/55e97c94-d5c8-4cac-ac09-8aad8a03b147/home"}
+ LOG  [HTTP] <- response {"durationMs": 678, "method": "GET", "requestId": "3c500e36-278d-474d-80ea-645685777329", "status": 200, "url": "/groups/55e97c94-d5c8-4cac-ac09-8aad8a03b147/home"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": {"requesterId": "09276a3e-501d-43f4-b8ee-c9e91d4cfc1b"}, "url": "http://192.168.1.8:3333/matches/6b7b3b23-9474-4847-8386-fc54622b65e7"}
+ LOG  [HTTP] <- response {"durationMs": 1182, "method": "GET", "requestId": "08e882b4-0093-45ab-81c0-036c0a6025ef", "status": 200, "url": "/matches/6b7b3b23-9474-4847-8386-fc54622b65e7"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/dashboard"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/notifications"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/invites"}
+ LOG  [HTTP] -> request {"data": undefined, "hasAuth": true, "method": "GET", "params": undefined, "url": "http://192.168.1.8:3333/groups/55e97c94-d5c8-4cac-ac09-8aad8a03b147"}
+ LOG  [HTTP] -> request {"data": {"latitude": -30.0417708, "longitude": -51.1694898}, "hasAuth": true, "method": "PATCH", "params": undefined, "url": "http://192.168.1.8:3333/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/location"}
+ LOG  [HTTP] <- response {"durationMs": 254, "method": "GET", "requestId": "208289c0-9912-49ab-b0fc-e2a69750296d", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/notifications"}
+ LOG  [HTTP] <- response {"durationMs": 258, "method": "GET", "requestId": "85a08f2d-d6f7-4457-afac-e2c67ae31b97", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/invites"}
+ LOG  [HTTP] <- response {"durationMs": 308, "method": "GET", "requestId": "ceaa9177-d836-44b6-8d88-8ae075ad8523", "status": 200, "url": "/groups/55e97c94-d5c8-4cac-ac09-8aad8a03b147"}
+ LOG  [HTTP] <- response {"durationMs": 376, "method": "PATCH", "requestId": "8e8e1c05-15af-4015-9049-f7f610a6c684", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/location"}
+ LOG  [HTTP] <- response {"durationMs": 589, "method": "GET", "requestId": "9162b38e-ef79-45cf-9324-6960ce9c152f", "status": 200, "url": "/athletes/09276a3e-501d-43f4-b8ee-c9e91d4cfc1b/dashboard"}

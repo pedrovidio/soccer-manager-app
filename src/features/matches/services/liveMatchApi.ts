@@ -1,9 +1,7 @@
 import { httpClient } from '@lib/httpClient';
-import type { LiveMatchData, LiveMatchEvent, LiveMatchEventType, LiveMatchSponsor, LiveMatchTeam } from '../types';
+import type { LiveMatchData, LiveMatchEvent, LiveMatchEventType, LiveMatchTeam } from '../types';
 
-type LiveMatchResponse = Omit<LiveMatchData, 'sponsor'> & {
-  sponsor?: LiveMatchSponsor;
-};
+type LiveMatchResponse = LiveMatchData;
 
 export interface RegisterLiveMatchEventPayload {
   type: LiveMatchEventType;
@@ -12,17 +10,9 @@ export interface RegisterLiveMatchEventPayload {
   minute: number;
 }
 
-const DEFAULT_SPONSOR: LiveMatchSponsor = {
-  name: 'Espaco disponivel para patrocinador',
-  logoUri: '',
-};
-
 export const liveMatchApi = {
   getLive: (matchId: string) =>
-    httpClient.get<LiveMatchResponse>(`/matches/${matchId}/live`).then((response) => ({
-      ...response.data,
-      sponsor: response.data.sponsor ?? DEFAULT_SPONSOR,
-    })),
+    httpClient.get<LiveMatchResponse>(`/matches/${matchId}/live`).then((response) => response.data),
 
   start: (matchId: string) =>
     httpClient.post(`/matches/${matchId}/live/start`, {}).then((response) => response.data),

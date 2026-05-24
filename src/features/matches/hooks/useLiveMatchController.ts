@@ -5,6 +5,11 @@ import { liveMatchApi } from '../services/liveMatchApi';
 import type { LiveMatchTeam } from '../types';
 import { useMatchRealtimeSubscription } from './useMatchRealtimeSubscription';
 
+type AddGoalInput = {
+  athleteId: string;
+  teamType: LiveMatchTeam;
+};
+
 export function useLiveMatchController(matchId: string) {
   const queryClient = useQueryClient();
   useMatchRealtimeSubscription(matchId);
@@ -27,9 +32,10 @@ export function useLiveMatchController(matchId: string) {
   });
 
   const eventMutation = useMutation({
-    mutationFn: (team: LiveMatchTeam) => liveMatchApi.registerEvent(matchId, {
+    mutationFn: ({ athleteId, teamType }: AddGoalInput) => liveMatchApi.registerEvent(matchId, {
       type: 'GOAL',
-      teamType: team,
+      teamType,
+      athleteId,
       minute: elapsedMinute(matchQuery.data?.startedAt),
     }),
     onSuccess: refreshMatch,
@@ -49,7 +55,7 @@ export function useLiveMatchController(matchId: string) {
     isSubmitting: startMutation.isPending || eventMutation.isPending || finishMutation.isPending,
     refetch: matchQuery.refetch,
     startMatch: () => startMutation.mutate(),
-    addGoal: (team: LiveMatchTeam) => eventMutation.mutate(team),
+    addGoal: (athleteId: string, teamType: LiveMatchTeam) => eventMutation.mutate({ athleteId, teamType }),
     finishMatch: () => finishMutation.mutate(),
   };
 }

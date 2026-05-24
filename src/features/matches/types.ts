@@ -15,6 +15,14 @@ export interface LiveMatchSponsor {
   logoUri: string;
 }
 
+export interface LiveMatchPlayer {
+  id: string;
+  name: string;
+  position: string;
+  overall: number;
+  photoUrl?: string | null;
+}
+
 export interface LiveMatchData {
   id: string;
   status: 'SCHEDULED' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
@@ -25,8 +33,10 @@ export interface LiveMatchData {
   awayTeamName: string;
   homeScore: number;
   awayScore: number;
+  homePlayers: LiveMatchPlayer[];
+  awayPlayers: LiveMatchPlayer[];
   isAdmin: boolean;
   canStartMatch: boolean;
   events: LiveMatchEvent[];
-  sponsor: LiveMatchSponsor;
+  sponsor?: LiveMatchSponsor;
 }

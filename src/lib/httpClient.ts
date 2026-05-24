@@ -69,6 +69,8 @@ httpClient.interceptors.response.use(
     };
     if (status === 401) {
       appLogger.warn('[HTTP] <- unauthorized', logData);
+    } else if (typeof status === 'number' && status < 500) {
+      appLogger.warn('[HTTP] <- rejected', logData);
     } else {
       appLogger.error('[HTTP] <- error', error, logData);
     }

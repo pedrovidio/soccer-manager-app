@@ -26,6 +26,7 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
   const router = useRouter();
   const fillPct = match.totalSlots > 0 ? (match.confirmedSlots / match.totalSlots) * 100 : 0;
   const isFinished = match.status === 'FINISHED';
+  const isLive = match.status === 'IN_PROGRESS';
   const isAdmin = match.isGroupAdmin === true;
   const hasMatchmaking = match.hasMatchmaking === true && !!match.matchmakingResult;
   const phase = match.phase ?? deriveMatchPhase({
@@ -37,12 +38,19 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
   const myTeam = hasMatchmaking
     ? match.matchmakingResult!.teams.find((team) => team.athletes.some((athlete) => athlete.id === athleteId))
     : null;
+  const handlePress = () => {
+    if (isLive) {
+      router.push(`/matches/live/${match.id}` as any);
+      return;
+    }
+    router.push({ pathname: '/matches/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
+  };
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, isLive && styles.liveCard]}
       activeOpacity={0.8}
-      onPress={() => router.push({ pathname: '/matches/match-home', params: { matchId: match.id, groupId: match.groupId, isAdmin: isAdmin ? '1' : '0' } } as any)}
+      onPress={handlePress}
     >
       {/* HEADER: data + badge confirmado */}
       <View style={styles.header}>
@@ -53,7 +61,12 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
           <Ionicons name="time-outline" size={13} color={Colors.n500} />
           <Text style={styles.dateText}>{match.time}</Text>
         </View>
-        {!isFinished && (
+        {isLive ? (
+          <View style={styles.livePill}>
+            <View style={styles.liveDot} />
+            <Text style={styles.liveText}>AO VIVO</Text>
+          </View>
+        ) : !isFinished && (
           <View style={styles.confPill}>
             <Ionicons name={phase === 'WAITING_CONFIRMATION' ? 'time-outline' : 'checkmark'} size={10} color={Colors.successDark} />
             <Text style={styles.confText}>{phase === 'WAITING_CONFIRMATION' ? 'Convocado' : 'Confirmado'}</Text>
@@ -80,14 +93,14 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
         </View>
 
         {!isFinished && (
-          <View style={phase === 'WAITING_CONFIRMATION' ? styles.waitingBox : styles.drawShortcut}>
+          <View style={isLive ? styles.liveShortcut : phase === 'WAITING_CONFIRMATION' ? styles.waitingBox : styles.drawShortcut}>
             <Ionicons
               name={phase === 'IN_PROGRESS' ? 'play-circle-outline' : phase === 'WAITING_CONFIRMATION' ? 'hourglass-outline' : 'shuffle-outline'}
               size={15}
-              color={phase === 'WAITING_CONFIRMATION' ? Colors.warningDark : Colors.primary}
+              color={isLive ? Colors.errorDark : phase === 'WAITING_CONFIRMATION' ? Colors.warningDark : Colors.primary}
             />
-            <Text style={phase === 'WAITING_CONFIRMATION' ? styles.waitingText : styles.drawShortcutText}>
-              {isAdmin && phase === 'CONFIRMED_WAITING_DRAW' ? 'Jogo confirmado. Sortear times.' : phaseLabel(phase)}
+            <Text style={isLive ? styles.liveShortcutText : phase === 'WAITING_CONFIRMATION' ? styles.waitingText : styles.drawShortcutText}>
+              {isLive ? 'Assistir transmissao agora' : isAdmin && phase === 'CONFIRMED_WAITING_DRAW' ? 'Jogo confirmado. Sortear times.' : phaseLabel(phase)}
             </Text>
           </View>
         )}

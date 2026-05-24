@@ -10,6 +10,10 @@ export const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     overflow: 'hidden',
   },
+  liveCard: {
+    borderColor: Colors.error,
+    borderWidth: 1.5,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -38,9 +42,14 @@ export const styles = StyleSheet.create({
 
   confPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: Colors.successLight, borderRadius: Radius.r999, paddingHorizontal: 10, paddingVertical: 3 },
   confText: { fontSize: 11, fontWeight: '600', color: Colors.successDark },
+  livePill: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: Colors.errorLight, borderRadius: Radius.r999, paddingHorizontal: 10, paddingVertical: 4 },
+  liveDot: { width: 7, height: 7, borderRadius: Radius.r999, backgroundColor: Colors.error },
+  liveText: { fontSize: 11, fontWeight: '800', color: Colors.errorDark },
 
   drawShortcut:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.primaryLight, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 2 },
   drawShortcutText: { fontSize: 12, fontWeight: '800', color: Colors.primary },
+  liveShortcut:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.errorLight, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 2 },
+  liveShortcutText: { fontSize: 12, fontWeight: '800', color: Colors.errorDark },
   waitingBox:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.warningLight, borderRadius: Radius.r8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 2 },
   waitingText:      { fontSize: 12, fontWeight: '800', color: Colors.warningDark },
   teamsBox:         { borderTopWidth: 1, borderTopColor: Colors.n200, paddingTop: 10, marginTop: 2, gap: 6 },
