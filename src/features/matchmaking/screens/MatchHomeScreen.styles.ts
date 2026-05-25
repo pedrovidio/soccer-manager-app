@@ -114,6 +114,7 @@ export const s = StyleSheet.create({
   secondaryActionText: { fontSize: 12, fontWeight: '700', color: Colors.primary },
   smallPrimaryBtn: { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10 },
   smallPrimaryText: { fontSize: 12, fontWeight: '700', color: Colors.white },
+  recordedScoreText: { fontSize: 15, fontWeight: '700', color: Colors.n900, textAlign: 'center', paddingVertical: 8 },
   teamsWrap:       { gap: 8 },
   teamsDiff:       { fontSize: 11, fontWeight: '700', color: Colors.n500 },
   teamBox:         { backgroundColor: Colors.n50, borderRadius: Radius.r8, borderWidth: 1, borderColor: Colors.n200, padding: 10 },

@@ -50,8 +50,8 @@ export function useMatchHomeController() {
 
   useEffect(() => {
     const [firstScore, secondScore] = data?.score?.scores ?? [];
-    setScoreA(firstScore ? String(firstScore.goals) : '');
-    setScoreB(secondScore ? String(secondScore.goals) : '');
+    setScoreA(firstScore !== undefined ? String(firstScore.goals) : '');
+    setScoreB(secondScore !== undefined ? String(secondScore.goals) : '');
   }, [data?.score]);
 
   useEffect(() => {
@@ -215,10 +215,7 @@ export function useMatchHomeController() {
   });
 
   const scoreMutation = useMutation({
-    mutationFn: () => matchApi.registerScore(matchId!, athleteId, [
-      { teamName: 'Time 1', goals: Number(scoreA) || 0 },
-      { teamName: 'Time 2', goals: Number(scoreB) || 0 },
-    ]),
+    mutationFn: () => matchApi.registerScore(matchId!, Number(scoreA) || 0, Number(scoreB) || 0),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
       Alert.alert('Placar registrado', 'O resultado foi salvo no historico.');

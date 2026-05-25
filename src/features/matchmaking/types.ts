@@ -74,6 +74,8 @@ export interface MatchDetail {
   isRecurring: boolean;
   recurrenceSeriesId?: string | null;
   guestConfig: GuestSlotConfig | null;
+  homeTeamName: string;
+  awayTeamName: string;
   teamComposition?: TeamComposition | null;
   mySpotPayment?: {
     id: string;
@@ -84,7 +86,6 @@ export interface MatchDetail {
   } | null;
   score?: {
     scores: { teamName: string; goals: number }[];
-    registeredBy: string;
     createdAt: string;
   } | null;
   myRatings?: Record<string, number>;

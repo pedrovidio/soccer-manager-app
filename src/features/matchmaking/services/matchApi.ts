@@ -71,8 +71,8 @@ export const matchApi = {
   ) =>
     httpClient.post(`/matches/${matchId}/ratings`, registerRatingRequestSchema.parse(payload)).then((r) => r.data),
 
-  registerScore: (matchId: string, registeredBy: string, scores: { teamName: string; goals: number }[]) =>
-    httpClient.post(`/matches/${matchId}/score`, { registeredBy, scores }).then((r) => r.data),
+  registerScore: (matchId: string, homeScore: number, awayScore: number) =>
+    httpClient.post(`/matches/${matchId}/score`, { homeScore, awayScore }).then((r) => r.data),
 
   cancelMatch: (matchId: string, adminId: string, reason: string) =>
     httpClient.patch(`/matches/${matchId}/cancel`, { adminId, reason }).then((r) => r.data),
