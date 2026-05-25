@@ -28,16 +28,16 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
   const isFinished = match.status === 'FINISHED';
   const isLive = match.status === 'IN_PROGRESS';
   const isAdmin = match.isGroupAdmin === true;
-  const hasMatchmaking = match.hasMatchmaking === true && !!match.matchmakingResult;
+  const hasTeamComposition = !!match.teamComposition;
   const phase = match.phase ?? deriveMatchPhase({
     status: match.status,
     type: match.type,
     confirmedCount: match.confirmedSlots,
     isDrafted: match.isDrafted,
-    hasMatchmaking,
+    hasMatchmaking: hasTeamComposition,
   });
-  const myTeam = hasMatchmaking
-    ? match.matchmakingResult!.teams.find((team) => team.athletes.some((athlete) => athlete.id === athleteId))
+  const myTeam = hasTeamComposition
+    ? match.teamComposition!.teams.find((team) => team.athletes.some((athlete) => athlete.id === athleteId))
     : null;
   const handlePress = () => {
     if (isLive) {
@@ -106,12 +106,12 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
           </View>
         )}
 
-        {!isFinished && hasMatchmaking && (
+        {!isFinished && hasTeamComposition && (
           <View style={styles.teamsBox}>
             <Text style={styles.teamsTitle}>
               {myTeam ? `Voce esta no ${myTeam.name ?? `Time ${myTeam.teamNumber}`}` : 'Times sorteados'}
             </Text>
-            {match.matchmakingResult!.teams.map((team) => (
+            {match.teamComposition!.teams.map((team) => (
               <View key={team.teamNumber} style={[styles.teamLine, myTeam?.teamNumber === team.teamNumber && styles.myTeamLine]}>
                 <Text style={[styles.teamName, myTeam?.teamNumber === team.teamNumber && styles.myTeamName]}>
                   {team.name ?? `Time ${team.teamNumber}`}

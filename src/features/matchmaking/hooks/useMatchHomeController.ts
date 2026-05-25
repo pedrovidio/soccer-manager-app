@@ -7,7 +7,7 @@ import { groupApi } from '@features/groups/services/groupApi';
 import { deriveMatchPhase, minimumConfirmedFor } from '../utils/matchPhase';
 import { formatDateTime } from '../utils/formatters';
 import { matchApi } from '../services/matchApi';
-import { Gender, GuestSlotConfig, MatchmakingResult, NearbyAthlete, PresenceStatus, SpotApplication } from '../types';
+import { Gender, GuestSlotConfig, NearbyAthlete, PresenceStatus, SpotApplication } from '../types';
 import { useDebouncedGuestConfig } from './useDebouncedGuestConfig';
 
 export type PresenceFilter = 'ALL' | PresenceStatus;
@@ -30,7 +30,6 @@ export function useMatchHomeController() {
   const [selectedSpotAthleteIds, setSelectedSpotAthleteIds] = useState<string[]>([]);
   const [finishModalVisible, setFinishModalVisible] = useState(false);
   const [finishComment, setFinishComment] = useState('');
-  const [matchmakingResult, setMatchmakingResult] = useState<MatchmakingResult | null>(null);
   const [presenceFilter, setPresenceFilter] = useState<PresenceFilter>('ALL');
   const [scoreA, setScoreA] = useState('');
   const [scoreB, setScoreB] = useState('');
@@ -48,11 +47,6 @@ export function useMatchHomeController() {
     queryFn: () => matchApi.listSpotApplications(matchId!),
     enabled: !!matchId && isAdmin && data?.status !== 'FINISHED',
   });
-
-  useEffect(() => {
-    if (!data?.matchmakingResult) return;
-    setMatchmakingResult(data.matchmakingResult);
-  }, [data?.matchmakingResult]);
 
   useEffect(() => {
     const [firstScore, secondScore] = data?.score?.scores ?? [];
@@ -213,9 +207,9 @@ export function useMatchHomeController() {
 
   const matchmakingMutation = useMutation({
     mutationFn: () => matchApi.matchmaking(matchId!, 2),
-    onSuccess: (result) => {
-      setMatchmakingResult(result);
-      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+    onSuccess: async () => {
+      await qc.refetchQueries({ queryKey: ['match-detail', matchId], type: 'active' });
+      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
     },
     onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel montar os times.'),
   });
@@ -258,15 +252,15 @@ export function useMatchHomeController() {
   const summary = useMemo(() => {
     if (!data) return null;
     const confirmed = data.presence.filter((presence) => presence.status === 'CONFIRMED').length;
-    const rawMatchmakingResult = matchmakingResult ?? data.matchmakingResult ?? null;
-    const hasVisibleMatchmakingResult = !!rawMatchmakingResult;
+    const visibleTeamComposition = data.teamComposition ?? null;
+    const hasVisibleTeamComposition = !!visibleTeamComposition;
     const minimumConfirmed = data.minimumConfirmed ?? minimumConfirmedFor(data.type);
     const phase = data.phase ?? deriveMatchPhase({
       status: data.status,
       type: data.type,
       confirmedCount: confirmed,
       isDrafted: data.isDrafted,
-      hasMatchmaking: hasVisibleMatchmakingResult,
+      hasMatchmaking: hasVisibleTeamComposition,
     });
 
     return {
@@ -282,8 +276,8 @@ export function useMatchHomeController() {
       filteredPresence: presenceFilter === 'ALL'
         ? data.presence
         : data.presence.filter((presence) => presence.status === presenceFilter),
-      visibleMatchmakingResult: rawMatchmakingResult ?? { teams: [], overallDifference: 0 },
-      hasVisibleMatchmakingResult,
+      visibleTeamComposition: visibleTeamComposition ?? { teams: [], overallDifference: 0 },
+      hasVisibleTeamComposition,
       hasRegisteredScore: !!data.score,
       minimumConfirmed,
       phase,
@@ -291,7 +285,7 @@ export function useMatchHomeController() {
       shouldSuggestSpot: isAdmin && phase === 'WAITING_CONFIRMATION' && confirmed < minimumConfirmed,
       pendingSpotApplications: spotApplications.filter((application) => application.status === 'PENDING'),
     };
-  }, [athleteId, data, isAdmin, matchmakingResult, presenceFilter, spotApplications]);
+  }, [athleteId, data, isAdmin, presenceFilter, spotApplications]);
 
   const goToEdit = useCallback(() => {
     router.push({ pathname: '/matches/create-match', params: { groupId, matchId } } as any);

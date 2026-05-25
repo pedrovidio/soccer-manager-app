@@ -1,3 +1,5 @@
+import type { TeamComposition } from '@features/matchmaking/types';
+
 export interface AthleteStats {
   pace: number;
   shooting: number;
@@ -75,6 +77,7 @@ export interface ConfirmedMatch {
   minOverall?: number;
   isGroupAdmin?: boolean;
   hasMatchmaking?: boolean;
+  teamComposition?: TeamComposition | null;
   matchmakingResult?: {
     overallDifference: number;
     teams: {

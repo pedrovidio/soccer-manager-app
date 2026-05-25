@@ -75,6 +75,7 @@ export interface MatchDetail {
   recurrenceSeriesId?: string | null;
   guestConfig: GuestSlotConfig | null;
   hasMatchmaking?: boolean;
+  teamComposition?: TeamComposition | null;
   matchmakingResult?: MatchmakingResult | null;
   mySpotPayment?: {
     id: string;
@@ -113,6 +114,15 @@ export interface MatchmakingTeam {
 
 export interface MatchmakingResult {
   teams: MatchmakingTeam[];
+  overallDifference: number;
+}
+
+export interface TeamCompositionTeam extends MatchmakingTeam {
+  side: 'HOME' | 'AWAY';
+}
+
+export interface TeamComposition {
+  teams: TeamCompositionTeam[];
   overallDifference: number;
 }
 

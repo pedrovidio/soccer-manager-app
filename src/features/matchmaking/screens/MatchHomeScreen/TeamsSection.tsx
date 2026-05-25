@@ -11,13 +11,13 @@ type TeamsSectionProps = {
 
 function TeamsSectionComponent({ controller }: TeamsSectionProps) {
   const { athleteId, summary } = controller;
-  if (!summary?.hasVisibleMatchmakingResult) return null;
+  if (!summary?.hasVisibleTeamComposition) return null;
 
   return (
     <View style={s.section}>
       <Text style={s.sectionTitle}>Escalacoes</Text>
       <FlatList
-        data={summary.visibleMatchmakingResult.teams}
+        data={summary.visibleTeamComposition.teams}
         keyExtractor={(team) => String(team.teamNumber)}
         scrollEnabled={false}
         contentContainerStyle={s.teamsWrap}

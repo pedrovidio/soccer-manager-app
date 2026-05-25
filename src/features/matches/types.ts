@@ -1,3 +1,5 @@
+import type { TeamComposition } from '@features/matchmaking/types';
+
 export type LiveMatchTeam = 'HOME' | 'AWAY';
 export type LiveMatchEventType = 'GOAL' | 'OWN_GOAL' | 'YELLOW_CARD' | 'RED_CARD';
 
@@ -35,6 +37,7 @@ export interface LiveMatchData {
   awayScore: number;
   homePlayers: LiveMatchPlayer[];
   awayPlayers: LiveMatchPlayer[];
+  teamComposition?: TeamComposition | null;
   isAdmin: boolean;
   canStartMatch: boolean;
   events: LiveMatchEvent[];
