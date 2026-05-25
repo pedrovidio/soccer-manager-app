@@ -76,17 +76,7 @@ export interface ConfirmedMatch {
   confirmedSlots: number;
   minOverall?: number;
   isGroupAdmin?: boolean;
-  hasMatchmaking?: boolean;
   teamComposition?: TeamComposition | null;
-  matchmakingResult?: {
-    overallDifference: number;
-    teams: {
-      teamNumber: number;
-      name?: string;
-      athletes: { id: string; name: string; position: string; overall: number }[];
-      averageOverall: number;
-    }[];
-  } | null;
 }
 
 export interface Invite {

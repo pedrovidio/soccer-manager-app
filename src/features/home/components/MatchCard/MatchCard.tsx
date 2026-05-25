@@ -34,7 +34,6 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
     type: match.type,
     confirmedCount: match.confirmedSlots,
     isDrafted: match.isDrafted,
-    hasMatchmaking: hasTeamComposition,
   });
   const myTeam = hasTeamComposition
     ? match.teamComposition!.teams.find((team) => team.athletes.some((athlete) => athlete.id === athleteId))

@@ -1,6 +1,6 @@
 import { httpClient } from '@lib/httpClient';
 import { z } from 'zod';
-import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResult, SpotMarketplaceMatch, SpotApplication } from '../types';
+import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResponse, SpotMarketplaceMatch, SpotApplication } from '../types';
 
 export const registerRatingRequestSchema = z.object({
   evaluatedAthleteId: z.string().uuid(),
@@ -63,7 +63,7 @@ export const matchApi = {
     httpClient.delete(`/matches/${matchId}/confirm-presence`).then((r) => r.data),
 
   matchmaking: (matchId: string, teamsCount = 2) =>
-    httpClient.post<MatchmakingResult>(`/matches/${matchId}/matchmaking`, { teamsCount }).then((r) => r.data),
+    httpClient.post<MatchmakingResponse>(`/matches/${matchId}/matchmaking`, { teamsCount }).then((r) => r.data),
 
   registerRating: (
     matchId: string,

@@ -260,7 +260,6 @@ export function useMatchHomeController() {
       type: data.type,
       confirmedCount: confirmed,
       isDrafted: data.isDrafted,
-      hasMatchmaking: hasVisibleTeamComposition,
     });
 
     return {

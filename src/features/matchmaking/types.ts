@@ -74,9 +74,7 @@ export interface MatchDetail {
   isRecurring: boolean;
   recurrenceSeriesId?: string | null;
   guestConfig: GuestSlotConfig | null;
-  hasMatchmaking?: boolean;
   teamComposition?: TeamComposition | null;
-  matchmakingResult?: MatchmakingResult | null;
   mySpotPayment?: {
     id: string;
     amount: number;
@@ -112,7 +110,7 @@ export interface MatchmakingTeam {
   averageOverall: number;
 }
 
-export interface MatchmakingResult {
+export interface MatchmakingResponse {
   teams: MatchmakingTeam[];
   overallDifference: number;
 }
