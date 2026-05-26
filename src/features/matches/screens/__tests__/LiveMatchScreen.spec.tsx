@@ -46,6 +46,7 @@ const match: LiveMatchData = {
   isAdmin: true,
   canStartMatch: false,
   events: [],
+  sponsorData: { imageUrl: 'https://cdn.test/live-master.png', targetUrl: null },
 };
 
 describe('<LiveMatchScreen />', () => {
@@ -61,12 +62,13 @@ describe('<LiveMatchScreen />', () => {
       finishMatch: jest.fn(),
     });
 
-    const { getByText } = render(<LiveMatchScreen matchId={match.id} />);
+    const { getByLabelText, getByText } = render(<LiveMatchScreen matchId={match.id} />);
 
     getByText('Transmissao ao Vivo');
     getByText('AO VIVO');
     getByText('2 x 1');
     getByText('Encerrar Partida');
     getByText('Linha do tempo');
+    getByLabelText('Banner do patrocinador');
   });
 });

@@ -5,6 +5,7 @@ import { useAuthStore } from '@features/auth/useAuthStore';
 import { getFullImageUrl } from '@lib/imageUrl';
 import { Avatar } from '@ui/composites/Avatar';
 import { BackButton } from '@ui/composites/BackButton';
+import { SponsorBanner } from '@ui/composites/SponsorBanner';
 import { Button } from '@ui/primitives';
 import { Colors, Radius, Spacing } from '@ui/tokens/theme';
 import { useLiveMatchController } from '../hooks/useLiveMatchController';
@@ -97,6 +98,8 @@ function LiveMatchContent({ match, isSubmitting, onAddGoal, onFinishMatch, onSta
             <Text style={styles.teamName}>{match.awayTeamName}</Text>
           </View>
         </View>
+
+        <SponsorBanner sponsorData={match.sponsorData} />
 
         <View style={styles.lineup}>
           <TeamColumn

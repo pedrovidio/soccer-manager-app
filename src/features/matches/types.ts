@@ -1,4 +1,5 @@
 import type { TeamComposition } from '@features/matchmaking/types';
+import type { SponsorBannerData } from '@ui/composites/SponsorBanner';
 
 export type LiveMatchTeam = 'HOME' | 'AWAY';
 export type LiveMatchEventType = 'GOAL' | 'OWN_GOAL' | 'YELLOW_CARD' | 'RED_CARD';
@@ -41,5 +42,6 @@ export interface LiveMatchData {
   isAdmin: boolean;
   canStartMatch: boolean;
   events: LiveMatchEvent[];
+  sponsorData?: SponsorBannerData | null;
   sponsor?: LiveMatchSponsor;
 }
