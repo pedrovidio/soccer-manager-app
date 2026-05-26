@@ -7,15 +7,23 @@ import { styles } from './styles';
 
 type Props = {
   onOpenExpense: (kind: ExpenseKind) => void;
+  isCourtRentalPaid: boolean;
 };
 
-function FinanceActionsComponent({ onOpenExpense }: Props) {
+function FinanceActionsComponent({ onOpenExpense, isCourtRentalPaid }: Props) {
   return (
     <View style={styles.actions}>
-      <TouchableOpacity style={styles.actionBtn} onPress={() => onOpenExpense('COURT_RENTAL')} activeOpacity={0.7}>
-        <Ionicons name="business-outline" size={18} color={Colors.primary} />
-        <Text style={styles.actionText}>Pagar quadra</Text>
-      </TouchableOpacity>
+      {isCourtRentalPaid ? (
+        <View style={[styles.actionBtn, styles.actionPaid]}>
+          <Ionicons name="checkmark-circle-outline" size={18} color={Colors.successDark} />
+          <Text style={styles.actionPaidText}>Quadra paga</Text>
+        </View>
+      ) : (
+        <TouchableOpacity style={styles.actionBtn} onPress={() => onOpenExpense('COURT_RENTAL')} activeOpacity={0.7}>
+          <Ionicons name="business-outline" size={18} color={Colors.primary} />
+          <Text style={styles.actionText}>Pagar quadra</Text>
+        </TouchableOpacity>
+      )}
       <TouchableOpacity style={styles.actionBtn} onPress={() => onOpenExpense('PURCHASE')} activeOpacity={0.7}>
         <Ionicons name="cart-outline" size={18} color={Colors.primary} />
         <Text style={styles.actionText}>Registrar compra</Text>

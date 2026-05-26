@@ -10,7 +10,9 @@ type SpotPaymentSectionProps = {
 
 function SpotPaymentSectionComponent({ controller }: SpotPaymentSectionProps) {
   const { data, isAdmin, reportSpotPaymentMutation } = controller;
-  if (isAdmin || data?.status !== 'FINISHED' || data.mySpotPayment?.status !== 'PENDING') return null;
+  if (isAdmin || data?.status !== 'FINISHED' || !data.mySpotPayment) return null;
+  const isPaid = data.mySpotPayment.status === 'PAID';
+  const isReported = data.mySpotPayment.status === 'PENDING' && !!data.mySpotPayment.paymentReportedAt;
 
   return (
     <View style={s.section}>
@@ -21,20 +23,26 @@ function SpotPaymentSectionComponent({ controller }: SpotPaymentSectionProps) {
             {`Valor: R$ ${data.mySpotPayment.amount.toFixed(2).replace('.', ',')}`}
           </Text>
         </View>
-        <TouchableOpacity
-          style={[s.paymentBtn, reportSpotPaymentMutation.isPending && s.inviteBtnDisabled]}
-          onPress={() => reportSpotPaymentMutation.mutate()}
-          disabled={reportSpotPaymentMutation.isPending}
-          activeOpacity={0.7}
-        >
-          {reportSpotPaymentMutation.isPending ? (
-            <ActivityIndicator color={Colors.white} size="small" />
-          ) : (
-            <Text style={s.paymentBtnText}>
-              {data.mySpotPayment.paymentReportedAt ? 'Reenviar aviso' : 'Informar pagamento'}
+        {isPaid || isReported ? (
+          <View style={[s.paymentBadge, isReported && s.paymentReportedBadge]}>
+            <Text style={[s.paymentBadgeText, isReported && s.paymentReportedBadgeText]}>
+              {isPaid ? 'Pago' : 'Informado'}
             </Text>
-          )}
-        </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={[s.paymentBtn, reportSpotPaymentMutation.isPending && s.inviteBtnDisabled]}
+            onPress={() => reportSpotPaymentMutation.mutate()}
+            disabled={reportSpotPaymentMutation.isPending}
+            activeOpacity={0.7}
+          >
+            {reportSpotPaymentMutation.isPending ? (
+              <ActivityIndicator color={Colors.white} size="small" />
+            ) : (
+              <Text style={s.paymentBtnText}>Informar pagamento</Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

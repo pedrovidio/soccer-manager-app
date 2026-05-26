@@ -42,7 +42,7 @@ export function GroupFinanceScreen() {
         refreshControl={<RefreshControl refreshing={controller.isLoading} onRefresh={controller.refetch} colors={[Colors.primary]} />}
       >
         <SummaryGrid summary={data.summary} />
-        <FinanceActions onOpenExpense={controller.setExpenseKind} />
+        <FinanceActions onOpenExpense={controller.setExpenseKind} isCourtRentalPaid={controller.isCourtRentalPaid} />
         <FinanceFilters
           statusFilter={controller.statusFilter}
           typeFilter={controller.typeFilter}

@@ -90,6 +90,14 @@ export function useGroupFinanceScreen() {
     () => reportQuery.data?.defaulters.filter((payment) => payment.isOverdue) ?? [],
     [reportQuery.data?.defaulters],
   );
+  const isCourtRentalPaid = useMemo(() => {
+    const now = new Date();
+    return reportQuery.data?.expenses.some((payment) => {
+      if (payment.type !== 'COURT_RENTAL' || payment.status !== 'PAID') return false;
+      const date = new Date(payment.createdAt);
+      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    }) ?? false;
+  }, [reportQuery.data?.expenses]);
 
   return {
     athleteId,
@@ -103,6 +111,7 @@ export function useGroupFinanceScreen() {
     groupId,
     isError: reportQuery.isError,
     isLoading: reportQuery.isLoading,
+    isCourtRentalPaid,
     isRegisteringExpense: registerExpenseMutation.isPending,
     overduePayments,
     refetch: reportQuery.refetch,

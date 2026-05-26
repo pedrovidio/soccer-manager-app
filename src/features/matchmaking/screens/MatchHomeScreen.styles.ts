@@ -105,6 +105,10 @@ export const s = StyleSheet.create({
   paymentText:     { fontSize: 12, color: Colors.n500, marginTop: 2 },
   paymentBtn:      { backgroundColor: Colors.primary, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 9 },
   paymentBtnText:  { color: Colors.white, fontSize: 12, fontWeight: '700' },
+  paymentBadge:    { backgroundColor: Colors.successLight, borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 9 },
+  paymentBadgeText:{ color: Colors.successDark, fontSize: 12, fontWeight: '700' },
+  paymentReportedBadge: { backgroundColor: Colors.warningLight },
+  paymentReportedBadgeText: { color: Colors.warningDark },
 
   matchActionsCard: { backgroundColor: Colors.white, borderRadius: Radius.r12, borderWidth: 1, borderColor: Colors.n200, padding: Spacing.md, gap: 10 },
   inlineActionRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },

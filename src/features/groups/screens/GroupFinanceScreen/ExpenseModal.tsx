@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Modal, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '@ui/tokens/theme';
 import { ExpenseKind } from './types';
 import { styles } from './styles';
@@ -53,7 +53,7 @@ function ExpenseModalComponent({
             multiline
           />
           <TouchableOpacity style={[styles.saveBtn, isSaving && styles.saveBtnDisabled]} onPress={onSave} disabled={isSaving} activeOpacity={0.7}>
-            <Text style={styles.saveBtnText}>{isSaving ? 'Salvando...' : 'Registrar saida'}</Text>
+            {isSaving ? <ActivityIndicator color={Colors.white} size="small" /> : <Text style={styles.saveBtnText}>Registrar saida</Text>}
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelBtn} onPress={onClose} activeOpacity={0.7}>
             <Text style={styles.cancelBtnText}>Cancelar</Text>

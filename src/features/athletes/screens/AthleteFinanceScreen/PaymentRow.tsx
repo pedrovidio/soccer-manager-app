@@ -11,7 +11,7 @@ type Props = {
 };
 
 function PaymentRowComponent({ payment, onPay }: Props) {
-  const canPay = payment.status === 'PENDING';
+  const canPay = payment.status === 'PENDING' && !payment.paymentReportedAt;
   const color = payment.status === 'PAID' ? Colors.successDark : payment.isOverdue ? Colors.errorDark : Colors.warningDark;
 
   return (
@@ -27,7 +27,13 @@ function PaymentRowComponent({ payment, onPay }: Props) {
       </View>
       <View style={styles.amounts}>
         <Text style={styles.amountText}>{formatCurrency(payment.amount)}</Text>
-        <Text style={[styles.statusText, { color }]}>{statusLabel(payment)}</Text>
+        {payment.status === 'PAID' ? (
+          <View style={styles.paidBadge}>
+            <Text style={styles.paidBadgeText}>Pago</Text>
+          </View>
+        ) : (
+          <Text style={[styles.statusText, { color }]}>{statusLabel(payment)}</Text>
+        )}
         {canPay && (
           <TouchableOpacity style={styles.payBtn} onPress={() => onPay(payment)} activeOpacity={0.7}>
             <Text style={styles.payBtnText}>Pagar</Text>

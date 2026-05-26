@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '@ui/tokens/theme';
 import { GroupFinancePayment } from '@features/groups/groupTypes';
 import { formatCurrency, formatDate, isExpenseType, statusLabel, typeLabel } from '@features/groups/utils/financeFormatters';
@@ -31,9 +31,15 @@ function PaymentRowComponent({ payment, isConfirming, onConfirm }: Props) {
       </View>
       <View style={styles.amounts}>
         <Text style={[styles.amountText, isExpense && styles.expenseText]}>{isExpense ? '-' : ''}{formatCurrency(payment.amount)}</Text>
-        <Text style={[styles.statusText, { color: statusTone }]}>
-          {payment.isOverdue ? 'Vencido' : statusLabel(payment.status)}
-        </Text>
+        {payment.status === 'PAID' ? (
+          <View style={styles.paidBadge}>
+            <Text style={styles.paidBadgeText}>Pago</Text>
+          </View>
+        ) : (
+          <Text style={[styles.statusText, { color: statusTone }]}>
+            {payment.isOverdue ? 'Vencido' : statusLabel(payment.status)}
+          </Text>
+        )}
         {canConfirm && (
           <TouchableOpacity
             style={[styles.confirmBtn, isConfirming && styles.confirmBtnDisabled]}
@@ -41,7 +47,7 @@ function PaymentRowComponent({ payment, isConfirming, onConfirm }: Props) {
             disabled={isConfirming}
             activeOpacity={0.7}
           >
-            <Text style={styles.confirmBtnText}>{isConfirming ? 'Confirmando...' : 'Confirmar'}</Text>
+            {isConfirming ? <ActivityIndicator color={Colors.white} size="small" /> : <Text style={styles.confirmBtnText}>Confirmar</Text>}
           </TouchableOpacity>
         )}
       </View>

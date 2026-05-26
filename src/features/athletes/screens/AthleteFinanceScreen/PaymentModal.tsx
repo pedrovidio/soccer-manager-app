@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@ui/tokens/theme';
 import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
@@ -18,7 +18,7 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
   if (!payment) return null;
 
   const pix = payment.group?.pixKey ?? payment.group?.adminPixKey ?? 'Pix nao cadastrado';
-  const canReportPayment = payment.type === 'MONTHLY' && payment.status === 'PENDING';
+  const canReportPayment = payment.type === 'MONTHLY' && payment.status === 'PENDING' && !payment.paymentReportedAt;
 
   return (
     <Modal transparent animationType="slide" visible onRequestClose={onClose}>
@@ -32,6 +32,16 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
           <InfoLine label="Administrador" value={payment.group?.adminName ?? 'Administrador do grupo'} />
           <InfoLine label="Pix" value={pix} strong />
 
+          {payment.status === 'PAID' && (
+            <View style={styles.paidBadgeFull}>
+              <Text style={styles.paidBadgeText}>Pago</Text>
+            </View>
+          )}
+          {payment.status === 'PENDING' && payment.paymentReportedAt && (
+            <View style={styles.reportedBadgeFull}>
+              <Text style={styles.reportedBadgeText}>Pagamento informado, aguardando confirmacao</Text>
+            </View>
+          )}
           {payment.match?.id && (
             <TouchableOpacity style={styles.primaryBtnFull} onPress={() => onOpenMatch(payment)} activeOpacity={0.7}>
               <Ionicons name="football-outline" size={18} color={Colors.white} />
@@ -45,8 +55,14 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
               disabled={isReporting}
               activeOpacity={0.7}
             >
-              <Ionicons name="receipt-outline" size={18} color={Colors.white} />
-              <Text style={styles.primaryBtnText}>{isReporting ? 'Informando...' : 'Informar pagamento'}</Text>
+              {isReporting ? (
+                <ActivityIndicator color={Colors.white} size="small" />
+              ) : (
+                <>
+                  <Ionicons name="receipt-outline" size={18} color={Colors.white} />
+                  <Text style={styles.primaryBtnText}>Informar pagamento</Text>
+                </>
+              )}
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.secondaryBtnFull} onPress={onClose} activeOpacity={0.7}>
