@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { athleteApi } from '@features/athletes/services/athleteApi';
+import { useAuthStore } from '@features/auth/useAuthStore';
 import { queryKeys } from '@lib/queryKeys';
 import { AthleteDashboard, ConfirmedMatch, Invite } from '@features/athletes/athleteTypes';
 import { Notification } from '@features/notifications/types';
@@ -15,11 +17,17 @@ interface HomeDashboardResult {
 }
 
 export function useHomeDashboard(athleteId: string): HomeDashboardResult {
+  const setPlan = useAuthStore((state) => state.setPlan);
   const dashboardQuery = useQuery({
     queryKey: queryKeys.dashboard(athleteId),
     queryFn: () => athleteApi.dashboard(athleteId),
     enabled: !!athleteId,
   });
+
+  useEffect(() => {
+    if (!dashboardQuery.data?.plan) return;
+    setPlan(dashboardQuery.data.plan, dashboardQuery.data.planExpiresAt ?? null);
+  }, [dashboardQuery.data?.plan, dashboardQuery.data?.planExpiresAt, setPlan]);
 
   const notificationsQuery = useQuery({
     queryKey: queryKeys.notifications(athleteId),

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
 import { setMemoryToken, setUnauthorizedHandler } from '@lib/httpClient';
-import { AuthState } from './authTypes';
+import { AthletePlan, AuthState } from './authTypes';
 import { authApi } from './services/authApi';
 import { queryClient } from '@lib/queryClient';
 import { supabase } from '@lib/supabase';
@@ -11,6 +11,7 @@ interface AuthStore extends AuthState {
   logout: () => Promise<void>;
   hydrate: () => Promise<void>;
   setAssessmentCompleted: () => void;
+  setPlan: (plan: AthletePlan, planExpiresAt: string | null) => void;
   isHydrated: boolean;
 }
 
@@ -18,6 +19,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
   token: null,
   athleteId: null,
   name: null,
+  plan: 'FREE',
+  planExpiresAt: null,
   hasCompletedAssessment: false,
   isAuthenticated: false,
   isHydrated: false,
@@ -40,6 +43,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
         token,
         athleteId,
         name: data.session?.user.user_metadata?.['name'] ?? name,
+        plan: 'FREE',
+        planExpiresAt: null,
         hasCompletedAssessment: assessment === 'true',
         isAuthenticated: true,
         isHydrated: true,
@@ -50,7 +55,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   login: async (email, password) => {
-    const { token, athleteId, name } = await authApi.login({ email, password });
+    const { token, athleteId, name, plan, planExpiresAt } = await authApi.login({ email, password });
     setMemoryToken(token);
     await Promise.all([
       SecureStore.setItemAsync('athlete_id', athleteId),
@@ -61,6 +66,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       token,
       athleteId,
       name,
+      plan,
+      planExpiresAt,
       hasCompletedAssessment: false,
       isAuthenticated: true,
     });
@@ -69,6 +76,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setAssessmentCompleted: () => {
     SecureStore.setItemAsync('has_assessment', 'true');
     set({ hasCompletedAssessment: true });
+  },
+
+  setPlan: (plan, planExpiresAt) => {
+    set({ plan, planExpiresAt });
   },
 
   logout: async () => {
@@ -80,7 +91,15 @@ export const useAuthStore = create<AuthStore>((set) => ({
       SecureStore.deleteItemAsync('has_assessment'),
     ]);
     queryClient.clear();
-    set({ token: null, athleteId: null, name: null, hasCompletedAssessment: false, isAuthenticated: false });
+    set({
+      token: null,
+      athleteId: null,
+      name: null,
+      plan: 'FREE',
+      planExpiresAt: null,
+      hasCompletedAssessment: false,
+      isAuthenticated: false,
+    });
   },
 }));
 
@@ -97,6 +116,8 @@ setUnauthorizedHandler(() => {
     token: null,
     athleteId: null,
     name: null,
+    plan: 'FREE',
+    planExpiresAt: null,
     hasCompletedAssessment: false,
     isAuthenticated: false,
   });

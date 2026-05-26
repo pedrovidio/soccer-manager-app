@@ -17,6 +17,8 @@ export const authApi = {
       token: data.session.access_token,
       athleteId: data.user.id,
       name: data.user.user_metadata?.['name'] ?? data.user.email ?? '',
+      plan: 'FREE',
+      planExpiresAt: null,
     };
   },
 
@@ -35,6 +37,8 @@ export const authApi = {
       token: data.session.access_token,
       athleteId: data.user.id,
       name: payload.name,
+      plan: 'FREE',
+      planExpiresAt: null,
     };
   },
 

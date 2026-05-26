@@ -7,7 +7,11 @@ export interface LoginResponse {
   token: string;
   athleteId: string;
   name: string;
+  plan: AthletePlan;
+  planExpiresAt: string | null;
 }
+
+export type AthletePlan = 'FREE' | 'PREMIUM';
 
 export interface RequestPasswordResetPayload {
   email: string;
@@ -27,6 +31,8 @@ export interface AuthState {
   token: string | null;
   athleteId: string | null;
   name: string | null;
+  plan: AthletePlan;
+  planExpiresAt: string | null;
   hasCompletedAssessment: boolean;
   isAuthenticated: boolean;
 }

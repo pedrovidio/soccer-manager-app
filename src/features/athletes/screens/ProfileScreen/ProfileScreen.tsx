@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { Colors } from '@ui/tokens/theme';
+import { PremiumOnly } from '@ui/components/PremiumOnly';
 import { AttributesCard } from './AttributesCard';
 import { ProfileActions } from './ProfileActions';
 import { ProfileHero } from './ProfileHero';
@@ -33,7 +34,9 @@ export function ProfileScreen() {
           statusStyle={profile.statusStyle}
           onEdit={controller.goEditProfile}
         />
-        <AttributesCard stats={profile.stats} />
+        <PremiumOnly>
+          <AttributesCard stats={profile.stats} />
+        </PremiumOnly>
         <ProfileActions onGroups={controller.goGroups} onLogout={controller.confirmLogout} />
       </ScrollView>
     </View>

@@ -42,6 +42,8 @@ export interface AthleteDashboard {
   phone?: string;
   age?: number;
   pixKey?: string | null;
+  plan?: 'FREE' | 'PREMIUM';
+  planExpiresAt?: string | null;
   address?: {
     cep: string;
     street: string;

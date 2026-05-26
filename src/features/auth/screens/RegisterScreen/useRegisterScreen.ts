@@ -132,6 +132,8 @@ export function useRegisterScreen() {
         token: authSession.token,
         athleteId: athlete.id,
         name: authSession.name,
+        plan: authSession.plan,
+        planExpiresAt: authSession.planExpiresAt,
         isAuthenticated: true,
       });
       router.replace('/');
