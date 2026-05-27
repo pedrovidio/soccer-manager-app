@@ -156,7 +156,6 @@ export function useEditProfileForm() {
         selfRatedPhysical: physical,
         preferredPosition: position || 'Midfielder',
       };
-      console.log('[assessment payload]', JSON.stringify(payload));
       return httpClient.patch(`/athletes/${athleteId}/assessment`, payload).then((r) => r.data);
     },
     onError: () => Alert.alert('Erro', 'Não foi possível salvar o questionário.'),
