@@ -4,7 +4,6 @@ import { BottomNav, NavTab } from '@ui/composites/BottomNav';
 const TAB_BY_PATH: Record<string, NavTab> = {
   '/': 'home',
   '/groups': 'groups',
-  '/buscar-jogos': 'marketplace',
   '/marketplace': 'marketplace',
   '/profile': 'profile',
 };
