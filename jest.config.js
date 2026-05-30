@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'jest-expo',
+  setupFiles: ['<rootDir>/jest-setup.js'],
   moduleNameMapper: {
     '^@features/(.*)$': '<rootDir>/src/features/$1',
     '^@lib/(.*)$': '<rootDir>/src/lib/$1',

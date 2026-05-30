@@ -83,6 +83,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   logout: async () => {
+    try {
+      const { useThemeStore } = require('../../ui/tokens/theme');
+      useThemeStore.getState().setTheme('dark');
+    } catch (e) {
+      // ignore
+    }
     await authApi.logout();
     setMemoryToken(null);
     await Promise.all([
@@ -104,6 +110,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
 }));
 
 setUnauthorizedHandler(() => {
+  try {
+    const { useThemeStore } = require('../../ui/tokens/theme');
+    useThemeStore.getState().setTheme('dark');
+  } catch (e) {
+    // ignore
+  }
   setMemoryToken(null);
   void supabase.auth.signOut();
   void Promise.all([

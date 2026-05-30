@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     backgroundColor: Arena.cyanSoft,
   },
   header: {
-    backgroundColor: 'rgba(6, 16, 15, 0.96)',
+    backgroundColor: Arena.bg,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.lg,
