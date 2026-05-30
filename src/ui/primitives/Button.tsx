@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, type TouchableOpacityProps } from 'react-native';
-import { Colors } from '../tokens/theme';
+import { Arena, Colors } from '../tokens/theme';
 import { styles } from './styles';
 
 type ButtonVariant = 'primary' | 'secondary' | 'text';
@@ -37,7 +37,7 @@ function ButtonComponent({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? Colors.white : Colors.primary} />
+        <ActivityIndicator color={variant === 'primary' ? Arena.bgDeep : Arena.neon} />
       ) : (
         <Text
           style={[

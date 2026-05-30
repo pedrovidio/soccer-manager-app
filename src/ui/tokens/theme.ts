@@ -25,5 +25,24 @@ export const Colors = {
   white: '#FFFFFF',
 } as const;
 
+export const Arena = {
+  bg: '#06100F',
+  bgDeep: '#030807',
+  graphite: '#0C1518',
+  graphiteElevated: '#121A1B',
+  moss: '#23351F',
+  mossSoft: 'rgba(54, 88, 45, 0.36)',
+  neon: '#D7FF45',
+  neonSoft: 'rgba(215, 255, 69, 0.14)',
+  neonBorder: 'rgba(215, 255, 69, 0.26)',
+  cyanSoft: 'rgba(37, 85, 98, 0.34)',
+  line: 'rgba(255, 255, 255, 0.10)',
+  card: 'rgba(18, 26, 27, 0.94)',
+  cardSoft: 'rgba(255, 255, 255, 0.07)',
+  text: '#F8FAFC',
+  textMuted: 'rgba(248, 250, 252, 0.68)',
+  textSubtle: 'rgba(248, 250, 252, 0.48)',
+} as const;
+
 export const Radius = { r4: 4, r8: 8, r12: 12, r16: 16, r24: 24, r999: 999 } as const;
 export const Spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24 } as const;

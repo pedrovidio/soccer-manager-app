@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { PremiumOnly } from '@ui/components/PremiumOnly';
 import { AttributesCard } from './AttributesCard';
 import { ProfileActions } from './ProfileActions';
@@ -15,7 +15,7 @@ export function ProfileScreen() {
   if (controller.isLoading && !profile.dashboard) {
     return (
       <View style={[styles.safe, styles.center]}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Arena.neon} />
       </View>
     );
   }

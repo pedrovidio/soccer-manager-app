@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { Colors, Spacing } from '@ui/tokens/theme';
+import { Arena, Spacing } from '@ui/tokens/theme';
 
 type Props = {
   label?: string;
@@ -9,7 +9,7 @@ type Props = {
 export function LoadingScreen({ label = 'Carregando...' }: Props) {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={Colors.primary} />
+      <ActivityIndicator size="large" color={Arena.neon} />
       <Text style={styles.label}>{label}</Text>
     </View>
   );
@@ -20,11 +20,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.n50,
+    backgroundColor: Arena.bg,
     gap: Spacing.md,
   },
   label: {
-    color: Colors.n600,
+    color: Arena.textMuted,
     fontSize: 14,
     fontWeight: '600',
   },

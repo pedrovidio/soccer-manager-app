@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ConfirmedMatch } from '@features/athletes/athleteTypes';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { styles } from './MatchCard.styles';
 import { deriveMatchPhase, phaseLabel } from '@features/matchmaking/utils/matchPhase';
 
@@ -55,10 +55,10 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
       {/* HEADER: data + badge confirmado */}
       <View style={styles.header}>
         <View style={styles.dateRow}>
-          <Ionicons name="calendar-outline" size={13} color={Colors.n500} />
+          <Ionicons name="calendar-outline" size={13} color={Arena.textMuted} />
           <Text style={styles.dateText}>{match.date}</Text>
           <View style={styles.dot} />
-          <Ionicons name="time-outline" size={13} color={Colors.n500} />
+          <Ionicons name="time-outline" size={13} color={Arena.textMuted} />
           <Text style={styles.dateText}>{match.time}</Text>
         </View>
         {isLive ? (
@@ -83,7 +83,7 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
 
         {/* vagas */}
         <View style={styles.slotsRow}>
-          <Ionicons name="people-outline" size={14} color={Colors.primary} />
+          <Ionicons name="people-outline" size={14} color={Arena.neon} />
           <Text style={styles.slotsText}>
             {match.confirmedSlots}/{match.totalSlots} vagas
           </Text>
@@ -97,10 +97,10 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
             <Ionicons
               name={phase === 'IN_PROGRESS' ? 'play-circle-outline' : phase === 'WAITING_CONFIRMATION' ? 'hourglass-outline' : 'shuffle-outline'}
               size={15}
-              color={isLive ? Colors.errorDark : phase === 'WAITING_CONFIRMATION' ? Colors.warningDark : Colors.primary}
+              color={isLive ? Colors.errorDark : phase === 'WAITING_CONFIRMATION' ? Colors.warningDark : Arena.neon}
             />
             <Text style={isLive ? styles.liveShortcutText : phase === 'WAITING_CONFIRMATION' ? styles.waitingText : styles.drawShortcutText}>
-              {isLive ? 'Assistir transmissao agora' : isAdmin && phase === 'CONFIRMED_WAITING_DRAW' ? 'Jogo confirmado. Sortear times.' : phaseLabel(phase)}
+              {isLive ? 'Entrar no jogo ao vivo' : isAdmin && phase === 'CONFIRMED_WAITING_DRAW' ? 'Quórum garantido. Sortear os times.' : phaseLabel(phase)}
             </Text>
           </View>
         )}
@@ -108,7 +108,7 @@ export function MatchCard({ match, athleteId }: MatchCardProps) {
         {!isFinished && hasTeamComposition && (
           <View style={styles.teamsBox}>
             <Text style={styles.teamsTitle}>
-              {myTeam ? `Voce esta no ${myTeam.name ?? `Time ${myTeam.teamNumber}`}` : 'Times sorteados'}
+              {myTeam ? `Você caiu no ${myTeam.name ?? `Time ${myTeam.teamNumber}`}` : 'Times sorteados'}
             </Text>
             {match.teamComposition!.teams.map((team) => (
               <View key={team.teamNumber} style={[styles.teamLine, myTeam?.teamNumber === team.teamNumber && styles.myTeamLine]}>

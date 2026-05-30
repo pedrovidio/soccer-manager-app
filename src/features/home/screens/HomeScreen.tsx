@@ -1,74 +1,82 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView,
-  ActivityIndicator, RefreshControl,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { OverallBadge } from '@features/athletes/components/OverallBadge';
+import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
+import { formatPositionLabel } from '@features/athletes/utils/positionLabel';
+import { Badge } from '@ui/composites/Badge';
+import { Arena, Colors } from '@ui/tokens/theme';
+import { useAthleteLocationSync } from '@features/athletes/hooks/useAthleteLocationSync';
 import { useAuthStore } from '@features/auth/useAuthStore';
-import { useHomeDashboard } from '../hooks/useHomeDashboard';
-import { useNotificationActions } from '@features/notifications/hooks/useNotifications';
 import { useFavoriteGroup } from '@features/groups/hooks/useFavoriteGroup';
 import { useFavoriteGroupDetails } from '@features/groups/hooks/useGroupQueries';
-import { OverallBadge } from '@features/athletes/components/OverallBadge';
-import { Badge } from '@ui/composites/Badge';
-import { MatchCard } from '../components/MatchCard';
-import { QuickActionsCard } from '../components/QuickActionsCard';
 import { NotificationsSheet } from '@features/notifications/components/NotificationsSheet';
-import { Colors } from '@ui/tokens/theme';
+import { useNotificationActions } from '@features/notifications/hooks/useNotifications';
+import { QuickActionsCard } from '../components/QuickActionsCard';
+import { MatchCard } from '../components/MatchCard';
+import { useHomeDashboard } from '../hooks/useHomeDashboard';
 import { styles } from '../HomeScreen.styles';
-import { formatPositionLabel } from '@features/athletes/utils/positionLabel';
-import { useAthleteLocationSync } from '@features/athletes/hooks/useAthleteLocationSync';
-import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
 
 export default function HomeScreen() {
   const [matchTab, setMatchTab] = useState<'upcoming' | 'past'>('upcoming');
   const [showNotifications, setShowNotifications] = useState(false);
 
   const router = useRouter();
-  const athleteId = useAuthStore((s) => s.athleteId) ?? '';
-  const authName  = useAuthStore((s) => s.name);
+  const athleteId = useAuthStore((state) => state.athleteId) ?? '';
+  const authName = useAuthStore((state) => state.name);
 
   const { dashboard, notifications, confirmedMatches, isLoading, isError, refetch } =
     useHomeDashboard(athleteId);
   useAthleteLocationSync(athleteId, !!athleteId);
 
   const {
-    unreadCount, markAsRead, markAllAsRead, deleteOne, deleteAll,
-    respondInvite, respondInvitePending, respondSpotApplication, respondSpotApplicationPending,
-  } =
-    useNotificationActions(athleteId, notifications);
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteOne,
+    deleteAll,
+    respondInvite,
+    respondInvitePending,
+    respondSpotApplication,
+    respondSpotApplicationPending,
+  } = useNotificationActions(athleteId, notifications);
 
   const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup();
   const { data: favoriteGroup } = useFavoriteGroupDetails(favoriteId, clearFavoriteGroup);
 
-  // Prefer fresh dashboard data, fall back to auth store values while loading
-  const name     = dashboard?.name     ?? authName     ?? '—';
-  const overall  = dashboard?.overall  ?? 0;
+  const name = dashboard?.name ?? authName ?? 'Craque';
+  const overall = dashboard?.overall ?? 0;
   const position = formatPositionLabel(dashboard?.position);
-  const status   = dashboard?.status   ?? 'Ativo';
+  const status = dashboard?.status ?? 'Ativo';
   const blockedByDebt = hasFinancialBlock(dashboard);
 
-  const allMatches  = confirmedMatches;
-  const upcoming    = allMatches.filter((m) => m.status === 'SCHEDULED' || m.status === 'IN_PROGRESS');
-  const past        = allMatches.filter((m) => m.status === 'FINISHED'  || m.status === 'CANCELLED');
-  const matches     = matchTab === 'upcoming' ? upcoming : past;
+  const upcoming = confirmedMatches.filter((match) => match.status === 'SCHEDULED' || match.status === 'IN_PROGRESS');
+  const past = confirmedMatches.filter((match) => match.status === 'FINISHED' || match.status === 'CANCELLED');
+  const matches = matchTab === 'upcoming' ? upcoming : past;
 
   if (isLoading && !dashboard) {
     return (
       <View style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Arena.neon} />
       </View>
     );
   }
 
   return (
     <View style={styles.safe}>
-      {/* ── HEADER ── */}
+      <View style={styles.fieldGlow} pointerEvents="none" />
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>Bem-vindo de volta 👋</Text>
+            <Text style={styles.greeting}>A rodada está chamando</Text>
             <Text style={styles.athleteName}>{name}</Text>
             <View style={styles.statsRow}>
               <OverallBadge value={overall} />
@@ -78,7 +86,7 @@ export default function HomeScreen() {
 
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.msgBtn} onPress={() => setShowNotifications(true)}>
-              <Ionicons name="chatbubble-outline" size={24} color={Colors.n700} />
+              <Ionicons name="chatbubble-outline" size={24} color={Arena.text} />
               {unreadCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
@@ -90,13 +98,11 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* ── CONTENT ── */}
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Arena.neon]} tintColor={Arena.neon} />}
       >
-        {/* ── FAVORITE GROUP SHORTCUT ── */}
         {favoriteGroup && (
           <TouchableOpacity
             style={styles.favoriteCard}
@@ -105,28 +111,30 @@ export default function HomeScreen() {
           >
             <View style={styles.favoriteCardLeft}>
               <Ionicons name="star" size={14} color={Colors.warning} />
-              <Text style={styles.favoriteCardLabel}>Grupo favorito</Text>
+              <Text style={styles.favoriteCardLabel}>Seu grupo de confiança</Text>
             </View>
             <View style={styles.favoriteCardRight}>
               <Text style={styles.favoriteCardName} numberOfLines={1}>{favoriteGroup.name}</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.n400} />
+              <Ionicons name="chevron-forward" size={16} color={Arena.textSubtle} />
             </View>
           </TouchableOpacity>
         )}
+
         {blockedByDebt && (
           <TouchableOpacity
             style={styles.debtCard}
             onPress={() => router.push('/athletes/athlete-finance' as any)}
             activeOpacity={0.7}
           >
-            <Ionicons name="lock-closed-outline" size={18} color={Colors.errorDark} />
+            <Ionicons name="lock-closed-outline" size={18} color={Colors.error} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.debtTitle}>Acesso limitado por pendencia financeira</Text>
+              <Text style={styles.debtTitle}>Tem pendência segurando seu jogo</Text>
               <Text style={styles.debtText}>{financialBlockMessage(dashboard)}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={Colors.errorDark} />
+            <Ionicons name="chevron-forward" size={16} color={Colors.error} />
           </TouchableOpacity>
         )}
+
         <QuickActionsCard
           notifications={notifications}
           onRespondInvite={respondInvite}
@@ -136,6 +144,7 @@ export default function HomeScreen() {
           blockMatchAccept={blockedByDebt}
           onViewAll={() => setShowNotifications(true)}
         />
+
         <View style={styles.section}>
           <View style={styles.tabs}>
             <Text
@@ -153,22 +162,22 @@ export default function HomeScreen() {
           </View>
 
           <Text style={styles.sectionTitle}>
-            {matchTab === 'upcoming' ? 'Próximas Partidas' : 'Últimas Partidas'}
+            {matchTab === 'upcoming' ? 'Partidas que vão sair do papel' : 'Histórias que já viraram placar'}
           </Text>
 
           {isError && (
             <View style={styles.emptyCard}>
               <Ionicons name="alert-circle-outline" size={36} color={Colors.error} />
-              <Text style={[styles.emptyText, { color: Colors.errorDark }]}>
-                Erro ao carregar partidas
+              <Text style={[styles.emptyText, { color: Colors.error }]}>
+                Não conseguimos buscar seus jogos agora.
               </Text>
             </View>
           )}
 
           {!isError && matches.length === 0 && (
             <View style={styles.emptyCard}>
-              <Ionicons name="football-outline" size={36} color={Colors.n300} />
-              <Text style={styles.emptyText}>Nenhuma partida encontrada</Text>
+              <Ionicons name="football-outline" size={36} color={Arena.neon} />
+              <Text style={styles.emptyText}>Nenhuma partida por aqui ainda. Chama o grupo e bota a bola pra rolar.</Text>
             </View>
           )}
 
@@ -178,9 +187,6 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      {/* ── BOTTOM NAV ── */}
-
-      {/* ── NOTIFICATIONS SHEET ── */}
       <NotificationsSheet
         visible={showNotifications}
         notifications={notifications}

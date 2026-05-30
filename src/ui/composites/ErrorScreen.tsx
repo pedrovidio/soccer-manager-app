@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 
 type Props = {
   message?: string;
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.n50,
+    backgroundColor: Arena.bg,
     paddingHorizontal: Spacing.xxl,
     gap: Spacing.md,
   },
@@ -41,16 +41,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.r999,
-    backgroundColor: Colors.errorLight,
+    backgroundColor: 'rgba(239, 68, 68, 0.14)',
     marginBottom: Spacing.xs,
   },
   title: {
-    color: Colors.n900,
+    color: Arena.text,
     fontSize: 20,
     fontWeight: '800',
   },
   message: {
-    color: Colors.n600,
+    color: Arena.textMuted,
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',
@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
     borderRadius: Radius.r12,
-    backgroundColor: Colors.primary,
+    backgroundColor: Arena.neon,
   },
   buttonText: {
-    color: Colors.white,
+    color: Arena.bgDeep,
     fontSize: 14,
     fontWeight: '700',
   },

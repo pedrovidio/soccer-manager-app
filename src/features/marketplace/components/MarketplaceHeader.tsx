@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { MarketplaceTab } from './types';
 import { styles } from './styles';
 
@@ -13,10 +13,12 @@ function MarketplaceHeaderComponent({ tab, isSyncingLocation }: MarketplaceHeade
   return (
     <View style={styles.header}>
       <View>
-        <Text style={styles.headerTitle}>Buscar jogos</Text>
-        <Text style={styles.headerSub}>{tab === 'invites' ? 'Convites recebidos' : 'Partidas perto de você'}</Text>
+        <Text style={styles.headerTitle}>Onde tem jogo hoje?</Text>
+        <Text style={styles.headerSub}>
+          {tab === 'invites' ? 'Convites esperando sua resposta' : 'Partidas perto de você'}
+        </Text>
       </View>
-      {isSyncingLocation && <ActivityIndicator color={Colors.primary} />}
+      {isSyncingLocation && <ActivityIndicator color={Arena.neon} />}
     </View>
   );
 }

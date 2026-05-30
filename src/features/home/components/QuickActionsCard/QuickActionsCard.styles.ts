@@ -1,14 +1,14 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
   wrap: {
     marginHorizontal: Spacing.lg,
     marginTop: Spacing.lg,
-    backgroundColor: Colors.white,
-    borderRadius: Radius.r12,
+    backgroundColor: Arena.card,
+    borderRadius: Radius.r16,
     borderWidth: 1,
-    borderColor: Colors.n200,
+    borderColor: Arena.neonBorder,
     padding: Spacing.md,
     gap: Spacing.sm,
   },
@@ -25,12 +25,12 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '800',
-    color: Colors.n900,
+    color: Arena.text,
   },
   viewAll: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.primary,
+    color: Arena.neon,
   },
   item: {
     flexDirection: 'row',
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     gap: Spacing.sm,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.n100,
+    borderTopColor: Arena.line,
   },
   iconWrap: {
     width: 34,
@@ -55,11 +55,11 @@ export const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: Colors.n900,
+    color: Arena.text,
   },
   itemText: {
     fontSize: 12,
-    color: Colors.n500,
+    color: Arena.textMuted,
     lineHeight: 16,
   },
   actions: {

@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import type { SpotMarketplaceMatch } from '@features/matchmaking/types';
 import { InfoLine } from './InfoLine';
 import { formatMarketplaceCurrency, formatMarketplaceDate } from './marketplaceFormatters';
@@ -24,7 +24,7 @@ function SpotMatchCardComponent({ match, isPending, onApply }: SpotMatchCardProp
     <View style={styles.card}>
       <View style={styles.cardTop}>
         <View style={styles.iconBox}>
-          <Ionicons name="football-outline" size={20} color={Colors.primary} />
+          <Ionicons name="football-outline" size={20} color={Arena.neon} />
         </View>
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle} numberOfLines={1}>{match.groupName}</Text>
@@ -43,7 +43,7 @@ function SpotMatchCardComponent({ match, isPending, onApply }: SpotMatchCardProp
         disabled={disabled}
       >
         {isPending ? (
-          <ActivityIndicator color={Colors.white} size="small" />
+          <ActivityIndicator color={Arena.bgDeep} size="small" />
         ) : (
           <Text style={styles.primaryBtnText}>{waiting ? 'Aguardando aprovação' : 'Candidatar-se'}</Text>
         )}

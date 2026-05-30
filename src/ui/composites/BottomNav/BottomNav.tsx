@@ -3,7 +3,7 @@ import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { NAV_ITEMS, NAV_ROUTES, NavItem, NavTab } from './options';
 import { styles } from './styles';
 
@@ -29,10 +29,11 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
 
     return (
       <TouchableOpacity style={[styles.btn, { width: itemWidth }]} onPress={() => handlePress(item.key)}>
+        {isActive && <View style={styles.activeHalo} />}
         <Ionicons
           name={isActive ? item.iconActive : item.icon}
           size={22}
-          color={isActive ? Colors.primary : Colors.n400}
+          color={isActive ? Arena.neon : Arena.textSubtle}
         />
         <Text style={[styles.label, isActive ? styles.labelActive : null]}>{item.label}</Text>
       </TouchableOpacity>

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Notification } from '@features/notifications/types';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { styles } from './QuickActionsCard.styles';
 
 const INVITE_TYPES = ['MATCH_INVITE', 'GROUP_INVITE'];
@@ -29,8 +29,8 @@ function isInvite(notification: Notification): boolean {
 }
 
 function actionIcon(type: string): { name: IconName; color: string; bg: string } {
-  if (type === 'GROUP_INVITE') return { name: 'people', color: Colors.primary, bg: Colors.primaryLight };
-  if (type === 'MATCH_INVITE') return { name: 'football', color: Colors.primary, bg: Colors.primaryLight };
+  if (type === 'GROUP_INVITE') return { name: 'people', color: Arena.neon, bg: Arena.neonSoft };
+  if (type === 'MATCH_INVITE') return { name: 'football', color: Arena.neon, bg: Arena.neonSoft };
   return { name: 'person-add', color: Colors.warningDark, bg: Colors.warningLight };
 }
 
@@ -52,8 +52,8 @@ export function QuickActionsCard({
     <View style={styles.wrap}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Ionicons name="flash-outline" size={16} color={Colors.primary} />
-          <Text style={styles.title}>{'A\u00e7\u00f5es r\u00e1pidas'}</Text>
+          <Ionicons name="flash-outline" size={16} color={Arena.neon} />
+          <Text style={styles.title}>Resolver antes da bola rolar</Text>
         </View>
         {actions.length > MAX_ACTIONS && (
           <TouchableOpacity onPress={onViewAll} activeOpacity={0.7}>

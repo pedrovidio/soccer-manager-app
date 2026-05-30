@@ -1,5 +1,6 @@
 import { Tabs, usePathname } from 'expo-router';
 import { BottomNav, NavTab } from '@ui/composites/BottomNav';
+import { Arena } from '@ui/tokens/theme';
 
 const TAB_BY_PATH: Record<string, NavTab> = {
   '/': 'home',
@@ -15,7 +16,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       tabBar={() => <BottomNav active={active} />}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: Arena.bg } }}
     />
   );
 }

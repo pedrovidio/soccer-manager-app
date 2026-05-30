@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { useFavoriteGroup } from '../hooks/useFavoriteGroup';
 import { useGroups } from '../hooks/useGroupQueries';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 import { GroupResponse } from '../groupTypes';
 
 export default function GroupsScreen() {
@@ -26,14 +26,14 @@ export default function GroupsScreen() {
       <View style={s.header}>
         <Text style={s.title}>Meus Grupos</Text>
         <TouchableOpacity style={s.addBtn} onPress={() => router.push('/groups/create-group')}>
-          <Ionicons name="add" size={22} color={Colors.white} />
+          <Ionicons name="add" size={22} color={Arena.bgDeep} />
         </TouchableOpacity>
       </View>
 
       {/* ── CONTENT ── */}
       {isLoading ? (
         <View style={s.center}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+          <ActivityIndicator size="large" color={Arena.neon} />
         </View>
       ) : isError ? (
         <View style={s.center}>
@@ -51,7 +51,7 @@ export default function GroupsScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={groups.length === 0 ? s.emptyContainer : s.list}
           refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />
+            <RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Arena.neon]} tintColor={Arena.neon} />
           }
           ListEmptyComponent={
             <View style={s.center}>
@@ -59,7 +59,7 @@ export default function GroupsScreen() {
               <Text style={s.emptyTitle}>Nenhum grupo ainda</Text>
               <Text style={s.emptyText}>Crie um grupo ou aguarde um convite</Text>
               <TouchableOpacity style={s.createBtn} onPress={() => router.push('/groups/create-group')}>
-                <Ionicons name="add-circle-outline" size={18} color={Colors.white} />
+                <Ionicons name="add-circle-outline" size={18} color={Arena.bgDeep} />
                 <Text style={s.createBtnText}>Criar grupo</Text>
               </TouchableOpacity>
             </View>
@@ -118,28 +118,28 @@ function GroupCard({ group, isFavorite, onFavorite, onPress }: {
 }
 
 const s = StyleSheet.create({
-  safe:           { flex: 1, backgroundColor: Colors.n50 },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.n200 },
-  title:          { fontSize: 20, fontWeight: '800', color: Colors.n900 },
-  addBtn:         { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center' },
+  safe:           { flex: 1, backgroundColor: Arena.bg },
+  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Arena.bg, borderBottomWidth: 1, borderBottomColor: Arena.neonBorder },
+  title:          { fontSize: 21, fontWeight: '900', color: Arena.text },
+  addBtn:         { width: 38, height: 38, borderRadius: 19, backgroundColor: Arena.neon, alignItems: 'center', justifyContent: 'center' },
   center:         { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 },
   emptyContainer: { flex: 1 },
   list:           { padding: Spacing.lg, gap: 10 },
-  emptyTitle:     { fontSize: 16, fontWeight: '700', color: Colors.n700, marginTop: 8 },
-  emptyText:      { fontSize: 13, color: Colors.n500 },
-  retryBtn:       { marginTop: 8, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: Colors.primary, borderRadius: Radius.r8 },
-  retryText:      { color: Colors.white, fontWeight: '600', fontSize: 13 },
-  createBtn:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingHorizontal: 20, paddingVertical: 12, backgroundColor: Colors.primary, borderRadius: Radius.r12 },
-  createBtnText:  { color: Colors.white, fontWeight: '700', fontSize: 14 },
-  card:               { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: Radius.r12, padding: Spacing.md, borderWidth: 1, borderColor: Colors.n200, gap: 12 },
-  cardFavorite:       { borderColor: Colors.warning, borderWidth: 1.5 },
-  cardAvatar:         { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
+  emptyTitle:     { fontSize: 16, fontWeight: '900', color: Arena.text, marginTop: 8 },
+  emptyText:      { fontSize: 13, color: Arena.textMuted, textAlign: 'center' },
+  retryBtn:       { marginTop: 8, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: Arena.neon, borderRadius: Radius.r12 },
+  retryText:      { color: Arena.bgDeep, fontWeight: '900', fontSize: 13 },
+  createBtn:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingHorizontal: 20, paddingVertical: 12, backgroundColor: Arena.neon, borderRadius: Radius.r16 },
+  createBtnText:  { color: Arena.bgDeep, fontWeight: '900', fontSize: 14 },
+  card:               { flexDirection: 'row', alignItems: 'center', backgroundColor: Arena.card, borderRadius: Radius.r16, padding: Spacing.md, borderWidth: 1, borderColor: Arena.line, gap: 12 },
+  cardFavorite:       { borderColor: Arena.neon, borderWidth: 1.5 },
+  cardAvatar:         { width: 44, height: 44, borderRadius: 22, backgroundColor: Arena.neonSoft, alignItems: 'center', justifyContent: 'center' },
   cardAvatarFavorite: { backgroundColor: '#FEF3C7' },
-  cardAvatarText:     { fontSize: 14, fontWeight: '800', color: Colors.primary },
+  cardAvatarText:     { fontSize: 14, fontWeight: '900', color: Arena.neon },
   cardAvatarTextFavorite: { color: Colors.warning },
   cardBody:       { flex: 1, gap: 2 },
-  cardName:       { fontSize: 14, fontWeight: '700', color: Colors.n900 },
-  cardDesc:       { fontSize: 12, color: Colors.n500 },
+  cardName:       { fontSize: 14, fontWeight: '900', color: Arena.text },
+  cardDesc:       { fontSize: 12, color: Arena.textMuted },
   cardMeta:       { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  cardMetaText:   { fontSize: 11, color: Colors.n500 },
+  cardMetaText:   { fontSize: 11, color: Arena.textMuted },
 });
