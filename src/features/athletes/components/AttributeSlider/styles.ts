@@ -1,15 +1,15 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius } from '@ui/tokens/theme';
+import { Arena, Colors, Radius } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
   wrap: { marginBottom: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  label: { fontSize: 13, fontWeight: '600', color: Colors.n700 },
-  value: { fontSize: 16, fontWeight: '800' },
+  label: { fontSize: 13, fontWeight: '800', color: Arena.text },
+  value: { fontSize: 16, fontWeight: '900' },
   trackWrap: { paddingVertical: 10 },
   track: {
     height: 8,
-    backgroundColor: Colors.n200,
+    backgroundColor: Arena.line,
     borderRadius: Radius.r999,
   },
   fill: {
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: Colors.white,
+    backgroundColor: Arena.graphiteElevated,
     borderWidth: 3,
     left: 0,
     top: -9,

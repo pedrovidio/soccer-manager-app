@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 type RegisterSubmitButtonProps = {
@@ -17,7 +17,7 @@ function RegisterSubmitButtonComponent({ isLastStep, loading, onPress }: Registe
       disabled={loading}
     >
       {loading ? (
-        <ActivityIndicator color={Colors.white} />
+        <ActivityIndicator color={Arena.bgDeep} />
       ) : (
         <Text style={styles.btnText}>{isLastStep ? 'Criar conta' : 'Continuar'}</Text>
       )}

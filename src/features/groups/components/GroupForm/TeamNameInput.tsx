@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { TextInput } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Input } from '@ui/primitives';
 import { Field } from './Field';
 import { styles } from './styles';
 
@@ -16,10 +15,9 @@ function TeamNameInputComponent({ index, value, editable, onChange }: Props) {
 
   return (
     <Field label={`Time ${index + 1} *`}>
-      <TextInput
-        style={[styles.input, !editable ? styles.inputDisabled : null]}
+      <Input
+        style={!editable ? styles.inputDisabled : null}
         placeholder={`Time ${index + 1}`}
-        placeholderTextColor={Colors.n400}
         value={value}
         onChangeText={handleChange}
         maxLength={40}

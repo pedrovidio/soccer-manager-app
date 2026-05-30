@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 type Props = {
@@ -13,7 +13,7 @@ function CreateGroupHeaderComponent({ step, onBack }: Props) {
   return (
     <View style={styles.header}>
       <TouchableOpacity style={styles.backBtn} onPress={onBack}>
-        <Ionicons name="arrow-back" size={18} color={Colors.n900} />
+        <Ionicons name="arrow-back" size={18} color={Arena.text} />
       </TouchableOpacity>
       <View style={styles.headerText}>
         <Text style={styles.headerTitle}>{step === 1 ? 'Criar grupo' : 'Adicionar participantes'}</Text>

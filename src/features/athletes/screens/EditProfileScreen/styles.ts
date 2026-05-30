@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.n50 },
+  safe: { flex: 1, backgroundColor: Arena.bg },
   keyboard: { flex: 1 },
   scroll: { padding: Spacing.lg, paddingBottom: 40 },
-  btn: { backgroundColor: Colors.primary, borderRadius: Radius.r12, paddingVertical: 15, alignItems: 'center', marginTop: 8 },
+  btn: { backgroundColor: Arena.neon, borderRadius: Radius.r16, paddingVertical: 15, alignItems: 'center', marginTop: 8 },
   btnDisabled: { opacity: 0.7 },
-  btnText: { color: Colors.white, fontSize: 15, fontWeight: '700' },
+  btnText: { color: Arena.bgDeep, fontSize: 15, fontWeight: '900' },
 });

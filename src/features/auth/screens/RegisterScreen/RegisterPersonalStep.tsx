@@ -1,7 +1,6 @@
 import React, { memo, useCallback } from 'react';
-import { Text, TextInput, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
-import { FormField, UFSelect, ChipRow } from '@ui/primitives';
+import { Text, View } from 'react-native';
+import { FormField, UFSelect, ChipRow, Input } from '@ui/primitives';
 import { maskCep, maskCpf, maskPhone } from '@ui/utils/masks';
 import { GENDERS } from './options';
 import { styles } from './styles';
@@ -35,14 +34,12 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       <Text style={styles.stepSubtitle}>Informações básicas e endereço</Text>
 
       <FormField label="Nome completo">
-        <TextInput style={styles.input} value={form.name} onChangeText={(value) => setField('name', value)} />
+        <Input value={form.name} onChangeText={(value) => setField('name', value)} />
       </FormField>
 
       <FormField label="E-mail">
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder="seu@email.com"
-          placeholderTextColor={Colors.n400}
           keyboardType="email-address"
           autoCapitalize="none"
           value={form.email}
@@ -51,10 +48,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       </FormField>
 
       <FormField label="CPF">
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder="000.000.000-00"
-          placeholderTextColor={Colors.n400}
           keyboardType="numeric"
           value={form.cpf}
           onChangeText={handleCpfChange}
@@ -64,10 +59,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       <View style={styles.row}>
         <View style={styles.rowLeft}>
           <FormField label="Senha">
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="******"
-              placeholderTextColor={Colors.n400}
               secureTextEntry
               value={form.password}
               onChangeText={(value) => setField('password', value)}
@@ -76,10 +69,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
         </View>
         <View style={styles.rowRight}>
           <FormField label="Confirmar senha">
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="******"
-              placeholderTextColor={Colors.n400}
               secureTextEntry
               value={form.confirmPassword}
               onChangeText={(value) => setField('confirmPassword', value)}
@@ -91,10 +82,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       <View style={styles.row}>
         <View style={styles.rowLeft}>
           <FormField label="Telefone">
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="(51) 99999-9999"
-              placeholderTextColor={Colors.n400}
               keyboardType="phone-pad"
               value={form.phone}
               onChangeText={handlePhoneChange}
@@ -103,8 +92,7 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
         </View>
         <View style={styles.rowRight}>
           <FormField label="Idade">
-            <TextInput
-              style={styles.input}
+            <Input
               keyboardType="numeric"
               value={form.age}
               onChangeText={(value) => setField('age', value)}
@@ -123,10 +111,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       <View style={styles.row}>
         <View style={styles.rowLeft}>
           <FormField label="CEP">
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="00000-000"
-              placeholderTextColor={Colors.n400}
               keyboardType="numeric"
               value={form.cep}
               onChangeText={handleCepChange}
@@ -135,7 +121,7 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
         </View>
         <View style={styles.rowRightWide}>
           <FormField label="Rua">
-            <TextInput style={styles.input} value={form.street} onChangeText={(value) => setField('street', value)} />
+            <Input value={form.street} onChangeText={(value) => setField('street', value)} />
           </FormField>
         </View>
       </View>
@@ -143,10 +129,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       <View style={styles.row}>
         <View style={styles.rowLeft}>
           <FormField label="Número">
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="123"
-              placeholderTextColor={Colors.n400}
               keyboardType="numeric"
               value={form.number}
               onChangeText={(value) => setField('number', value)}
@@ -155,10 +139,8 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
         </View>
         <View style={styles.rowRightWide}>
           <FormField label="Complemento">
-            <TextInput
-              style={styles.input}
+            <Input
               placeholder="Apto (opcional)"
-              placeholderTextColor={Colors.n400}
               value={form.complement}
               onChangeText={(value) => setField('complement', value)}
             />
@@ -167,8 +149,7 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       </View>
 
       <FormField label="Bairro">
-        <TextInput
-          style={styles.input}
+        <Input
           value={form.neighborhood}
           onChangeText={(value) => setField('neighborhood', value)}
         />
@@ -177,7 +158,7 @@ function RegisterPersonalStepComponent({ form, setField, onCepComplete }: Regist
       <View style={styles.row}>
         <View style={styles.rowLeftWide}>
           <FormField label="Cidade">
-            <TextInput style={styles.input} value={form.city} onChangeText={(value) => setField('city', value)} />
+            <Input value={form.city} onChangeText={(value) => setField('city', value)} />
           </FormField>
         </View>
       </View>

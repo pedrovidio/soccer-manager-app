@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { View, Text, PanResponder, LayoutChangeEvent } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 interface Props {
@@ -49,7 +49,7 @@ function AttributeSliderComponent({ label, value, onChange, min = 0, max = 100 }
   }, []);
 
   const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
-  const color = value >= 70 ? Colors.success : value >= 50 ? Colors.warning : Colors.error;
+  const color = value >= 70 ? Arena.neon : value >= 50 ? Colors.warning : Colors.error;
   const fillWidth = `${pct * 100}%` as any;
   const thumbOffset = trackWidth.current * pct;
 

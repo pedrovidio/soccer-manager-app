@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { FlatList, Text, TextInput, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { FlatList, Text, View } from 'react-native';
 import { maskCurrency } from '@ui/utils/masks';
 import { CreateGroupFormData } from '@features/groups/groupTypes';
+import { Input } from '@ui/primitives';
 import { Field } from './Field';
 import { TeamNameInput } from './TeamNameInput';
 import { styles } from './styles';
@@ -29,16 +29,15 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
     <TeamNameInput index={item.index} value={item.value} editable={editable} onChange={handleTeamNameChange} />
   ), [editable, handleTeamNameChange]);
 
-  const inputStyle = useMemo(() => [styles.input, !editable ? styles.inputDisabled : null], [editable]);
+  const inputStyle = useMemo(() => [!editable ? styles.inputDisabled : null], [editable]);
 
   return (
     <>
       <Text style={styles.sectionLabel}>Identificacao</Text>
       <Field label="Nome do grupo *">
-        <TextInput
+        <Input
           style={inputStyle}
           placeholder="Ex: Pelada da Sexta"
-          placeholderTextColor={Colors.n400}
           value={form.name}
           onChangeText={(value) => onChange('name', value)}
           maxLength={60}
@@ -47,10 +46,9 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
       </Field>
 
       <Field label="Descricao">
-        <TextInput
-          style={[styles.input, styles.inputMultiline, !editable ? styles.inputDisabled : null]}
+        <Input
+          style={[styles.inputMultiline, !editable ? styles.inputDisabled : null]}
           placeholder="Conte um pouco sobre o grupo (opcional)"
-          placeholderTextColor={Colors.n400}
           value={form.description}
           onChangeText={(value) => onChange('description', value)}
           multiline
@@ -63,10 +61,9 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
       <View style={styles.divider} />
       <Text style={styles.sectionLabel}>Financeiro</Text>
       <Field label="Aluguel mensal da quadra">
-        <TextInput
+        <Input
           style={inputStyle}
           placeholder="0,00"
-          placeholderTextColor={Colors.n400}
           keyboardType="decimal-pad"
           value={form.courtMonthlyFee}
           onChangeText={(value) => onChange('courtMonthlyFee', maskCurrency(value))}
@@ -77,10 +74,9 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
       <View style={styles.row}>
         <View style={styles.leftColumn}>
           <Field label="Mensalidade do mensalista">
-            <TextInput
+            <Input
               style={inputStyle}
               placeholder="0,00"
-              placeholderTextColor={Colors.n400}
               keyboardType="decimal-pad"
               value={form.monthlyFee}
               onChangeText={(value) => onChange('monthlyFee', maskCurrency(value))}
@@ -90,10 +86,9 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
         </View>
         <View style={styles.column}>
           <Field label="Valor do avulso">
-            <TextInput
+            <Input
               style={inputStyle}
               placeholder="0,00"
-              placeholderTextColor={Colors.n400}
               keyboardType="decimal-pad"
               value={form.spotFee}
               onChangeText={(value) => onChange('spotFee', maskCurrency(value))}
@@ -104,10 +99,9 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
       </View>
 
       <Field label="Chave PIX">
-        <TextInput
+        <Input
           style={inputStyle}
           placeholder="CPF, e-mail ou tel."
-          placeholderTextColor={Colors.n400}
           autoCapitalize="none"
           value={form.pixKey}
           onChangeText={(value) => onChange('pixKey', value)}
@@ -116,10 +110,9 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
       </Field>
 
       <Field label="Dia de vencimento da mensalidade">
-        <TextInput
+        <Input
           style={inputStyle}
           placeholder="10"
-          placeholderTextColor={Colors.n400}
           keyboardType="number-pad"
           value={form.monthlyFeeDueDay}
           onChangeText={(value) => onChange('monthlyFeeDueDay', value.replace(/\D/g, '').slice(0, 2))}
