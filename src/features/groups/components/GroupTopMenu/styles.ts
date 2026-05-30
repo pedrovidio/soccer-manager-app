@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Radius, Spacing } from '@ui/tokens/theme';
 
 const MENU_PADDING = 3;
 const MENU_HEIGHT = 40;
@@ -18,10 +18,12 @@ export const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     marginTop: Spacing.sm,
     marginBottom: Spacing.md,
-    backgroundColor: Colors.n100,
+    backgroundColor: Arena.cardSoft,
     borderRadius: Radius.r8,
     padding: MENU_PADDING,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Arena.line,
   },
   item: {
     width: MENU_ITEM_WIDTH,
@@ -32,14 +34,14 @@ export const styles = StyleSheet.create({
     borderRadius: Radius.r8 - 2,
     paddingHorizontal: 2,
   },
-  itemActive: { backgroundColor: Colors.white },
+  itemActive: { backgroundColor: Arena.neon },
   text: {
     fontSize: 11,
     lineHeight: 14,
     fontWeight: '700',
-    color: Colors.n500,
+    color: Arena.textMuted,
     textAlign: 'center',
     includeFontPadding: false,
   },
-  textActive: { color: Colors.primary },
+  textActive: { color: Arena.bgDeep, fontWeight: '900' },
 });

@@ -31,7 +31,6 @@ export function GroupMembersScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <MembersHeader groupName={group.name} />
-      <GroupTopMenu groupId={controller.groupId!} active="members" showFinance={isAdmin} />
       <MembersTabs
         activeTab={controller.activeTab}
         membersCount={members.length}
@@ -68,6 +67,8 @@ export function GroupMembersScreen() {
         onClose={controller.closeOptions}
         onRefresh={controller.refetch}
       />
+
+      <GroupTopMenu groupId={controller.groupId!} active="members" showFinance={isAdmin} />
     </SafeAreaView>
   );
 }

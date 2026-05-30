@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { HomeHeader } from './HomeHeader';
 import { HomeErrorState, HomeLoadingState } from './LoadingErrorState';
@@ -36,11 +36,10 @@ export function GroupHomeScreen() {
         isAdmin={data.isAdmin}
         onEdit={controller.goEditGroup}
       />
-      <GroupTopMenu groupId={controller.groupId!} active="summary" showFinance={data.isAdmin} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={controller.isLoading} onRefresh={controller.refetch} colors={[Colors.primary]} />}
+        refreshControl={<RefreshControl refreshing={controller.isLoading} onRefresh={controller.refetch} colors={[Arena.neon]} />}
         contentContainerStyle={styles.scroll}
       >
         <QuickActions
@@ -69,6 +68,8 @@ export function GroupHomeScreen() {
           onOpenMatches={controller.goMatches}
         />
       </ScrollView>
+
+      <GroupTopMenu groupId={controller.groupId!} active="summary" showFinance={data.isAdmin} />
     </SafeAreaView>
   );
 }

@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
   // ── Screen ──────────────────────────────────────────────────────────
   screen: {
     flex: 1,
-    backgroundColor: Colors.n900,
+    backgroundColor: Arena.bg,
   },
 
   // ── Header ──────────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: 14,
     borderBottomWidth: 0.5,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: Arena.line,
   },
   backBtn: {
     width: 36,
@@ -23,13 +23,15 @@ export const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: Arena.cardSoft,
+    borderWidth: 1,
+    borderColor: Arena.line,
   },
   headerTitle: {
     flex: 1,
     fontSize: 18,
-    fontWeight: '700',
-    color: Colors.white,
+    fontWeight: '800',
+    color: Arena.text,
     marginLeft: 12,
   },
   clearBtn: {
@@ -50,7 +52,7 @@ export const styles = StyleSheet.create({
   // ── Hint ────────────────────────────────────────────────────────────
   hint: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.3)',
+    color: Arena.textSubtle,
     textAlign: 'center',
     paddingVertical: 8,
   },
@@ -68,15 +70,17 @@ export const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: Arena.card,
     borderRadius: Radius.r12,
     padding: 12,
     gap: 12,
+    borderWidth: 1,
+    borderColor: Arena.line,
   },
   cardUnread: {
-    backgroundColor: 'rgba(47,104,255,0.12)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(47,104,255,0.3)',
+    backgroundColor: Arena.neonSoft,
+    borderWidth: 1,
+    borderColor: Arena.neonBorder,
   },
   iconWrap: {
     width: 40,
@@ -98,25 +102,25 @@ export const styles = StyleSheet.create({
   cardTitle: {
     flex: 1,
     fontSize: 13,
-    fontWeight: '700',
-    color: Colors.white,
+    fontWeight: '800',
+    color: Arena.text,
     marginRight: 8,
   },
   cardTime: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
+    color: Arena.textSubtle,
     flexShrink: 0,
   },
   cardBody: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.6)',
+    color: Arena.textMuted,
     lineHeight: 17,
   },
   unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.primary,
+    backgroundColor: Arena.neon,
     marginTop: 4,
     flexShrink: 0,
   },
@@ -137,12 +141,12 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   actionBtnAccept: {
-    backgroundColor: Colors.successLight,
-    borderColor: Colors.success,
+    backgroundColor: 'rgba(34, 197, 94, 0.16)',
+    borderColor: 'rgba(34, 197, 94, 0.32)',
   },
   actionBtnDecline: {
-    backgroundColor: Colors.errorLight,
-    borderColor: Colors.error,
+    backgroundColor: 'rgba(239, 68, 68, 0.16)',
+    borderColor: 'rgba(239, 68, 68, 0.32)',
   },
   actionBtnText: {
     fontSize: 12,
@@ -159,12 +163,12 @@ export const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: 'rgba(255,255,255,0.6)',
+    color: Arena.textMuted,
     marginTop: 8,
   },
   emptyBody: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.3)',
+    color: Arena.textSubtle,
   },
 
   // ── Mark all read ────────────────────────────────────────────────────
@@ -175,18 +179,18 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Colors.white,
+    backgroundColor: Arena.neon,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: Radius.r999,
     shadowColor: '#000',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
   },
   markAllText: {
     fontSize: 13,
-    fontWeight: '700',
-    color: Colors.primary,
+    fontWeight: '900',
+    color: Arena.bgDeep,
   },
 });

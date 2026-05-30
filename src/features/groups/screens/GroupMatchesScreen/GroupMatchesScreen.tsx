@@ -27,7 +27,6 @@ export function GroupMatchesScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <MatchesHeader groupName={group.name} isAdmin={isAdmin} onCreateMatch={controller.goCreateMatch} />
-      <GroupTopMenu groupId={controller.groupId!} active="matches" showFinance={isAdmin} />
       <MatchesList
         matches={upcomingMatches}
         isAdmin={isAdmin}
@@ -36,6 +35,8 @@ export function GroupMatchesScreen() {
         refreshing={controller.isLoading}
         onRefresh={controller.refetch}
       />
+
+      <GroupTopMenu groupId={controller.groupId!} active="matches" showFinance={isAdmin} />
     </SafeAreaView>
   );
 }

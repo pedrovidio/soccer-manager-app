@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Image, Linking, Pressable, StyleSheet, View } from 'react-native';
-import { Colors, Radius } from '@ui/tokens/theme';
+import { Arena, Radius } from '@ui/tokens/theme';
 
 export interface SponsorBannerData {
   imageUrl?: string | null;
@@ -49,8 +49,8 @@ export const SponsorBanner = memo(SponsorBannerComponent);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.n200,
+    backgroundColor: Arena.card,
+    borderColor: Arena.line,
     borderRadius: Radius.r12,
     borderWidth: 1,
     height: 76,

@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 interface Props {
@@ -23,7 +23,7 @@ function BackButtonComponent({ onPress }: Props) {
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.backBtn}>
-      <Ionicons name="arrow-back" size={22} color={Colors.n900} style={styles.icon} />
+      <Ionicons name="arrow-back" size={22} color={Arena.text} style={styles.icon} />
     </TouchableOpacity>
   );
 }

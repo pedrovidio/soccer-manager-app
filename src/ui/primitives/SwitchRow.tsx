@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Switch, Text, View } from 'react-native';
-import { Colors } from '../tokens/theme';
+import { Arena } from '../tokens/theme';
 import { styles } from './styles';
 import { SwitchRowProps } from './types';
 
@@ -14,8 +14,8 @@ function SwitchRowComponent({ label, desc, value, onValueChange }: SwitchRowProp
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: Colors.n300, true: Colors.primary }}
-        thumbColor={Colors.white}
+        trackColor={{ false: Arena.line, true: Arena.neon }}
+        thumbColor={Arena.text}
       />
     </View>
   );

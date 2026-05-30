@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { ExpenseModal } from './ExpenseModal';
 import { FinanceActions } from './FinanceActions';
@@ -34,12 +34,11 @@ export function GroupFinanceScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <FinanceHeader groupName={data.group.name} />
-      <GroupTopMenu groupId={controller.groupId!} active="finance" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={controller.isLoading} onRefresh={controller.refetch} colors={[Colors.primary]} />}
+        refreshControl={<RefreshControl refreshing={controller.isLoading} onRefresh={controller.refetch} colors={[Arena.neon]} />}
       >
         <SummaryGrid summary={data.summary} />
         <FinanceActions onOpenExpense={controller.setExpenseKind} isCourtRentalPaid={controller.isCourtRentalPaid} />
@@ -103,6 +102,8 @@ export function GroupFinanceScreen() {
           />
         )}
       </ScrollView>
+
+      <GroupTopMenu groupId={controller.groupId!} active="finance" />
 
       <ExpenseModal
         kind={controller.expenseKind}

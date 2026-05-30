@@ -4,7 +4,7 @@ import {
   StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius } from '../tokens/theme';
+import { Arena, Radius } from '../tokens/theme';
 
 export interface PlaceResult {
   description: string;
@@ -79,21 +79,21 @@ export function PlacesAutocomplete({ value, onSelect, onChange, placeholder }: P
   return (
     <View style={s.wrap}>
       <View style={s.inputRow}>
-        <Ionicons name="location-outline" size={16} color={Colors.primary} />
+        <Ionicons name="location-outline" size={16} color={Arena.neon} />
         <TextInput
           style={s.input}
           value={query}
           onChangeText={handleChange}
           placeholder={placeholder ?? 'Buscar quadra ou endereço...'}
-          placeholderTextColor={Colors.n400}
+          placeholderTextColor={Arena.textSubtle}
           returnKeyType="search"
           onBlur={() => setTimeout(() => setShowList(false), 200)}
         />
         {loading
-          ? <ActivityIndicator size="small" color={Colors.primary} />
+          ? <ActivityIndicator size="small" color={Arena.neon} />
           : query.length > 0 && (
               <TouchableOpacity onPress={handleClear} hitSlop={8}>
-                <Ionicons name="close-circle" size={16} color={Colors.n400} />
+                <Ionicons name="close-circle" size={16} color={Arena.textMuted} />
               </TouchableOpacity>
             )
         }
@@ -113,7 +113,7 @@ export function PlacesAutocomplete({ value, onSelect, onChange, placeholder }: P
                 onPress={() => handleSelect(item)}
                 activeOpacity={0.7}
               >
-                <Ionicons name="location-outline" size={14} color={Colors.n500} style={{ marginTop: 2 }} />
+                <Ionicons name="location-outline" size={14} color={Arena.neon} style={{ marginTop: 2 }} />
                 <Text style={s.itemText} numberOfLines={2}>{item.description}</Text>
               </TouchableOpacity>
             ))
@@ -128,23 +128,23 @@ const s = StyleSheet.create({
   wrap:      { zIndex: 10 },
   inputRow:  {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.n300,
-    borderRadius: Radius.r8, paddingHorizontal: 12, paddingVertical: 10,
+    backgroundColor: Arena.graphiteElevated, borderWidth: 1, borderColor: Arena.neonBorder,
+    borderRadius: Radius.r16, paddingHorizontal: 12, paddingVertical: 10,
   },
-  input:     { flex: 1, fontSize: 14, color: Colors.n900, padding: 0 },
+  input:     { flex: 1, fontSize: 14, color: Arena.text, padding: 0 },
   list:      {
     position: 'absolute', top: '100%', left: 0, right: 0,
-    backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.n200,
-    borderRadius: Radius.r8, marginTop: 4,
+    backgroundColor: Arena.graphiteElevated, borderWidth: 1, borderColor: Arena.neonBorder,
+    borderRadius: Radius.r16, marginTop: 4,
     elevation: 8, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8,
     zIndex: 20,
   },
   item:      {
     flexDirection: 'row', alignItems: 'flex-start', gap: 8,
     paddingHorizontal: 12, paddingVertical: 10,
-    borderBottomWidth: 0.5, borderBottomColor: Colors.n200,
+    borderBottomWidth: 0.5, borderBottomColor: Arena.line,
   },
   itemLast:  { borderBottomWidth: 0 },
-  itemText:  { flex: 1, fontSize: 13, color: Colors.n800, lineHeight: 18 },
-  emptyText: { fontSize: 13, color: Colors.n400 },
+  itemText:  { flex: 1, fontSize: 13, color: Arena.text, lineHeight: 18 },
+  emptyText: { fontSize: 13, color: Arena.textMuted },
 });
