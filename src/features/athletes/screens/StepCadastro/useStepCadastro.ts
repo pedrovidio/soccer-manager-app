@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getFullImageUrl } from '@lib/imageUrl';
 import { queryKeys } from '@lib/queryKeys';
 import { athleteApi } from '@features/athletes/services/athleteApi';
+import { getInitials } from '@ui/utils/avatar';
 import { StepCadastroProps } from './types';
 
 export function useStepCadastro(props: StepCadastroProps) {
@@ -37,7 +38,7 @@ export function useStepCadastro(props: StepCadastroProps) {
 
   const currentPhoto = props.photoUri ?? getFullImageUrl(props.dashboard?.photoUrl) ?? null;
   const initials = useMemo(
-    () => (props.dashboard?.name ?? '').split(' ').slice(0, 2).map((word: string) => word[0]).join('').toUpperCase(),
+    () => getInitials(props.dashboard?.name ?? ''),
     [props.dashboard?.name],
   );
 

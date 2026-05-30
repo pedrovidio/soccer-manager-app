@@ -26,11 +26,12 @@ export function validateProfileStep(form: RegisterFormData) {
   return null;
 }
 
-export function parseApiError(e: any): string {
-  const data = e?.response?.data;
-  if (data?.errors?.length) return data.errors.map((x: any) => x.message).join('\n');
+export function parseApiError(e: unknown): string {
+  const err = e as { response?: { data?: { error?: string; errors?: Array<{ message: string }> } }; message?: string } | null;
+  const data = err?.response?.data;
+  if (data?.errors?.length) return data.errors.map((x) => x.message).join('\n');
   if (data?.error) return data.error;
-  if (e?.message) return e.message;
+  if (err?.message) return err.message;
   return 'Não foi possível completar a operação.';
 }
 

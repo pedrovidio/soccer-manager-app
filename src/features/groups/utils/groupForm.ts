@@ -12,11 +12,12 @@ export const INITIAL_GROUP_FORM: CreateGroupFormData = {
   teamNames: ['Time 1', 'Time 2'],
 };
 
-export function parseApiError(error: any, fallback = 'Nao foi possivel completar a operacao.'): string {
-  const data = error?.response?.data;
-  if (data?.errors?.length) return data.errors.map((item: any) => item.message).join('\n');
+export function parseApiError(error: unknown, fallback = 'Nao foi possivel completar a operacao.'): string {
+  const err = error as { response?: { data?: { error?: string; errors?: Array<{ message: string }> } }; message?: string } | null;
+  const data = err?.response?.data;
+  if (data?.errors?.length) return data.errors.map((item) => item.message).join('\n');
   if (data?.error) return data.error;
-  if (error?.message) return error.message;
+  if (err?.message) return err.message;
   return fallback;
 }
 

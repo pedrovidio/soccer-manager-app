@@ -4,13 +4,17 @@ import { useMemo, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
 import { Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { assessmentSchema, AssessmentFormData } from '../schemas/assessmentSchema';
 import { calculateWeightedOverall } from '../utils/overallCalculator';
 import { httpClient as api } from '@lib/httpClient';
 import { useAuthStore } from '@features/auth/useAuthStore';
 
 export const useAssessmentLogic = () => {
+  const router = useRouter();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
+  const setAssessmentCompleted = useAuthStore((s) => s.setAssessmentCompleted);
+
   const {
     control,
     handleSubmit,
@@ -59,8 +63,15 @@ export const useAssessmentLogic = () => {
     },
     onSuccess: () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Sucesso!', 'Seu Overall inicial foi calculado e salvo.');
-      // TODO: Redirecionar para o Dashboard ou atualizar Store do Zustand (Ex: setAssessmentCompleted)
+      Alert.alert('Sucesso!', 'Seu Overall inicial foi calculado e salvo.', [
+        {
+          text: 'Ok',
+          onPress: () => {
+            setAssessmentCompleted();
+            router.replace('/' as any);
+          },
+        },
+      ]);
     },
     onError: () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

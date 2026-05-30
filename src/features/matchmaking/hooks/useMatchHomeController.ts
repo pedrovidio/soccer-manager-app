@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
@@ -157,10 +158,14 @@ export function useMatchHomeController() {
   const reportSpotPaymentMutation = useMutation({
     mutationFn: () => matchApi.reportSpotPayment(matchId!, athleteId),
     onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
       Alert.alert('Pagamento informado', 'O administrador foi avisado para conferir o Pix.');
     },
-    onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel informar o pagamento.'),
+    onError: (error: any) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel informar o pagamento.');
+    },
   });
 
   const checkInMutation = useMutation({
@@ -208,10 +213,14 @@ export function useMatchHomeController() {
   const matchmakingMutation = useMutation({
     mutationFn: () => matchApi.matchmaking(matchId!, 2),
     onSuccess: async () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       await qc.refetchQueries({ queryKey: ['match-detail', matchId], type: 'active' });
       qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
     },
-    onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel montar os times.'),
+    onError: (error: any) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel montar os times.');
+    },
   });
 
   const scoreMutation = useMutation({

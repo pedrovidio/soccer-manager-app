@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { getFullImageUrl } from '@lib/imageUrl';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
+import { getInitials } from '@ui/utils/avatar';
 import { STATUS_STYLE, overallColor } from './profileData';
 
 export function useProfileScreen() {
@@ -24,7 +25,7 @@ export function useProfileScreen() {
       position: dashboard?.position ?? '',
       status,
       stats: dashboard?.averageStats,
-      initials: name.split(' ').slice(0, 2).map((word: string) => word[0]).join('').toUpperCase(),
+      initials: getInitials(name),
       overallColor: overallColor(overall),
       statusStyle: STATUS_STYLE[status] ?? STATUS_STYLE.Ativo,
       photoUrl: getFullImageUrl(dashboard?.photoUrl),
