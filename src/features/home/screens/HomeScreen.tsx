@@ -6,13 +6,12 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { OverallBadge } from '@features/athletes/components/OverallBadge';
+import { getFullImageUrl } from '@lib/imageUrl';
 import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
-import { formatPositionLabel } from '@features/athletes/utils/positionLabel';
-import { Badge } from '@ui/composites/Badge';
 import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { Arena, Colors } from '@ui/tokens/theme';
 import { useAthleteLocationSync } from '@features/athletes/hooks/useAthleteLocationSync';
@@ -32,7 +31,6 @@ export default function HomeScreen() {
 
   const router = useRouter();
   const athleteId = useAuthStore((state) => state.athleteId) ?? '';
-  const authName = useAuthStore((state) => state.name);
 
   const { dashboard, notifications, confirmedMatches, isLoading, isError, refetch } =
     useHomeDashboard(athleteId);
@@ -53,11 +51,8 @@ export default function HomeScreen() {
   const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup();
   const { data: favoriteGroup } = useFavoriteGroupDetails(favoriteId, clearFavoriteGroup);
 
-  const name = dashboard?.name ?? authName ?? 'Craque';
-  const overall = dashboard?.overall ?? 0;
-  const position = formatPositionLabel(dashboard?.position);
-  const status = dashboard?.status ?? 'Ativo';
   const blockedByDebt = hasFinancialBlock(dashboard);
+  const photoUrl = getFullImageUrl(dashboard?.photoUrl);
 
   const upcoming = confirmedMatches.filter((match) => match.status === 'SCHEDULED' || match.status === 'IN_PROGRESS');
   const past = confirmedMatches.filter((match) => match.status === 'FINISHED' || match.status === 'CANCELLED');
@@ -77,12 +72,15 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>A rodada está chamando</Text>
-            <Text style={styles.athleteName}>{name}</Text>
-            <View style={styles.statsRow}>
-              <OverallBadge value={overall} />
-              <Text style={styles.positionText}>{position}</Text>
-            </View>
+            <TouchableOpacity onPress={() => router.push('/profile')} activeOpacity={0.7}>
+              {photoUrl ? (
+                <Image source={{ uri: photoUrl }} style={styles.athletePhoto} />
+              ) : (
+                <View style={styles.athletePhotoFallback}>
+                  <Ionicons name="person" size={24} color={Arena.textSubtle} />
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.headerRight}>
@@ -94,7 +92,6 @@ export default function HomeScreen() {
                 </View>
               )}
             </TouchableOpacity>
-            <Badge label={status} variant="ok" />
           </View>
         </View>
       </View>
