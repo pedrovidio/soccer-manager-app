@@ -1,6 +1,5 @@
 import React from 'react';
 import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
-import { BottomNav } from '@ui/composites/BottomNav/BottomNav';
 import { Colors } from '@ui/tokens/theme';
 import { AthleteFinanceErrorState, AthleteFinanceLoadingState } from './LoadingErrorState';
 import { FinanceFilters, FinanceTabs } from './FilterTabs';
@@ -63,7 +62,6 @@ export function AthleteFinanceScreen() {
         onClose={() => controller.setSelectedPayment(null)}
         onOpenMatch={controller.openMatch}
       />
-      <BottomNav active="financial" />
     </SafeAreaView>
   );
 }

@@ -86,7 +86,7 @@ export function useMarketplaceScreen() {
   }, [invitesQuery, spotMatchesQuery]);
 
   const goFinance = useCallback(() => {
-    router.push('/athletes/athlete-finance' as any);
+    router.push('/financial' as any);
   }, [router]);
 
   const acceptInvite = useCallback((invite: Invite) => {

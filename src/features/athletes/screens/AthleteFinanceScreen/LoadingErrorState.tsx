@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomNav } from '@ui/composites/BottomNav/BottomNav';
 import { Arena, Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
@@ -23,7 +22,6 @@ export const AthleteFinanceErrorState = memo(function AthleteFinanceErrorState({
           <Text style={styles.primaryBtnText}>Tentar novamente</Text>
         </TouchableOpacity>
       </View>
-      <BottomNav active="financial" />
     </SafeAreaView>
   );
 });

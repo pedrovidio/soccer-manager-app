@@ -124,7 +124,7 @@ export default function HomeScreen() {
         {blockedByDebt && (
           <TouchableOpacity
             style={styles.debtCard}
-            onPress={() => router.push('/athletes/athlete-finance' as any)}
+            onPress={() => router.push('/financial' as any)}
             activeOpacity={0.7}
           >
             <Ionicons name="lock-closed-outline" size={18} color={Colors.error} />
