@@ -6,7 +6,7 @@ import { s } from './MatchHomeScreen.styles';
 import { useMatchHomeController } from '../hooks/useMatchHomeController';
 import { ConfirmationSection } from './MatchHomeScreen/ConfirmationSection';
 import { FinishMatchModal } from './MatchHomeScreen/FinishMatchModal';
-import { GuestSlotsSection } from './MatchHomeScreen/GuestSlotsSection';
+
 import { MatchActionsSection } from './MatchHomeScreen/MatchActionsSection';
 import { MatchHeader } from './MatchHomeScreen/MatchHeader';
 import { MatchInfoCard } from './MatchHomeScreen/MatchInfoCard';
@@ -51,7 +51,7 @@ export default function MatchHomeScreen() {
         <SpotPaymentSection controller={controller} />
         <PendingApplicationsSection controller={controller} />
         <PresenceSection controller={controller} />
-        <GuestSlotsSection controller={controller} />
+
       </ScrollView>
       <FinishMatchModal controller={controller} />
     </SafeAreaView>

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@ui/tokens/theme';
 import { CounterBadge } from '@features/matchmaking/components/CounterBadge';
@@ -11,7 +11,7 @@ type ConfirmationSectionProps = {
 };
 
 function ConfirmationSectionComponent({ controller }: ConfirmationSectionProps) {
-  const { data, presenceFilter, setPresenceFilter, summary } = controller;
+  const { data, goToGuests, presenceFilter, setPresenceFilter, summary } = controller;
   if (!data || !summary || data.status === 'FINISHED') return null;
 
   return (
@@ -33,12 +33,12 @@ function ConfirmationSectionComponent({ controller }: ConfirmationSectionProps) 
       </Text>
 
       {summary.shouldSuggestSpot && (
-        <View style={s.hintBox}>
+        <TouchableOpacity style={s.hintBox} activeOpacity={0.7} onPress={goToGuests}>
           <Ionicons name="person-add-outline" size={16} color={Colors.warningDark} />
           <Text style={s.hintText}>
             Faltam {Math.max(summary.minimumConfirmed - summary.confirmed, 0)} atleta(s) para confirmar o jogo. Considere convidar avulsos.
           </Text>
-        </View>
+        </TouchableOpacity>
       )}
     </View>
   );

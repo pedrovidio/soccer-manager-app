@@ -15,7 +15,7 @@ function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
   if (!data || !summary) return null;
 
   const isFinished = data.status === 'FINISHED';
-  const canOpenLiveMatch = data.status !== 'FINISHED' && data.status !== 'CANCELLED';
+  const canOpenLiveMatch = data.status === 'IN_PROGRESS';
   const waiting = summary.phase === 'WAITING_CONFIRMATION';
 
   return (
@@ -53,7 +53,7 @@ function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
         </TouchableOpacity>
       )}
 
-      {isAdmin && !isFinished && data.status !== 'CANCELLED' && (
+      {isAdmin && data.status === 'IN_PROGRESS' && (
         <View style={s.adminActionsRow}>
           <TouchableOpacity
             style={[s.actionBtn, s.actionBtnFinish]}

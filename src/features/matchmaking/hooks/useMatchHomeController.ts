@@ -194,9 +194,22 @@ export function useMatchHomeController() {
       qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
       qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
       Alert.alert('Check-in cancelado', 'Sua vaga foi aberta e o administrador foi avisado.');
-      router.replace('/' as any);
     },
     onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel cancelar sua presenca.'),
+  });
+
+  const confirmPresenceMutation = useMutation({
+    mutationFn: () => matchApi.updatePresence(matchId!, athleteId, 'CONFIRMED'),
+    onSuccess: (result: any) => {
+      qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
+      if (result?.status === 'WAITLISTED') {
+        Alert.alert('Fila de espera', 'O jogo está cheio. Você foi colocado na fila de espera.');
+      } else {
+        Alert.alert('Presenca confirmada', 'Sua presenca foi confirmada com sucesso.');
+      }
+    },
+    onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel confirmar sua presenca.'),
   });
 
   const confirmCancelPresence = useCallback(() => {
@@ -287,7 +300,12 @@ export function useMatchHomeController() {
       minimumConfirmed,
       phase,
       canDrawTeams: isAdmin && phase === 'CONFIRMED_WAITING_DRAW',
-      shouldSuggestSpot: isAdmin && phase === 'WAITING_CONFIRMATION' && confirmed < minimumConfirmed,
+      shouldSuggestSpot: (() => {
+        if (!isAdmin || phase !== 'WAITING_CONFIRMATION' || confirmed >= minimumConfirmed) return false;
+        const matchTime = new Date(data.date).getTime();
+        const oneHourMs = 60 * 60 * 1000;
+        return (matchTime - Date.now()) <= oneHourMs;
+      })(),
       pendingSpotApplications: spotApplications.filter((application) => application.status === 'PENDING'),
     };
   }, [athleteId, data, isAdmin, presenceFilter, spotApplications]);
@@ -299,6 +317,10 @@ export function useMatchHomeController() {
   const goToLiveMatch = useCallback(() => {
     router.push(`/matches/live/${matchId}` as any);
   }, [matchId, router]);
+
+  const goToGuests = useCallback(() => {
+    router.push({ pathname: '/matches/guests', params: { matchId, groupId, isAdmin: isAdmin ? '1' : '0' } } as any);
+  }, [groupId, matchId, isAdmin, router]);
 
   return {
     athleteId,
@@ -331,11 +353,13 @@ export function useMatchHomeController() {
     gender,
     summary,
     cancelPresenceMutation,
+    confirmPresenceMutation,
     checkInMutation,
     closeGuestMutation,
     confirmCancelPresence,
     finishMatchMutation,
     goToEdit,
+    goToGuests,
     goToLiveMatch,
     matchmakingMutation,
     openGuestMutation,
