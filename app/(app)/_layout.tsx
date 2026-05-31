@@ -22,6 +22,11 @@ export default function AppLayout() {
         animation: 'slide_from_right',
         contentStyle: { backgroundColor: Arena.bg },
       }}
-    />
+    >
+      <Stack.Screen name="groups/group-home" options={{ animation: 'none' }} />
+      <Stack.Screen name="groups/group-members" options={{ animation: 'none' }} />
+      <Stack.Screen name="groups/group-matches" options={{ animation: 'none' }} />
+      <Stack.Screen name="groups/group-finance" options={{ animation: 'none' }} />
+    </Stack>
   );
 }

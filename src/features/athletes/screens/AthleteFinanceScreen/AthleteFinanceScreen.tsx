@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { Colors } from '@ui/tokens/theme';
 import { AthleteFinanceErrorState, AthleteFinanceLoadingState } from './LoadingErrorState';
 import { FinanceFilters, FinanceTabs } from './FilterTabs';
@@ -25,9 +25,12 @@ export function AthleteFinanceScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={controller.isLoading} onRefresh={controller.refetch} colors={[Colors.primary]} />}
+        refreshControl={<RefreshControl refreshing={controller.isFetching} onRefresh={controller.refetch} colors={[Colors.primary]} />}
       >
-        <SummaryGrid summary={data.summary} />
+        <View style={{ opacity: controller.isFetching ? 0.6 : 1 }}>
+          <SummaryGrid summary={data.summary} />
+        </View>
+
         <FinanceFilters
           statusFilter={controller.statusFilter}
           typeFilter={controller.typeFilter}
@@ -36,23 +39,25 @@ export function AthleteFinanceScreen() {
         />
         <FinanceTabs activeTab={controller.tab} onChange={controller.setTab} />
 
-        {controller.tab === 'due' && (
-          <PaymentList
-            title="Valores em aberto"
-            empty="Nenhum pagamento pendente"
-            payments={data.duePayments}
-            onPay={controller.setSelectedPayment}
-          />
-        )}
-        {controller.tab === 'history' && (
-          <PaymentList
-            title="Historico de pagamentos"
-            empty="Nenhum pagamento encontrado"
-            payments={data.payments}
-            onPay={controller.setSelectedPayment}
-          />
-        )}
-        {controller.tab === 'reports' && <ReportsSection data={data} />}
+        <View style={{ opacity: controller.isFetching ? 0.6 : 1, flex: 1 }}>
+          {controller.tab === 'due' && (
+            <PaymentList
+              title="Valores em aberto"
+              empty="Nenhum pagamento pendente"
+              payments={data.duePayments}
+              onPay={controller.setSelectedPayment}
+            />
+          )}
+          {controller.tab === 'history' && (
+            <PaymentList
+              title="Historico de pagamentos"
+              empty="Nenhum pagamento encontrado"
+              payments={data.payments}
+              onPay={controller.setSelectedPayment}
+            />
+          )}
+          {controller.tab === 'reports' && <ReportsSection data={data} />}
+        </View>
       </ScrollView>
 
       <PaymentModal

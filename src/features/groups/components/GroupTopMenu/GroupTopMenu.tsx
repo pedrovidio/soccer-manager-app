@@ -10,7 +10,7 @@ interface GroupTopMenuProps {
 }
 
 function GroupTopMenuComponent({ groupId, active, showFinance = true }: GroupTopMenuProps) {
-  const { items, navigate } = useGroupTopMenu({ active, groupId, showFinance });
+  const { items, navigate, prevTab } = useGroupTopMenu({ active, groupId, showFinance });
 
   const options = items.map((item) => ({
     value: item.key,
@@ -28,6 +28,7 @@ function GroupTopMenuComponent({ groupId, active, showFinance = true }: GroupTop
     <SegmentedControl
       options={options}
       value={active}
+      prevValue={prevTab as any}
       onChange={handleChange}
       style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 12 }}
     />

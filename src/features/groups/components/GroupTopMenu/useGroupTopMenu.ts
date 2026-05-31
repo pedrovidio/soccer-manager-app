@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { GROUP_TOP_MENU_ITEMS } from './menuItems';
 import { GroupTopMenuItem, GroupTopMenuTab } from './types';
 
@@ -11,6 +11,7 @@ type Params = {
 
 export function useGroupTopMenu({ active, groupId, showFinance }: Params) {
   const router = useRouter();
+  const { prevTab } = useLocalSearchParams<{ prevTab?: string }>();
 
   const items = useMemo(
     () => showFinance ? GROUP_TOP_MENU_ITEMS : GROUP_TOP_MENU_ITEMS.filter((item) => item.key !== 'finance'),
@@ -19,8 +20,8 @@ export function useGroupTopMenu({ active, groupId, showFinance }: Params) {
 
   const navigate = useCallback((item: GroupTopMenuItem) => {
     if (active === item.key) return;
-    router.push({ pathname: item.pathname as any, params: { groupId } });
+    router.replace({ pathname: item.pathname as any, params: { groupId, prevTab: active } });
   }, [active, groupId, router]);
 
-  return { items, navigate };
+  return { items, navigate, prevTab };
 }

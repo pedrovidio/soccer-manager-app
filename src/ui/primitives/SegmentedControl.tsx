@@ -1,5 +1,5 @@
-import React, { memo, useState, useCallback, useRef, useEffect } from 'react';
-import { FlatList, Text, TouchableOpacity, View, StyleSheet, Animated } from 'react-native';
+import React, { memo, useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { FlatList, Text, TouchableOpacity, View, StyleSheet, Animated, Dimensions } from 'react-native';
 import { Arena, Radius } from '../tokens/theme';
 
 export type SegmentOption<T> = {
@@ -10,6 +10,7 @@ export type SegmentOption<T> = {
 type SegmentedControlProps<T> = {
   options: SegmentOption<T>[];
   value: T;
+  prevValue?: T;
   onChange: (value: T) => void;
   style?: any;
 };
@@ -17,25 +18,50 @@ type SegmentedControlProps<T> = {
 function SegmentedControlComponent<T extends string | number>({
   options,
   value,
+  prevValue,
   onChange,
   style,
 }: SegmentedControlProps<T>) {
-  const [containerWidth, setContainerWidth] = useState(0);
+  // Pre-calculate highly accurate width and translateX to avoid any single-frame layout shifts/flickering
+  const initialWidth = useMemo(() => {
+    const screenWidth = Dimensions.get('window').width;
+    const flatStyle = StyleSheet.flatten(style) || {};
+    const marginHorizontal = flatStyle.marginHorizontal ?? flatStyle.margin ?? 16;
+    return screenWidth - (Number(marginHorizontal) * 2);
+  }, [style]);
+
+  const activeIndex = options.findIndex((item) => item.value === value);
+  const prevActiveIndex = prevValue !== undefined ? options.findIndex((item) => item.value === prevValue) : -1;
+
+  // Start the slider at the previous active tab position to animate it across screen changes
+  const animationStartIndex = prevActiveIndex !== -1 && prevActiveIndex !== activeIndex ? prevActiveIndex : activeIndex;
+
+  const initialItemWidth = (initialWidth - 8) / options.length;
+  const initialTargetX = animationStartIndex !== -1 ? animationStartIndex * initialItemWidth : 0;
+
+  const [containerWidth, setContainerWidth] = useState(initialWidth);
   const isFirstLayout = useRef(true);
-  const translateX = useRef(new Animated.Value(0)).current;
+  const translateX = useRef(new Animated.Value(initialTargetX)).current;
 
   // We subtract 8px (3px padding on each side, 1px border on each side) to fit the segments perfectly
   const itemWidth = containerWidth > 0 ? (containerWidth - 8) / options.length : 0;
   const fontSize = options.length > 4 ? 10 : 13;
-
-  const activeIndex = options.findIndex((item) => item.value === value);
 
   useEffect(() => {
     if (containerWidth > 0 && activeIndex !== -1 && itemWidth > 0) {
       const targetX = activeIndex * itemWidth;
 
       if (isFirstLayout.current) {
-        translateX.setValue(targetX);
+        if (initialTargetX !== targetX) {
+          translateX.setValue(initialTargetX);
+          Animated.timing(translateX, {
+            toValue: targetX,
+            duration: 220,
+            useNativeDriver: true,
+          }).start();
+        } else {
+          translateX.setValue(targetX);
+        }
         isFirstLayout.current = false;
       } else {
         Animated.timing(translateX, {
@@ -45,7 +71,7 @@ function SegmentedControlComponent<T extends string | number>({
         }).start();
       }
     }
-  }, [activeIndex, itemWidth, containerWidth, translateX]);
+  }, [activeIndex, itemWidth, containerWidth, translateX, initialTargetX]);
 
   const renderItem = useCallback(({ item }: { item: SegmentOption<T> }) => {
     const active = item.value === value;

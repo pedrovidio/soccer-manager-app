@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { athleteApi } from '@features/athletes/services/athleteApi';
 import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
@@ -26,6 +26,7 @@ export function useAthleteFinanceScreen() {
     queryKey: ['athlete-finance-report', athleteId, filters],
     queryFn: () => athleteApi.financeReport(athleteId, filters),
     enabled: !!athleteId,
+    placeholderData: keepPreviousData,
   });
 
   const reportPaymentMutation = useMutation({
@@ -56,6 +57,7 @@ export function useAthleteFinanceScreen() {
     data: reportQuery.data,
     isError: reportQuery.isError,
     isLoading: reportQuery.isLoading,
+    isFetching: reportQuery.isFetching,
     isReportingPayment: reportPaymentMutation.isPending,
     refetch: reportQuery.refetch,
     selectedPayment,
