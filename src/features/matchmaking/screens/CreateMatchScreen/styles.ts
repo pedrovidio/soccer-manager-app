@@ -35,6 +35,8 @@ export const styles = StyleSheet.create({
   segmentActive: { backgroundColor: Arena.neon },
   segmentText: { fontSize: 13, fontWeight: '700', color: Arena.textSubtle },
   segmentTextActive: { color: Arena.bgDeep, fontWeight: '900' },
+  flatList: { flex: 1 },
+  flatListContent: { flexGrow: 1 },
   pickerBtn: {
     flexDirection: 'row',
     alignItems: 'center',

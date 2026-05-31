@@ -13,6 +13,7 @@ import { OverallBadge } from '@features/athletes/components/OverallBadge';
 import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
 import { formatPositionLabel } from '@features/athletes/utils/positionLabel';
 import { Badge } from '@ui/composites/Badge';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { Arena, Colors } from '@ui/tokens/theme';
 import { useAthleteLocationSync } from '@features/athletes/hooks/useAthleteLocationSync';
 import { useAuthStore } from '@features/auth/useAuthStore';
@@ -146,20 +147,15 @@ export default function HomeScreen() {
         />
 
         <View style={styles.section}>
-          <View style={styles.tabs}>
-            <Text
-              style={[styles.tab, matchTab === 'upcoming' ? styles.tabActive : null]}
-              onPress={() => setMatchTab('upcoming')}
-            >
-              Próximas
-            </Text>
-            <Text
-              style={[styles.tab, matchTab === 'past' ? styles.tabActive : null]}
-              onPress={() => setMatchTab('past')}
-            >
-              Histórico
-            </Text>
-          </View>
+          <SegmentedControl
+            options={[
+              { value: 'upcoming', label: 'Próximas' },
+              { value: 'past', label: 'Histórico' },
+            ]}
+            value={matchTab}
+            onChange={setMatchTab}
+            style={{ marginBottom: 12 }}
+          />
 
           <Text style={styles.sectionTitle}>
             {matchTab === 'upcoming' ? 'Partidas que vão sair do papel' : 'Histórias que já viraram placar'}

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { GroupFinanceStatus, GroupFinanceType } from '@features/groups/groupTypes';
 import { FinanceTab, StatusFilter, TypeFilter } from './types';
 import { styles } from './styles';
@@ -65,17 +66,18 @@ const tabs: Array<{ label: string; value: FinanceTab }> = [
 ];
 
 function FinanceTabsComponent({ activeTab, onChange }: TabsProps) {
+  const options = tabs.map((item) => ({
+    value: item.value,
+    label: item.label,
+  }));
+
   return (
-    <View style={styles.tabs}>
-      {tabs.map((item) => {
-        const active = item.value === activeTab;
-        return (
-          <TouchableOpacity key={item.value} style={[styles.tabBtn, active && styles.tabBtnActive]} onPress={() => onChange(item.value)} activeOpacity={0.7}>
-            <Text style={[styles.tabText, active && styles.tabTextActive]}>{item.label}</Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+    <SegmentedControl
+      options={options}
+      value={activeTab}
+      onChange={onChange}
+      style={{ margin: 16 }}
+    />
   );
 }
 

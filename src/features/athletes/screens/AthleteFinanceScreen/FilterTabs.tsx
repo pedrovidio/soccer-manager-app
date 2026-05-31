@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { AthleteFinanceTab, StatusFilter, TypeFilter } from './types';
 import { styles } from './styles';
 
@@ -40,20 +41,19 @@ function FinanceFiltersComponent({
 export const FinanceFilters = memo(FinanceFiltersComponent);
 
 function FinanceTabsComponent({ activeTab, onChange }: { activeTab: AthleteFinanceTab; onChange: (tab: AthleteFinanceTab) => void }) {
-  return (
-    <View style={styles.tabs}>
-      <TabButton label="Pagar" active={activeTab === 'due'} onPress={() => onChange('due')} />
-      <TabButton label="Historico" active={activeTab === 'history'} onPress={() => onChange('history')} />
-      <TabButton label="Relatorios" active={activeTab === 'reports'} onPress={() => onChange('reports')} />
-    </View>
-  );
-}
+  const options = [
+    { value: 'due' as const, label: 'Pagar' },
+    { value: 'history' as const, label: 'Histórico' },
+    { value: 'reports' as const, label: 'Relatórios' },
+  ];
 
-function TabButton({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
-    <TouchableOpacity style={[styles.tabBtn, active && styles.tabBtnActive]} onPress={onPress} activeOpacity={0.7}>
-      <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
-    </TouchableOpacity>
+    <SegmentedControl
+      options={options}
+      value={activeTab}
+      onChange={onChange}
+      style={{ margin: 16 }}
+    />
   );
 }
 

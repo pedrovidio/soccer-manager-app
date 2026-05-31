@@ -7,3 +7,4 @@ export { SwitchRow } from './SwitchRow';
 export { TimeSelect } from './TimeSelect';
 export { UFSelect } from './UFSelect';
 export { WizardHeader } from './WizardHeader';
+export { SegmentedControl } from './SegmentedControl';

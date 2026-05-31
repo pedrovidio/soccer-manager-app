@@ -1,5 +1,6 @@
-import React, { memo, useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import React, { memo } from 'react';
+import { Text, View } from 'react-native';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { MATCH_TYPES } from './options';
 import { styles } from './styles';
 import { MatchType, MatchTypeOption } from './types';
@@ -10,32 +11,26 @@ type MatchTypeSelectorProps = {
 };
 
 function MatchTypeSelectorComponent({ value, onChange }: MatchTypeSelectorProps) {
-  const renderItem = useCallback(({ item }: { item: MatchTypeOption }) => {
-    const active = value === item.value;
+  const options = MATCH_TYPES.map((item) => ({
+    value: item.value,
+    label: item.label,
+  }));
 
-    return (
-      <TouchableOpacity
-        style={[styles.segment, active ? styles.segmentActive : null]}
-        onPress={() => onChange(item)}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.segmentText, active ? styles.segmentTextActive : null]}>{item.label}</Text>
-      </TouchableOpacity>
-    );
-  }, [onChange, value]);
+  const handleChange = (val: MatchType) => {
+    const selected = MATCH_TYPES.find((item) => item.value === val);
+    if (selected) {
+      onChange(selected);
+    }
+  };
 
   return (
     <View>
       <Text style={styles.label}>Tipo de partida</Text>
-      <View style={styles.segmented}>
-        <FlatList
-          data={MATCH_TYPES}
-          keyExtractor={(item) => item.value}
-          renderItem={renderItem}
-          horizontal
-          scrollEnabled={false}
-        />
-      </View>
+      <SegmentedControl
+        options={options}
+        value={value}
+        onChange={handleChange}
+      />
     </View>
   );
 }

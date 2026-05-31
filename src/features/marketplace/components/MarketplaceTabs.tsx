@@ -1,12 +1,6 @@
-import React, { memo, useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import React, { memo } from 'react';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { MarketplaceTab } from './types';
-import { styles } from './styles';
-
-type TabOption = {
-  key: MarketplaceTab;
-  label: string;
-};
 
 type MarketplaceTabsProps = {
   activeTab: MarketplaceTab;
@@ -16,37 +10,18 @@ type MarketplaceTabsProps = {
 };
 
 function MarketplaceTabsComponent({ activeTab, inviteCount, matchCount, onChange }: MarketplaceTabsProps) {
-  const { width } = useWindowDimensions();
-  const tabWidth = (width - 48) / 2;
-  const options: TabOption[] = [
-    { key: 'invites', label: `Convites (${inviteCount})` },
-    { key: 'search', label: `Buscar jogos (${matchCount})` },
+  const options = [
+    { value: 'invites' as const, label: `Convites (${inviteCount})` },
+    { value: 'search' as const, label: `Buscar jogos (${matchCount})` },
   ];
 
-  const renderItem = useCallback(({ item }: { item: TabOption }) => {
-    const active = activeTab === item.key;
-
-    return (
-      <TouchableOpacity
-        style={[styles.tabBtn, active ? styles.tabBtnActive : null, { width: tabWidth }]}
-        onPress={() => onChange(item.key)}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.tabText, active ? styles.tabTextActive : null]}>{item.label}</Text>
-      </TouchableOpacity>
-    );
-  }, [activeTab, onChange, tabWidth]);
-
   return (
-    <View style={styles.tabs}>
-      <FlatList
-        data={options}
-        horizontal
-        keyExtractor={(item) => item.key}
-        renderItem={renderItem}
-        scrollEnabled={false}
-      />
-    </View>
+    <SegmentedControl
+      options={options}
+      value={activeTab}
+      onChange={onChange}
+      style={{ marginHorizontal: 24, marginVertical: 12 }}
+    />
   );
 }
 
