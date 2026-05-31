@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { MembersTab } from './types';
-import { styles } from './styles';
 
 type Props = {
   activeTab: MembersTab;
@@ -12,21 +11,18 @@ type Props = {
 };
 
 function MembersTabsComponent({ activeTab, membersCount, spotCount, isAdmin, onChange }: Props) {
-  return (
-    <View style={styles.tabs}>
-      <TabButton label={`Membros (${membersCount})`} active={activeTab === 'members'} onPress={() => onChange('members')} />
-      {isAdmin && (
-        <TabButton label={`Avulsos (${spotCount})`} active={activeTab === 'spot'} onPress={() => onChange('spot')} />
-      )}
-    </View>
-  );
-}
+  const options = [
+    { value: 'members' as const, label: `Membros (${membersCount})` },
+    ...(isAdmin ? [{ value: 'spot' as const, label: `Avulsos (${spotCount})` }] : []),
+  ];
 
-function TabButton({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
-    <TouchableOpacity style={[styles.tabBtn, active && styles.tabBtnActive]} onPress={onPress} activeOpacity={0.7}>
-      <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
-    </TouchableOpacity>
+    <SegmentedControl
+      options={options}
+      value={activeTab}
+      onChange={onChange}
+      style={{ marginHorizontal: 16, marginTop: 12, marginBottom: 8 }}
+    />
   );
 }
 

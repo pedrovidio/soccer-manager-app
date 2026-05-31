@@ -14,17 +14,6 @@ export const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 20, fontWeight: '900', color: Arena.text },
   headerSub: { fontSize: 12, color: Arena.textMuted, marginTop: 2 },
-  tabs: { flexDirection: 'row', gap: 8, padding: Spacing.lg, backgroundColor: Arena.bg },
-  tabBtn: {
-    flex: 1,
-    borderRadius: Radius.r999,
-    backgroundColor: Arena.cardSoft,
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  tabBtnActive: { backgroundColor: Arena.neon },
-  tabText: { fontSize: 12, fontWeight: '900', color: Arena.textMuted },
-  tabTextActive: { color: Arena.bgDeep },
   list: { flex: 1 },
   listContent: { padding: Spacing.lg, paddingBottom: Spacing.xl, gap: 12 },
   lockCard: {

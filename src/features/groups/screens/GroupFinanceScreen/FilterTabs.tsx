@@ -1,25 +1,9 @@
 import React, { memo } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { GroupFinanceStatus, GroupFinanceType } from '@features/groups/groupTypes';
 import { FinanceTab, StatusFilter, TypeFilter } from './types';
 import { styles } from './styles';
-
-type ChipProps<T extends string> = {
-  label: string;
-  value: T;
-  activeValue: T;
-  onPress: (value: T) => void;
-};
-
-function FilterChip<T extends string>({ label, value, activeValue, onPress }: ChipProps<T>) {
-  const active = value === activeValue;
-  return (
-    <TouchableOpacity style={[styles.chip, active && styles.chipActive]} onPress={() => onPress(value)} activeOpacity={0.7}>
-      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
 
 type FilterProps = {
   statusFilter: StatusFilter;
@@ -32,19 +16,28 @@ function FinanceFiltersComponent({ statusFilter, typeFilter, onStatusChange, onT
   return (
     <View style={styles.filterBlock}>
       <Text style={styles.filterTitle}>Filtros</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-        <FilterChip label="Todos" value="ALL" activeValue={statusFilter} onPress={onStatusChange} />
-        <FilterChip label="Pendentes" value="PENDING" activeValue={statusFilter} onPress={onStatusChange as (value: string) => void} />
-        <FilterChip label="Pagos" value="PAID" activeValue={statusFilter} onPress={onStatusChange as (value: string) => void} />
-        <FilterChip label="Cancelados" value="CANCELLED" activeValue={statusFilter} onPress={onStatusChange as (value: string) => void} />
-      </ScrollView>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-        <FilterChip label="Todos tipos" value="ALL" activeValue={typeFilter} onPress={onTypeChange} />
-        <FilterChip label="Avulsos" value="SPOT" activeValue={typeFilter} onPress={onTypeChange as (value: string) => void} />
-        <FilterChip label="Mensalidades" value="MONTHLY" activeValue={typeFilter} onPress={onTypeChange as (value: string) => void} />
-        <FilterChip label="Quadra" value="COURT_RENTAL" activeValue={typeFilter} onPress={onTypeChange as (value: string) => void} />
-        <FilterChip label="Compras" value="PURCHASE" activeValue={typeFilter} onPress={onTypeChange as (value: string) => void} />
-      </ScrollView>
+      <SegmentedControl
+        options={[
+          { value: 'ALL', label: 'Todos' },
+          { value: 'PENDING', label: 'Pendentes' },
+          { value: 'PAID', label: 'Pagos' },
+          { value: 'CANCELLED', label: 'Cancelados' },
+        ]}
+        value={statusFilter}
+        onChange={onStatusChange}
+        style={{ marginBottom: 8 }}
+      />
+      <SegmentedControl
+        options={[
+          { value: 'ALL', label: 'Todos tipos' },
+          { value: 'SPOT', label: 'Avulsos' },
+          { value: 'MONTHLY', label: 'Mensalidades' },
+          { value: 'COURT_RENTAL', label: 'Quadra' },
+          { value: 'PURCHASE', label: 'Compras' },
+        ]}
+        value={typeFilter}
+        onChange={onTypeChange}
+      />
     </View>
   );
 }

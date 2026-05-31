@@ -1,8 +1,6 @@
-import React, { memo, useCallback } from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
-import { TopMenuItem } from './TopMenuItem';
-import { GroupTopMenuItem, GroupTopMenuTab } from './types';
-import { styles } from './styles';
+import React, { memo } from 'react';
+import { SegmentedControl } from '@ui/primitives/SegmentedControl';
+import { GroupTopMenuTab } from './types';
 import { useGroupTopMenu } from './useGroupTopMenu';
 
 interface GroupTopMenuProps {
@@ -14,19 +12,24 @@ interface GroupTopMenuProps {
 function GroupTopMenuComponent({ groupId, active, showFinance = true }: GroupTopMenuProps) {
   const { items, navigate } = useGroupTopMenu({ active, groupId, showFinance });
 
-  const renderItem = useCallback(({ item }: ListRenderItemInfo<GroupTopMenuItem>) => (
-    <TopMenuItem item={item} active={active === item.key} onPress={navigate} />
-  ), [active, navigate]);
+  const options = items.map((item) => ({
+    value: item.key,
+    label: item.label,
+  }));
+
+  const handleChange = (val: GroupTopMenuTab) => {
+    const selected = items.find((item) => item.key === val);
+    if (selected) {
+      navigate(selected);
+    }
+  };
 
   return (
-    <FlatList
-      data={items}
-      keyExtractor={(item) => item.key}
-      renderItem={renderItem}
-      horizontal
-      scrollEnabled={false}
-      style={styles.wrap}
-      removeClippedSubviews={false}
+    <SegmentedControl
+      options={options}
+      value={active}
+      onChange={handleChange}
+      style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 12 }}
     />
   );
 }

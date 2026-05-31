@@ -1,5 +1,5 @@
-import React, { memo, useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import React, { memo, useCallback, useRef, useEffect } from 'react';
+import { Animated, FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -18,6 +18,28 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
   const router = useRouter();
   const itemWidth = width / NAV_ITEMS.length;
 
+  const activeIndex = NAV_ITEMS.findIndex((item) => item.key === active);
+  const translateX = useRef(new Animated.Value(0)).current;
+  const isFirstLayout = useRef(true);
+
+  const haloWidth = 54;
+  const targetX = activeIndex * itemWidth + (itemWidth - haloWidth) / 2;
+
+  useEffect(() => {
+    if (itemWidth > 0 && activeIndex !== -1) {
+      if (isFirstLayout.current) {
+        translateX.setValue(targetX);
+        isFirstLayout.current = false;
+      } else {
+        Animated.timing(translateX, {
+          toValue: targetX,
+          duration: 220,
+          useNativeDriver: true,
+        }).start();
+      }
+    }
+  }, [activeIndex, itemWidth, targetX, translateX]);
+
   const handlePress = useCallback((tab: NavTab) => {
     if (onPress) { onPress(tab); return; }
     if (tab === active) return;
@@ -28,8 +50,7 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
     const isActive = item.key === active;
 
     return (
-      <TouchableOpacity style={[styles.btn, { width: itemWidth }]} onPress={() => handlePress(item.key)}>
-        {isActive && <View style={styles.activeHalo} />}
+      <TouchableOpacity style={[styles.btn, { width: itemWidth }]} onPress={() => handlePress(item.key)} activeOpacity={0.8}>
         <Ionicons
           name={isActive ? item.iconActive : item.icon}
           size={22}
@@ -42,6 +63,16 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(bottom, 10) }]}>
+      {itemWidth > 0 && activeIndex !== -1 && (
+        <Animated.View
+          style={[
+            styles.activeHalo,
+            {
+              transform: [{ translateX }],
+            },
+          ]}
+        />
+      )}
       <FlatList
         data={NAV_ITEMS}
         horizontal

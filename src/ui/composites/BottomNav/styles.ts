@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
   activeHalo: {
     position: 'absolute',
     top: 4,
+    left: 0,
     width: 54,
     height: 32,
     borderRadius: 18,
