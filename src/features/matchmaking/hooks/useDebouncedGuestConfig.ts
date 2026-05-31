@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Gender } from '../types';
 
 interface GuestFilterState {
-  radiusKm: string;
-  minAge: string;
-  maxAge: string;
+  radiusKm: number;
+  minAge: number;
+  maxAge: number;
   gender: Gender;
-  minOverall: string;
+  minOverall: number;
 }
 
 export interface DebouncedGuestConfig {
@@ -29,11 +29,11 @@ export function useDebouncedGuestConfig(filters: GuestFilterState): DebouncedGue
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedConfig({
-        radiusKm: +filters.radiusKm || 10,
-        minAge: +filters.minAge || 16,
-        maxAge: +filters.maxAge || 50,
+        radiusKm: filters.radiusKm || 10,
+        minAge: filters.minAge || 16,
+        maxAge: filters.maxAge || 50,
         gender: filters.gender,
-        minOverall: +filters.minOverall || 0,
+        minOverall: filters.minOverall || 0,
       });
     }, 600);
     return () => clearTimeout(t);

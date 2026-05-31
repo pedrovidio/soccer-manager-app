@@ -87,25 +87,50 @@ function GuestSlotsSectionComponent({ controller }: GuestSlotsSectionProps) {
             <View style={s.filterRow}>
               <View style={s.flex1}>
                 <Text style={s.filterLabel}>Vagas</Text>
-                <TextInput style={s.filterInput} value={guestVacancies} onChangeText={setGuestVacancies} keyboardType="numeric" />
+                <TextInput
+                  style={s.filterInput}
+                  value={String(guestVacancies)}
+                  onChangeText={(text) => setGuestVacancies(text === '' ? 0 : parseInt(text, 10) || 0)}
+                  keyboardType="numeric"
+                />
               </View>
               <View style={s.flex1}>
                 <Text style={s.filterLabel}>Raio (km)</Text>
-                <TextInput style={s.filterInput} value={radiusKm} onChangeText={setRadiusKm} keyboardType="numeric" />
+                <TextInput
+                  style={s.filterInput}
+                  value={String(radiusKm)}
+                  onChangeText={(text) => setRadiusKm(text === '' ? 0 : parseFloat(text) || 0)}
+                  keyboardType="numeric"
+                />
               </View>
               <View style={s.flex1}>
                 <Text style={s.filterLabel}>OVR min.</Text>
-                <TextInput style={s.filterInput} value={minOverall} onChangeText={setMinOverall} keyboardType="numeric" />
+                <TextInput
+                  style={s.filterInput}
+                  value={String(minOverall)}
+                  onChangeText={(text) => setMinOverall(text === '' ? 0 : parseInt(text, 10) || 0)}
+                  keyboardType="numeric"
+                />
               </View>
             </View>
             <View style={s.filterRow}>
               <View style={s.flex1}>
                 <Text style={s.filterLabel}>Idade min.</Text>
-                <TextInput style={s.filterInput} value={minAge} onChangeText={setMinAge} keyboardType="numeric" />
+                <TextInput
+                  style={s.filterInput}
+                  value={String(minAge)}
+                  onChangeText={(text) => setMinAge(text === '' ? 0 : parseInt(text, 10) || 0)}
+                  keyboardType="numeric"
+                />
               </View>
               <View style={s.flex1}>
                 <Text style={s.filterLabel}>Idade max.</Text>
-                <TextInput style={s.filterInput} value={maxAge} onChangeText={setMaxAge} keyboardType="numeric" />
+                <TextInput
+                  style={s.filterInput}
+                  value={String(maxAge)}
+                  onChangeText={(text) => setMaxAge(text === '' ? 0 : parseInt(text, 10) || 0)}
+                  keyboardType="numeric"
+                />
               </View>
               <View style={s.flex1} />
             </View>

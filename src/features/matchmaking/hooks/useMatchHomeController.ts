@@ -21,12 +21,12 @@ export function useMatchHomeController() {
   const isAdmin = isAdminParam === '1';
 
   const [guestOpen, setGuestOpen] = useState(false);
-  const [guestVacancies, setGuestVacancies] = useState('2');
-  const [minAge, setMinAge] = useState('16');
-  const [maxAge, setMaxAge] = useState('50');
+  const [guestVacancies, setGuestVacancies] = useState<number>(2);
+  const [minAge, setMinAge] = useState<number>(16);
+  const [maxAge, setMaxAge] = useState<number>(50);
   const [gender, setGender] = useState<Gender>('ANY');
-  const [radiusKm, setRadiusKm] = useState('10');
-  const [minOverall, setMinOverall] = useState('0');
+  const [radiusKm, setRadiusKm] = useState<number>(10);
+  const [minOverall, setMinOverall] = useState<number>(0);
   const [nameSearch, setNameSearch] = useState('');
   const [selectedSpotAthleteIds, setSelectedSpotAthleteIds] = useState<string[]>([]);
   const [finishModalVisible, setFinishModalVisible] = useState(false);
@@ -96,12 +96,12 @@ export function useMatchHomeController() {
   const selectedSpotAthletesCount = selectedSpotAthleteIds.length;
 
   const guestConfig: GuestSlotConfig = useMemo(() => ({
-    guestVacancies: +guestVacancies || 2,
-    minAge: +minAge || 16,
-    maxAge: +maxAge || 50,
+    guestVacancies: guestVacancies || 2,
+    minAge: minAge || 16,
+    maxAge: maxAge || 50,
     gender,
-    spotRadiusKm: +radiusKm || 10,
-    minOverall: +minOverall || 0,
+    spotRadiusKm: radiusKm || 10,
+    minOverall: minOverall || 0,
   }), [gender, guestVacancies, maxAge, minAge, minOverall, radiusKm]);
 
   const openGuestMutation = useMutation({
