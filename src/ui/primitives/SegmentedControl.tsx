@@ -1,5 +1,5 @@
-import React, { memo, useState, useCallback } from 'react';
-import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import React, { memo, useState, useCallback, useRef, useEffect } from 'react';
+import { FlatList, Text, TouchableOpacity, View, StyleSheet, Animated } from 'react-native';
 import { Arena, Radius } from '../tokens/theme';
 
 export type SegmentOption<T> = {
@@ -21,10 +21,31 @@ function SegmentedControlComponent<T extends string | number>({
   style,
 }: SegmentedControlProps<T>) {
   const [containerWidth, setContainerWidth] = useState(0);
+  const isFirstLayout = useRef(true);
+  const translateX = useRef(new Animated.Value(0)).current;
 
   // We subtract 8px (3px padding on each side, 1px border on each side) to fit the segments perfectly
   const itemWidth = containerWidth > 0 ? (containerWidth - 8) / options.length : 0;
   const fontSize = options.length > 4 ? 10 : 13;
+
+  const activeIndex = options.findIndex((item) => item.value === value);
+
+  useEffect(() => {
+    if (containerWidth > 0 && activeIndex !== -1 && itemWidth > 0) {
+      const targetX = activeIndex * itemWidth;
+
+      if (isFirstLayout.current) {
+        translateX.setValue(targetX);
+        isFirstLayout.current = false;
+      } else {
+        Animated.timing(translateX, {
+          toValue: targetX,
+          duration: 220,
+          useNativeDriver: true,
+        }).start();
+      }
+    }
+  }, [activeIndex, itemWidth, containerWidth, translateX]);
 
   const renderItem = useCallback(({ item }: { item: SegmentOption<T> }) => {
     const active = item.value === value;
@@ -33,7 +54,7 @@ function SegmentedControlComponent<T extends string | number>({
       <TouchableOpacity
         style={[
           styles.segment,
-          active ? styles.segmentActive : null,
+          containerWidth === 0 && active ? styles.segmentActive : null,
           itemWidth > 0 ? { width: itemWidth } : { flex: 1 },
         ]}
         onPress={() => onChange(item.value)}
@@ -44,13 +65,24 @@ function SegmentedControlComponent<T extends string | number>({
         </Text>
       </TouchableOpacity>
     );
-  }, [value, onChange, itemWidth, fontSize]);
+  }, [value, onChange, itemWidth, fontSize, containerWidth]);
 
   return (
     <View
       style={[styles.segmented, style]}
       onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
     >
+      {containerWidth > 0 && (
+        <Animated.View
+          style={[
+            styles.animatedBackground,
+            {
+              width: itemWidth,
+              transform: [{ translateX }],
+            },
+          ]}
+        />
+      )}
       <FlatList
         data={options}
         keyExtractor={(item) => String(item.value)}
@@ -79,6 +111,14 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     flexGrow: 1,
+  },
+  animatedBackground: {
+    position: 'absolute',
+    top: 3,
+    bottom: 3,
+    left: 3,
+    backgroundColor: Arena.neon,
+    borderRadius: Radius.r999,
   },
   segment: {
     paddingVertical: 9,
