@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
 import { formatCurrency, formatDate } from '@features/athletes/utils/athleteFinanceFormatters';
 import { styles } from './styles';
@@ -18,7 +18,7 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
   if (!payment) return null;
 
   const pix = payment.group?.pixKey ?? payment.group?.adminPixKey ?? 'Pix nao cadastrado';
-  const canReportPayment = payment.type === 'MONTHLY' && payment.status === 'PENDING' && !payment.paymentReportedAt;
+  const canReportPayment = payment.status === 'PENDING' && !payment.paymentReportedAt;
 
   return (
     <Modal transparent animationType="slide" visible onRequestClose={onClose}>
@@ -42,12 +42,6 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
               <Text style={styles.reportedBadgeText}>Pagamento informado, aguardando confirmacao</Text>
             </View>
           )}
-          {payment.match?.id && (
-            <TouchableOpacity style={styles.primaryBtnFull} onPress={() => onOpenMatch(payment)} activeOpacity={0.7}>
-              <Ionicons name="football-outline" size={18} color={Colors.white} />
-              <Text style={styles.primaryBtnText}>Abrir jogo e informar pagamento</Text>
-            </TouchableOpacity>
-          )}
           {canReportPayment && (
             <TouchableOpacity
               style={[styles.primaryBtnFull, isReporting && styles.primaryBtnFullDisabled]}
@@ -56,13 +50,23 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
               activeOpacity={0.7}
             >
               {isReporting ? (
-                <ActivityIndicator color={Colors.white} size="small" />
+                <ActivityIndicator color={Arena.bgDeep} size="small" />
               ) : (
                 <>
-                  <Ionicons name="receipt-outline" size={18} color={Colors.white} />
+                  <Ionicons name="receipt-outline" size={18} color={Arena.bgDeep} />
                   <Text style={styles.primaryBtnText}>Informar pagamento</Text>
                 </>
               )}
+            </TouchableOpacity>
+          )}
+          {payment.match?.id && (
+            <TouchableOpacity
+              style={[styles.secondaryBtnFull, { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8 }]}
+              onPress={() => onOpenMatch(payment)}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="football-outline" size={18} color={Arena.text} />
+              <Text style={styles.secondaryBtnText}>Abrir jogo</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.secondaryBtnFull} onPress={onClose} activeOpacity={0.7}>

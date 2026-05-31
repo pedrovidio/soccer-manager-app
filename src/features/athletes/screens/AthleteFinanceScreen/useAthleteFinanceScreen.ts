@@ -4,7 +4,8 @@ import { useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { athleteApi } from '@features/athletes/services/athleteApi';
-import { AthleteFinancePayment } from '@features/athletes/athleteTypes';
+import { matchApi } from '@features/matchmaking/services/matchApi';
+import { AthleteFinancePayment, AthleteFinanceType } from '@features/athletes/athleteTypes';
 import { AthleteFinanceTab, StatusFilter, TypeFilter } from './types';
 
 export function useAthleteFinanceScreen() {
@@ -30,7 +31,12 @@ export function useAthleteFinanceScreen() {
   });
 
   const reportPaymentMutation = useMutation({
-    mutationFn: (transactionId: string) => athleteApi.reportMonthlyPayment(transactionId),
+    mutationFn: (payment: AthleteFinancePayment) => {
+      if (payment.type === 'SPOT' && payment.match?.id) {
+        return matchApi.reportSpotPayment(payment.match.id, athleteId);
+      }
+      return athleteApi.reportMonthlyPayment(payment.id);
+    },
     onSuccess: () => {
       setSelectedPayment(null);
       queryClient.invalidateQueries({ queryKey: ['athlete-finance-report', athleteId] });
@@ -50,7 +56,7 @@ export function useAthleteFinanceScreen() {
   }, [router]);
 
   const reportPayment = useCallback((payment: AthleteFinancePayment) => {
-    reportPaymentMutation.mutate(payment.id);
+    reportPaymentMutation.mutate(payment);
   }, [reportPaymentMutation]);
 
   return {

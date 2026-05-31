@@ -11,7 +11,8 @@ type Props = {
 };
 
 function PaymentRowComponent({ payment, onPay }: Props) {
-  const canPay = payment.status === 'PENDING' && !payment.paymentReportedAt;
+  const isFutureMatch = !!(payment.match?.date && new Date(payment.match.date) > new Date());
+  const canPay = payment.status === 'PENDING' && !payment.paymentReportedAt && !isFutureMatch;
   const color = payment.status === 'PAID' ? Colors.successDark : payment.isOverdue ? Colors.errorDark : Colors.warningDark;
 
   return (
