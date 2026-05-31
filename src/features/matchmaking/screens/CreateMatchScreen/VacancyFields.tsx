@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 type VacancyFieldsProps = {
@@ -28,7 +28,7 @@ function VacancyFieldsComponent({
           <Text style={styles.label}>Vagas</Text>
           <TextInput
             style={styles.input}
-            placeholderTextColor={Colors.n400}
+            placeholderTextColor={Arena.textSubtle}
             value={totalVacancies}
             onChangeText={onTotalChange}
             keyboardType="numeric"
@@ -39,7 +39,7 @@ function VacancyFieldsComponent({
           <TextInput
             style={styles.input}
             placeholder="2"
-            placeholderTextColor={Colors.n400}
+            placeholderTextColor={Arena.textSubtle}
             value={reserveVacancies}
             onChangeText={onReserveChange}
             keyboardType="numeric"
@@ -48,7 +48,7 @@ function VacancyFieldsComponent({
       </View>
 
       <View style={styles.hintRow}>
-        <Ionicons name="information-circle-outline" size={13} color={Colors.n400} />
+        <Ionicons name="information-circle-outline" size={13} color={Arena.textSubtle} />
         <Text style={styles.hintText}>
           Sugestão para {typeLabel}: {suggestedVacancies} jogadores no máximo, incluindo reservas (editável)
         </Text>

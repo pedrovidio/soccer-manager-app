@@ -26,7 +26,7 @@ export default function GroupsScreen() {
       <View style={s.header}>
         <Text style={s.title}>Meus Grupos</Text>
         <TouchableOpacity style={s.addBtn} onPress={() => router.push('/groups/create-group')}>
-          <Ionicons name="add" size={22} color={Arena.bgDeep} />
+          <Ionicons name="add" size={22} color={Arena.text} />
         </TouchableOpacity>
       </View>
 
@@ -121,7 +121,7 @@ const s = StyleSheet.create({
   safe:           { flex: 1, backgroundColor: Arena.bg },
   header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Arena.bg, borderBottomWidth: 1, borderBottomColor: Arena.neonBorder },
   title:          { fontSize: 21, fontWeight: '900', color: Arena.text },
-  addBtn:         { width: 38, height: 38, borderRadius: 19, backgroundColor: Arena.neon, alignItems: 'center', justifyContent: 'center' },
+  addBtn:         { width: 38, height: 38, borderRadius: 19, backgroundColor: Arena.cardSoft, borderWidth: 1, borderColor: Arena.line, alignItems: 'center', justifyContent: 'center' },
   center:         { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 },
   emptyContainer: { flex: 1 },
   list:           { padding: Spacing.lg, gap: 10 },

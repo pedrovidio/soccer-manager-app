@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { formatTime } from './createMatchFormatters';
 import { styles } from './styles';
 
@@ -31,7 +31,7 @@ function RecurringToggleComponent({ date, value, onToggle }: RecurringToggleProp
             : 'Ocorre apenas nesta data'}
         </Text>
       </View>
-      <Ionicons name="repeat" size={18} color={value ? Colors.primary : Colors.n400} />
+      <Ionicons name="repeat" size={18} color={value ? Arena.neon : Arena.textSubtle} />
     </TouchableOpacity>
   );
 }

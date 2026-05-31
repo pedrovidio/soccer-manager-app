@@ -7,7 +7,7 @@ export const AVATAR_SIZE: Record<AvatarSize, number> = { xs: 24, sm: 32, md: 40,
 export const AVATAR_FONT_SIZE: Record<AvatarSize, number> = { xs: 9, sm: 11, md: 14, lg: 20 };
 
 export const AVATAR_COLOR: Record<AvatarColor, { bg: string; text: string }> = {
-  blue: { bg: Arena.neonSoft, text: Arena.neon },
-  green: { bg: 'rgba(34, 197, 94, 0.16)', text: '#4ADE80' },
-  amber: { bg: 'rgba(245, 158, 11, 0.16)', text: '#FBBF24' },
+  get blue() { return { bg: Arena.neonSoft, text: Arena.neon }; },
+  get green() { return { bg: Arena.successBg, text: Arena.success }; },
+  get amber() { return { bg: Arena.warningBg, text: Arena.warning }; },
 };

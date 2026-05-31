@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     opacity: 0.65,
   },
   buttonLabel: {
-    color: Arena.bgDeep,
+    color: Arena.buttonLabelPrimary,
     fontSize: 15,
     fontWeight: '900',
     letterSpacing: 0.4,

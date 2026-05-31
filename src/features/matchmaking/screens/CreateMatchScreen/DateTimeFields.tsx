@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { formatDate, formatTime } from './createMatchFormatters';
 import { styles } from './styles';
 
@@ -31,14 +31,14 @@ function DateTimeFieldsComponent({
         <View style={styles.flex1}>
           <Text style={styles.label}>Data</Text>
           <TouchableOpacity style={styles.pickerBtn} onPress={onDatePress} activeOpacity={0.7}>
-            <Ionicons name="calendar-outline" size={16} color={Colors.primary} />
+            <Ionicons name="calendar-outline" size={16} color={Arena.neon} />
             <Text style={styles.pickerBtnText}>{formatDate(date)}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.flex1}>
           <Text style={styles.label}>Hora</Text>
           <TouchableOpacity style={styles.pickerBtn} onPress={onTimePress} activeOpacity={0.7}>
-            <Ionicons name="time-outline" size={16} color={Colors.primary} />
+            <Ionicons name="time-outline" size={16} color={Arena.neon} />
             <Text style={styles.pickerBtnText}>{formatTime(date)}</Text>
           </TouchableOpacity>
         </View>

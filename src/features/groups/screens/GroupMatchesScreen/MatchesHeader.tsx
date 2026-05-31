@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { BackButton } from '@ui/composites/BackButton';
 import { GroupHomeShortcut } from '@features/groups/components/GroupHomeShortcut';
 import { styles } from './styles';
@@ -24,7 +24,7 @@ function MatchesHeaderComponent({ groupName, isAdmin, onCreateMatch }: Props) {
         <GroupHomeShortcut />
         {isAdmin && (
           <TouchableOpacity accessibilityLabel="Criar jogo" accessibilityRole="button" style={styles.iconBtn} onPress={onCreateMatch}>
-            <Ionicons name="add" size={22} color={Colors.n700} />
+            <Ionicons name="add" size={22} color={Arena.text} />
           </TouchableOpacity>
         )}
       </View>

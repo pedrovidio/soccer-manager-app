@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupHomeData } from '@features/groups/groupTypes';
 import { formatCurrency } from '@features/groups/utils/financeFormatters';
 import { formatMatchDate } from '@features/groups/utils/matchFormatters';
@@ -62,7 +62,7 @@ function SummaryGridComponent({ data, blockedCount, favoriteSpotCount, onMembers
 function SummaryCard({ icon, label, value, sub, onPress }: { icon: any; label: string; value: string; sub: string; onPress: () => void }) {
   return (
     <TouchableOpacity style={styles.summaryCard} onPress={onPress} activeOpacity={0.75}>
-      <Ionicons name={icon} size={20} color={Colors.primary} />
+      <Ionicons name={icon} size={20} color={Arena.neon} />
       <Text style={styles.summaryValue} numberOfLines={1}>{value}</Text>
       <Text style={styles.summaryLabel}>{label}</Text>
       <Text style={styles.summarySub} numberOfLines={1}>{sub}</Text>

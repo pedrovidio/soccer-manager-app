@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 type Props = {
@@ -27,7 +27,7 @@ function QuickAction({ icon, label, onPress }: { icon: any; label: string; onPre
   return (
     <TouchableOpacity style={styles.quickAction} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.quickActionIcon}>
-        <Ionicons name={icon} size={20} color={Colors.primary} />
+        <Ionicons name={icon} size={20} color={Arena.neon} />
       </View>
       <Text style={styles.quickActionLabel}>{label}</Text>
     </TouchableOpacity>

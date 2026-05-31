@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { BackButton } from '@ui/composites/BackButton';
 import { GroupHomeShortcut } from '@features/groups/components/GroupHomeShortcut';
 import { styles } from './styles';
@@ -25,7 +25,7 @@ function HomeHeaderComponent({ groupName, membersCount, isAdmin, onEdit }: Props
         <GroupHomeShortcut />
         {isAdmin && (
           <TouchableOpacity accessibilityLabel="Editar grupo" accessibilityRole="button" style={styles.iconBtn} onPress={onEdit}>
-            <Ionicons name="settings-outline" size={20} color={Colors.n700} />
+            <Ionicons name="settings-outline" size={20} color={Arena.text} />
           </TouchableOpacity>
         )}
       </View>

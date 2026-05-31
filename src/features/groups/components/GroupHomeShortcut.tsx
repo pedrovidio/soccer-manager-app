@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 
 function GroupHomeShortcutComponent() {
   const router = useRouter();
@@ -19,7 +19,7 @@ function GroupHomeShortcutComponent() {
       onPress={goHome}
       style={styles.button}
     >
-      <Ionicons name="home-outline" size={19} color={Colors.n700} />
+      <Ionicons name="home-outline" size={19} color={Arena.text} />
     </TouchableOpacity>
   );
 }
@@ -31,7 +31,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.n100,
+    backgroundColor: Arena.cardSoft,
+    borderWidth: 1,
+    borderColor: Arena.line,
     alignItems: 'center',
     justifyContent: 'center',
   },

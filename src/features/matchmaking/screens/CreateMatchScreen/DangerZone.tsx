@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { CancelMode } from './types';
 import { styles } from './styles';
 
@@ -27,7 +27,7 @@ function DangerZoneComponent({ isRecurring, isPending, onCancel }: DangerZonePro
         disabled={isPending}
         activeOpacity={0.8}
       >
-        <Ionicons name="close-circle-outline" size={16} color={Colors.errorDark} />
+        <Ionicons name="close-circle-outline" size={16} color={Arena.error} />
         <Text style={styles.dangerBtnText}>
           {isRecurring ? 'Cancelar esta partida' : 'Cancelar partida'}
         </Text>

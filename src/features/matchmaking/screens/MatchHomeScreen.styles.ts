@@ -10,7 +10,7 @@ export const s = StyleSheet.create({
   retryBtn:    { marginTop: 8, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: Arena.neon, borderRadius: Radius.r8 },
   retryText:   { color: Arena.bgDeep, fontWeight: '800' },
 
-  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: 'rgba(6, 16, 15, 0.96)', borderBottomWidth: 1, borderBottomColor: Arena.line, gap: 12, minHeight: 56 },
+  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, backgroundColor: Arena.graphiteElevated, borderBottomWidth: 1, borderBottomColor: Arena.line, gap: 12, minHeight: 56 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: Arena.cardSoft, borderWidth: 1, borderColor: Arena.line, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 15, fontWeight: '800', color: Arena.text },
   headerSub:   { fontSize: 11, color: Arena.textMuted, textTransform: 'capitalize' },

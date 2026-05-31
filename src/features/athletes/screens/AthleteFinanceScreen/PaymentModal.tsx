@@ -50,10 +50,10 @@ function PaymentModalComponent({ payment, isReporting, onClose, onOpenMatch, onR
               activeOpacity={0.7}
             >
               {isReporting ? (
-                <ActivityIndicator color={Arena.bgDeep} size="small" />
+                <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" />
               ) : (
                 <>
-                  <Ionicons name="receipt-outline" size={18} color={Arena.bgDeep} />
+                  <Ionicons name="receipt-outline" size={18} color={Arena.buttonLabelPrimary} />
                   <Text style={styles.primaryBtnText}>Informar pagamento</Text>
                 </>
               )}
