@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { Match, MatchDetail, GuestSlotConfig, NearbyAthlete, SpotPayment, MatchmakingResponse, SpotMarketplaceMatch, SpotApplication } from '../types';
 
 export const registerRatingRequestSchema = z.object({
-  evaluatedAthleteId: z.string().uuid(),
+  evaluatedAthleteId: z.string(),
   stars: z.number().int().min(1).max(5),
 });
 
