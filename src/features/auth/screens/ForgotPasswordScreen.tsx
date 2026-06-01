@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { AuthBrandLogo } from '@features/auth/components/AuthBrandLogo';
 import { Button, FormField, Input } from '@ui/primitives';
 import { useAuthMutations } from '../hooks/useAuthMutations';
 import { passwordRecoveryStyles as styles } from './PasswordRecovery.styles';
@@ -41,6 +42,7 @@ export default function ForgotPasswordScreen() {
       <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.panel}>
+            <AuthBrandLogo compact style={styles.brand} />
             <Text style={styles.title}>Recuperar senha</Text>
             <Text style={styles.description}>
               Digite seu e-mail para receber um código de recuperação com seis dígitos.

@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Arena.bg },
   keyboard: { flex: 1 },
   scroll: { padding: Spacing.lg, paddingBottom: 40 },
+  brandIntro: { alignItems: 'center', marginBottom: 24 },
   stepTitle: { fontSize: 22, fontWeight: '800', color: Arena.text, marginBottom: 4 },
   stepSubtitle: { fontSize: 13, color: Arena.textMuted, marginBottom: 20 },
   input: {

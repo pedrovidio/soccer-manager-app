@@ -22,6 +22,9 @@ export const passwordRecoveryStyles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.xl,
   },
+  brand: {
+    marginBottom: Spacing.xl,
+  },
   title: {
     color: Colors.n900,
     fontSize: 24,

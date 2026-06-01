@@ -1,5 +1,6 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, View } from 'react-native';
+import { AuthBrandLogo } from '@features/auth/components/AuthBrandLogo';
 import { WizardHeader } from '@ui/primitives';
 import { RegisterAttributesStep } from './RegisterAttributesStep';
 import { RegisterAvailabilityStep } from './RegisterAvailabilityStep';
@@ -23,6 +24,10 @@ export default function RegisterScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          <View style={styles.brandIntro}>
+            <AuthBrandLogo compact nameColor="#FFFFFF" />
+          </View>
+
           {register.step === 1 && (
             <RegisterPersonalStep
               form={register.form}

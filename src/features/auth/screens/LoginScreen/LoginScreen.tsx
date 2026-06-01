@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { AuthBrandLogo } from '@features/auth/components/AuthBrandLogo';
 import { LoginForm } from './LoginForm';
 import { styles } from './styles';
 import { useLoginScreen } from './useLoginScreen';
@@ -41,12 +41,7 @@ export default function LoginScreen() {
         >
           <Animated.View style={[styles.hero, introStyle]}>
             <View style={styles.brandRow}>
-              <View style={styles.logoMark}>
-                <Ionicons name="football-outline" size={20} color="#D7FF45" />
-                <View style={styles.logoCheck}>
-                  <Ionicons name="checkmark" size={10} color="#07110D" />
-                </View>
-              </View>
+              <AuthBrandLogo showName={false} />
               <Text style={styles.brandName}>NÃO FICO SEM JOGAR</Text>
             </View>
 
