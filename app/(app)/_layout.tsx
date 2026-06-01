@@ -4,6 +4,10 @@ import { ErrorScreen } from '@ui/composites/ErrorScreen';
 import { LoadingScreen } from '@ui/composites/LoadingScreen';
 import { Arena } from '@ui/tokens/theme';
 
+export const unstable_settings = {
+  initialRouteName: '(tabs)',
+};
+
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return <ErrorScreen onRetry={retry} />;
 }
@@ -17,12 +21,14 @@ export default function AppLayout() {
 
   return (
     <Stack
+      initialRouteName="(tabs)"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
         contentStyle: { backgroundColor: Arena.bg },
       }}
     >
+      <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
       <Stack.Screen name="groups/group-home" options={{ animation: 'none' }} />
       <Stack.Screen name="groups/group-members" options={{ animation: 'none' }} />
       <Stack.Screen name="groups/group-matches" options={{ animation: 'none' }} />

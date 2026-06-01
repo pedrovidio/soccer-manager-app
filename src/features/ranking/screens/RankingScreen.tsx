@@ -4,10 +4,10 @@ import {
   FlatList,
   Image,
   RefreshControl,
-  SafeAreaView,
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Arena } from '@ui/tokens/theme';
 import { getFullImageUrl } from '@lib/imageUrl';
