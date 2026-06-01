@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Arena } from '@ui/tokens/theme';
+import { usePremium } from '../../../hooks/usePremium';
 import { NAV_ITEMS, NAV_ROUTES, NavItem, NavTab } from './options';
 import { styles } from './styles';
 
@@ -16,9 +17,12 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
   const { bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const router = useRouter();
-  const itemWidth = width / NAV_ITEMS.length;
+  
+  const { isPremium } = usePremium();
+  const visibleItems = NAV_ITEMS.filter((item) => item.key !== 'ranking' || isPremium);
 
-  const activeIndex = NAV_ITEMS.findIndex((item) => item.key === active);
+  const itemWidth = width / visibleItems.length;
+  const activeIndex = visibleItems.findIndex((item) => item.key === active);
   const translateX = useRef(new Animated.Value(0)).current;
   const isFirstLayout = useRef(true);
 
@@ -74,7 +78,7 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
         />
       )}
       <FlatList
-        data={NAV_ITEMS}
+        data={visibleItems}
         horizontal
         keyExtractor={(item) => item.key}
         renderItem={renderItem}

@@ -22,7 +22,11 @@ export function usePremium(): { isPremium: boolean } {
   }, [plan, planExpiresAt]);
 
   const expiresAt = planExpiresAt ? new Date(planExpiresAt).getTime() : Number.NaN;
+  const isActive =
+    plan === 'PREMIUM' &&
+    (!planExpiresAt || (Number.isFinite(expiresAt) && now < expiresAt));
+
   return {
-    isPremium: plan === 'PREMIUM' && Number.isFinite(expiresAt) && now < expiresAt,
+    isPremium: isActive,
   };
 }
