@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Arena } from '@ui/tokens/theme';
 import { PremiumOnly } from '@ui/components/PremiumOnly';
 import { AttributesCard } from './AttributesCard';
@@ -34,11 +35,48 @@ export function ProfileScreen() {
           statusStyle={profile.statusStyle}
           onEdit={controller.goEditProfile}
         />
+        <RankingBadge
+          rankGlobal={controller.rankingSummary.rankGlobal}
+          points={controller.rankingSummary.points}
+          goals={controller.rankingSummary.goals}
+          isLoading={controller.isRankingLoading}
+        />
         <PremiumOnly>
           <AttributesCard stats={profile.stats} />
         </PremiumOnly>
         <ProfileActions onGroups={controller.goGroups} onLogout={controller.confirmLogout} />
       </ScrollView>
+    </View>
+  );
+}
+
+function RankingBadge({
+  rankGlobal,
+  points,
+  goals,
+  isLoading,
+}: {
+  rankGlobal: number;
+  points: number;
+  goals: number;
+  isLoading: boolean;
+}) {
+  const rankLabel = rankGlobal > 0 ? `Top #${rankGlobal}` : 'Sem ranking';
+
+  return (
+    <View style={styles.rankingCard}>
+      <View style={styles.rankingIcon}>
+        <Ionicons name="trophy" size={22} color={Arena.buttonLabelPrimary} />
+      </View>
+      <View style={styles.rankingInfo}>
+        <Text style={styles.rankingTitle}>{isLoading ? 'Atualizando...' : rankLabel}</Text>
+        <Text style={styles.rankingMeta}>
+          {points} Pontos | {goals} Gols
+        </Text>
+      </View>
+      <View style={styles.rankingGlow}>
+        <Ionicons name="stats-chart" size={18} color={Arena.neon} />
+      </View>
     </View>
   );
 }

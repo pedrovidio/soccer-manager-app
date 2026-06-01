@@ -1,9 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { getFullImageUrl } from '@lib/imageUrl';
+import { queryKeys } from '@lib/queryKeys';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
+import { rankingApi } from '@features/ranking/services/rankingApi';
 import { getInitials } from '@ui/utils/avatar';
 import { STATUS_STYLE, overallColor } from './profileData';
 
@@ -13,6 +16,11 @@ export function useProfileScreen() {
   const authName = useAuthStore((state) => state.name);
   const logout = useAuthStore((state) => state.logout);
   const { dashboard, isLoading } = useHomeDashboard(athleteId);
+  const rankingSummaryQuery = useQuery({
+    queryKey: queryKeys.rankingMe(athleteId),
+    queryFn: rankingApi.mySummary,
+    enabled: !!athleteId,
+  });
 
   const profile = useMemo(() => {
     const name = dashboard?.name ?? authName ?? '-';
@@ -52,6 +60,8 @@ export function useProfileScreen() {
   return {
     isLoading,
     profile,
+    rankingSummary: rankingSummaryQuery.data ?? { rankGlobal: 0, points: 0, goals: 0 },
+    isRankingLoading: rankingSummaryQuery.isLoading,
     goEditProfile,
     goGroups,
     confirmLogout,

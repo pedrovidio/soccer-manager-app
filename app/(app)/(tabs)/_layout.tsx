@@ -6,6 +6,7 @@ const TAB_BY_PATH: Record<string, NavTab> = {
   '/': 'home',
   '/groups': 'groups',
   '/marketplace': 'marketplace',
+  '/ranking': 'ranking',
   '/financial': 'financial',
   '/profile': 'profile',
 };

@@ -1,0 +1,168 @@
+import { StyleSheet } from 'react-native';
+import { Arena, Radius, Spacing } from '@ui/tokens/theme';
+
+export const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: Arena.bg,
+  },
+  header: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  eyebrow: {
+    color: Arena.textSubtle,
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  title: {
+    color: Arena.text,
+    fontSize: 28,
+    fontWeight: '900',
+    marginTop: 2,
+  },
+  totalPill: {
+    minWidth: 64,
+    height: 36,
+    borderRadius: Radius.r999,
+    borderWidth: 1,
+    borderColor: Arena.neonBorder,
+    backgroundColor: Arena.neonSoft,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: Spacing.md,
+  },
+  totalText: {
+    color: Arena.text,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  listContent: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: 112,
+    gap: Spacing.sm,
+  },
+  card: {
+    minHeight: 78,
+    borderRadius: Radius.r8,
+    borderWidth: 1,
+    borderColor: Arena.line,
+    backgroundColor: Arena.card,
+    padding: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  currentCard: {
+    borderColor: Arena.neon,
+    backgroundColor: Arena.neonSoft,
+  },
+  positionBox: {
+    width: 42,
+    alignItems: 'center',
+  },
+  position: {
+    color: Arena.textMuted,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  podiumPosition: {
+    color: Arena.neon,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.r999,
+    overflow: 'hidden',
+    backgroundColor: Arena.graphiteElevated,
+    borderWidth: 1,
+    borderColor: Arena.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarText: {
+    color: Arena.text,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  info: {
+    flex: 1,
+    minWidth: 0,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  name: {
+    color: Arena.text,
+    fontSize: 15,
+    fontWeight: '800',
+    flexShrink: 1,
+  },
+  youBadge: {
+    color: Arena.buttonLabelPrimary,
+    backgroundColor: Arena.neon,
+    borderRadius: Radius.r999,
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  meta: {
+    color: Arena.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 5,
+  },
+  pointsBox: {
+    width: 58,
+    alignItems: 'flex-end',
+  },
+  points: {
+    color: Arena.neon,
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  pointsLabel: {
+    color: Arena.textSubtle,
+    fontSize: 11,
+    fontWeight: '800',
+    marginTop: -2,
+  },
+  state: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xl,
+  },
+  stateTitle: {
+    color: Arena.text,
+    fontSize: 17,
+    fontWeight: '800',
+    marginTop: Spacing.md,
+  },
+  stateText: {
+    color: Arena.textMuted,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+  },
+  footerLoader: {
+    paddingVertical: Spacing.lg,
+    alignItems: 'center',
+  },
+});

@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 
-export type NavTab = 'home' | 'groups' | 'marketplace' | 'financial' | 'profile';
+export type NavTab = 'home' | 'groups' | 'marketplace' | 'ranking' | 'financial' | 'profile';
 
 export const NAV_ROUTES: Record<NavTab, string> = {
   home: '/',
   groups: '/groups',
   marketplace: '/marketplace',
+  ranking: '/ranking',
   financial: '/financial',
   profile: '/profile',
 };
@@ -21,6 +22,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'home', label: 'Inicio', icon: 'home-outline', iconActive: 'home' },
   { key: 'groups', label: 'Grupos', icon: 'people-outline', iconActive: 'people' },
   { key: 'marketplace', label: 'Buscar jogos', icon: 'football-outline', iconActive: 'football' },
+  { key: 'ranking', label: 'Ranking', icon: 'podium-outline', iconActive: 'podium' },
   { key: 'financial', label: 'Financeiro', icon: 'wallet-outline', iconActive: 'wallet' },
   { key: 'profile', label: 'Perfil', icon: 'person-outline', iconActive: 'person' },
 ];
