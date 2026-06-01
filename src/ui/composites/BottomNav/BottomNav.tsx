@@ -1,8 +1,13 @@
 import React, { memo, useCallback, useRef, useEffect } from 'react';
-import { Animated, FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Animated, FlatList, Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import { athleteApi } from '@features/athletes/services/athleteApi';
+import { useAuthStore } from '@features/auth/useAuthStore';
+import { getFullImageUrl } from '@lib/imageUrl';
+import { queryKeys } from '@lib/queryKeys';
 import { Arena } from '@ui/tokens/theme';
 import { usePremium } from '../../../hooks/usePremium';
 import { NAV_ITEMS, NAV_ROUTES, NavItem, NavTab } from './options';
@@ -17,9 +22,16 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
   const { bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const router = useRouter();
+  const athleteId = useAuthStore((state) => state.athleteId) ?? '';
   
   const { isPremium } = usePremium();
+  const { data: dashboard } = useQuery({
+    queryKey: queryKeys.dashboard(athleteId),
+    queryFn: () => athleteApi.dashboard(athleteId),
+    enabled: !!athleteId,
+  });
   const visibleItems = NAV_ITEMS.filter((item) => item.key !== 'ranking' || isPremium);
+  const profilePhotoUrl = getFullImageUrl(dashboard?.photoUrl);
 
   const itemWidth = width / visibleItems.length;
   const activeIndex = visibleItems.findIndex((item) => item.key === active);
@@ -55,15 +67,22 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
 
     return (
       <TouchableOpacity style={[styles.btn, { width: itemWidth }]} onPress={() => handlePress(item.key)} activeOpacity={0.8}>
-        <Ionicons
-          name={isActive ? item.iconActive : item.icon}
-          size={22}
-          color={isActive ? Arena.neon : Arena.textSubtle}
-        />
+        {item.key === 'profile' && profilePhotoUrl ? (
+          <Image
+            source={{ uri: profilePhotoUrl }}
+            style={[styles.profilePhoto, isActive ? styles.profilePhotoActive : null]}
+          />
+        ) : (
+          <Ionicons
+            name={isActive ? item.iconActive : item.icon}
+            size={22}
+            color={isActive ? Arena.neon : Arena.textSubtle}
+          />
+        )}
         <Text style={[styles.label, isActive ? styles.labelActive : null]}>{item.label}</Text>
       </TouchableOpacity>
     );
-  }, [active, handlePress, itemWidth]);
+  }, [active, handlePress, itemWidth, profilePhotoUrl]);
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(bottom, 10) }]}>

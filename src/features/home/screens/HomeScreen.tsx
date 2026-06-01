@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { getFullImageUrl } from '@lib/imageUrl';
 import { financialBlockMessage, hasFinancialBlock } from '@features/athletes/utils/financialAccess';
 import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { Arena, Colors } from '@ui/tokens/theme';
@@ -52,7 +51,6 @@ export default function HomeScreen() {
   const { data: favoriteGroup } = useFavoriteGroupDetails(favoriteId, clearFavoriteGroup);
 
   const blockedByDebt = hasFinancialBlock(dashboard);
-  const photoUrl = getFullImageUrl(dashboard?.photoUrl);
 
   const upcoming = confirmedMatches.filter((match) => match.status === 'SCHEDULED' || match.status === 'IN_PROGRESS');
   const past = confirmedMatches.filter((match) => match.status === 'FINISHED' || match.status === 'CANCELLED');
@@ -72,20 +70,19 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => router.push('/profile')} activeOpacity={0.7}>
-              {photoUrl ? (
-                <Image source={{ uri: photoUrl }} style={styles.athletePhoto} />
-              ) : (
-                <View style={styles.athletePhotoFallback}>
-                  <Ionicons name="person" size={24} color={Arena.textSubtle} />
-                </View>
-              )}
-            </TouchableOpacity>
+            <Image
+              accessibilityIgnoresInvertColors
+              accessibilityLabel="Logo Não Fico Sem Jogar"
+              resizeMode="contain"
+              source={require('../../../../assets/images/logo.png')}
+              style={styles.appLogo}
+            />
+            <Text style={styles.appName}>NAO FICO SEM JOGAR</Text>
           </View>
 
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.msgBtn} onPress={() => setShowNotifications(true)}>
-              <Ionicons name="chatbubble-outline" size={24} color={Arena.text} />
+              <Ionicons name="notifications-outline" size={24} color={Arena.text} />
               {unreadCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>

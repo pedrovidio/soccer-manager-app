@@ -11,6 +11,17 @@ export const styles = StyleSheet.create({
   list: { flexGrow: 0 },
   listContent: { flexGrow: 1 },
   btn: { height: 48, alignItems: 'center', justifyContent: 'center', gap: 3 },
+  profilePhoto: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Arena.textSubtle,
+    backgroundColor: Arena.cardSoft,
+  },
+  profilePhotoActive: {
+    borderColor: Arena.neon,
+  },
   activeHalo: {
     position: 'absolute',
     top: 4,
