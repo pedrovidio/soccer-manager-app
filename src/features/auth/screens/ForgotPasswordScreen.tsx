@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, Text, View } 
 import { useRouter } from 'expo-router';
 import { AuthBrandLogo } from '@features/auth/components/AuthBrandLogo';
 import { Button, FormField, Input } from '@ui/primitives';
+import { Arena } from '@ui/tokens/theme';
 import { useAuthMutations } from '../hooks/useAuthMutations';
 import { passwordRecoveryStyles as styles } from './PasswordRecovery.styles';
 import { getResetRequestErrorMessage } from './passwordRecoveryErrors';
@@ -42,7 +43,7 @@ export default function ForgotPasswordScreen() {
       <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.panel}>
-            <AuthBrandLogo compact style={styles.brand} />
+            <AuthBrandLogo compact nameColor={Arena.text} style={styles.brand} />
             <Text style={styles.title}>Recuperar senha</Text>
             <Text style={styles.description}>
               Digite seu e-mail para receber um código de recuperação com seis dígitos.

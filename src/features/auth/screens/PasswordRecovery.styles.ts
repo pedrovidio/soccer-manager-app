@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 
 export const passwordRecoveryStyles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: Colors.n50,
+    backgroundColor: Arena.bg,
   },
   keyboard: {
     flex: 1,
@@ -16,8 +16,8 @@ export const passwordRecoveryStyles = StyleSheet.create({
     paddingVertical: 40,
   },
   panel: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.n200,
+    backgroundColor: Arena.card,
+    borderColor: Arena.line,
     borderRadius: Radius.r16,
     borderWidth: 1,
     padding: Spacing.xl,
@@ -26,13 +26,13 @@ export const passwordRecoveryStyles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   title: {
-    color: Colors.n900,
+    color: Arena.text,
     fontSize: 24,
     fontWeight: '800',
     marginBottom: Spacing.sm,
   },
   description: {
-    color: Colors.n500,
+    color: Arena.textMuted,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: Spacing.xl,
@@ -47,7 +47,7 @@ export const passwordRecoveryStyles = StyleSheet.create({
   },
   feedback: {
     borderRadius: Radius.r8,
-    color: Colors.n700,
+    color: Arena.textMuted,
     fontSize: 12,
     lineHeight: 18,
     padding: Spacing.md,
