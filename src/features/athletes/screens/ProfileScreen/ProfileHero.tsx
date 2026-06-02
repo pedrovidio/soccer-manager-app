@@ -11,13 +11,16 @@ type Props = {
   overall: number;
   overallColor: string;
   photoUrl?: string | null;
+  plan: 'FREE' | 'PREMIUM';
   position: string;
   status: string;
   statusStyle: { bg: string; color: string };
   onEdit: () => void;
 };
 
-function ProfileHeroComponent({ name, initials, overall, overallColor, photoUrl, position, status, statusStyle, onEdit }: Props) {
+function ProfileHeroComponent({ name, initials, overall, overallColor, photoUrl, plan, position, status, statusStyle, onEdit }: Props) {
+  const isPremium = plan === 'PREMIUM';
+
   return (
     <View style={styles.heroCard}>
       <TouchableOpacity style={styles.editBtn} onPress={onEdit}>
@@ -39,6 +42,16 @@ function ProfileHeroComponent({ name, initials, overall, overallColor, photoUrl,
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
           <Text style={[styles.statusText, { color: statusStyle.color }]}>{status}</Text>
+        </View>
+        <View style={[styles.planBadge, isPremium ? styles.planBadgePremium : styles.planBadgeFree]}>
+          <Ionicons
+            name={isPremium ? 'star' : 'leaf-outline'}
+            size={12}
+            color={isPremium ? Arena.buttonLabelPrimary : Arena.textSubtle}
+          />
+          <Text style={[styles.planText, isPremium ? styles.planTextPremium : styles.planTextFree]}>
+            {isPremium ? 'Premium' : 'Free'}
+          </Text>
         </View>
       </View>
     </View>

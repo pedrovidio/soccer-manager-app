@@ -20,7 +20,7 @@ function ProfileActionsComponent({ onGroups, onLogout }: { onGroups: () => void;
 
       <View style={styles.actionRow}>
         <Ionicons name={isLight ? "sunny-outline" : "moon-outline"} size={20} color={Arena.neon} />
-        <Text style={styles.actionLabel}>Tema Claro</Text>
+        <Text style={styles.actionLabel}>{isLight ? 'Tema Claro' : 'Tema Escuro'}</Text>
         <Switch
           value={isLight}
           onValueChange={(val) => setTheme(val ? 'light' : 'dark')}

@@ -30,6 +30,7 @@ export function ProfileScreen() {
           overall={profile.overall}
           overallColor={profile.overallColor}
           photoUrl={profile.photoUrl}
+          plan={profile.plan}
           position={profile.position}
           status={profile.status}
           statusStyle={profile.statusStyle}

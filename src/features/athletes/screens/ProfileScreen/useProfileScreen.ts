@@ -31,6 +31,7 @@ export function useProfileScreen() {
       name,
       overall,
       position: dashboard?.position ?? '',
+      plan: dashboard?.plan ?? 'FREE',
       status,
       stats: dashboard?.averageStats,
       initials: getInitials(name),
