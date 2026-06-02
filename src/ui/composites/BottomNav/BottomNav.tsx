@@ -5,11 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { athleteApi } from '@features/athletes/services/athleteApi';
+import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { getFullImageUrl } from '@lib/imageUrl';
 import { queryKeys } from '@lib/queryKeys';
 import { Arena } from '@ui/tokens/theme';
-import { usePremium } from '../../../hooks/usePremium';
 import { NAV_ITEMS, NAV_ROUTES, NavItem, NavTab } from './options';
 import { styles } from './styles';
 
@@ -24,13 +24,18 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
   const router = useRouter();
   const athleteId = useAuthStore((state) => state.athleteId) ?? '';
   
-  const { isPremium } = usePremium();
+  const marketplaceAccess = useFeatureAccess('MATCH_SEARCH');
+  const rankingAccess = useFeatureAccess('RANKING_ACCESS');
   const { data: dashboard } = useQuery({
     queryKey: queryKeys.dashboard(athleteId),
     queryFn: () => athleteApi.dashboard(athleteId),
     enabled: !!athleteId,
   });
-  const visibleItems = NAV_ITEMS.filter((item) => item.key !== 'ranking' || isPremium);
+  const visibleItems = NAV_ITEMS.filter((item) => {
+    if (item.key === 'marketplace') return marketplaceAccess.hasAccess;
+    if (item.key === 'ranking') return rankingAccess.hasAccess;
+    return true;
+  });
   const profilePhotoUrl = getFullImageUrl(dashboard?.photoUrl);
 
   const itemWidth = width / visibleItems.length;

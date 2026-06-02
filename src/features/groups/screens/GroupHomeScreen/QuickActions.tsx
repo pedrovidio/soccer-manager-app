@@ -9,16 +9,17 @@ type Props = {
   onInvite: () => void;
   onCreateMatch: () => void;
   onFinance: () => void;
+  showFinance?: boolean;
 };
 
-function QuickActionsComponent({ isAdmin, onInvite, onCreateMatch, onFinance }: Props) {
+function QuickActionsComponent({ isAdmin, onInvite, onCreateMatch, onFinance, showFinance = true }: Props) {
   if (!isAdmin) return null;
 
   return (
     <View style={styles.actionsRow}>
       <QuickAction icon="person-add-outline" label="Convidar" onPress={onInvite} />
       <QuickAction icon="football-outline" label="Nova partida" onPress={onCreateMatch} />
-      <QuickAction icon="wallet-outline" label="Financeiro" onPress={onFinance} />
+      {showFinance ? <QuickAction icon="wallet-outline" label="Financeiro" onPress={onFinance} /> : null}
     </View>
   );
 }

@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 import { Image, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
+import { usePremium } from '../../../hooks/usePremium';
 import { Arena, Radius } from '@ui/tokens/theme';
 
 export interface SponsorBannerData {
@@ -12,7 +14,11 @@ interface SponsorBannerProps {
 }
 
 function SponsorBannerComponent({ sponsorData }: SponsorBannerProps) {
-  if (!sponsorData?.imageUrl) {
+  const adFreeAccess = useFeatureAccess('AD_FREE');
+  const { isPremium } = usePremium();
+  const canShowAds = !adFreeAccess.isLoading && adFreeAccess.isFeatureActive && !isPremium;
+
+  if (!canShowAds || !sponsorData?.imageUrl) {
     return null;
   }
 

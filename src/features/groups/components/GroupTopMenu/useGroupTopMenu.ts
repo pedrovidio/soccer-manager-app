@@ -14,7 +14,9 @@ export function useGroupTopMenu({ active, groupId, showFinance }: Params) {
   const { prevTab } = useLocalSearchParams<{ prevTab?: string }>();
 
   const items = useMemo(
-    () => showFinance ? GROUP_TOP_MENU_ITEMS : GROUP_TOP_MENU_ITEMS.filter((item) => item.key !== 'finance'),
+    () => showFinance
+      ? GROUP_TOP_MENU_ITEMS
+      : GROUP_TOP_MENU_ITEMS.filter((item) => item.key !== 'finance'),
     [showFinance],
   );
 

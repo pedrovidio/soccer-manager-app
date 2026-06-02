@@ -15,9 +15,10 @@ type Props = {
   onSpot: () => void;
   onFinance: () => void;
   onMatches: () => void;
+  showFinance?: boolean;
 };
 
-function SummaryGridComponent({ data, blockedCount, favoriteSpotCount, onMembers, onSpot, onFinance, onMatches }: Props) {
+function SummaryGridComponent({ data, blockedCount, favoriteSpotCount, onMembers, onSpot, onFinance, onMatches, showFinance = true }: Props) {
   const { isAdmin, members, upcomingMatches, balance } = data;
   const nextMatch = upcomingMatches[0];
 
@@ -39,7 +40,7 @@ function SummaryGridComponent({ data, blockedCount, favoriteSpotCount, onMembers
           onPress={onSpot}
         />
       )}
-      {isAdmin && balance && (
+      {isAdmin && showFinance && balance && (
         <SummaryCard
           icon="wallet-outline"
           label="Em caixa"

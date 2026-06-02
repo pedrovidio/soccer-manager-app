@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Redirect } from 'expo-router';
+import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
 import { Arena } from '@ui/tokens/theme';
 import { getFullImageUrl } from '@lib/imageUrl';
 import { useAuthStore } from '@features/auth/useAuthStore';
@@ -88,6 +90,16 @@ const RankingRow = memo(function RankingRow({
 });
 
 export default function RankingScreen() {
+  const access = useFeatureAccess('RANKING_ACCESS');
+  if (access.isLoading) return null;
+  if (!access.hasAccess) {
+    return <Redirect href="/" />;
+  }
+
+  return <RankingContent />;
+}
+
+function RankingContent() {
   const athleteId = useAuthStore((state) => state.athleteId);
   const ranking = useRanking();
 

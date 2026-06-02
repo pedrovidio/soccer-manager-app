@@ -2,7 +2,6 @@ import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Arena } from '@ui/tokens/theme';
-import { PremiumOnly } from '@ui/components/PremiumOnly';
 import { AttributesCard } from './AttributesCard';
 import { ProfileActions } from './ProfileActions';
 import { ProfileHero } from './ProfileHero';
@@ -42,9 +41,7 @@ export function ProfileScreen() {
           goals={controller.rankingSummary.goals}
           isLoading={controller.isRankingLoading}
         />
-        <PremiumOnly>
-          <AttributesCard stats={profile.stats} />
-        </PremiumOnly>
+        <AttributesCard stats={profile.stats} />
         <ProfileActions onGroups={controller.goGroups} onLogout={controller.confirmLogout} />
       </ScrollView>
     </View>

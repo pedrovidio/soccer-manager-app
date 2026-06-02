@@ -1,5 +1,7 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
+import { Redirect } from 'expo-router';
+import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
 import { MarketplaceHeader } from '../components/MarketplaceHeader';
 import { MarketplaceList } from '../components/MarketplaceList';
 import { MarketplaceTabs } from '../components/MarketplaceTabs';
@@ -7,6 +9,17 @@ import { styles } from '../components/styles';
 import { useMarketplaceScreen } from '../hooks/useMarketplaceScreen';
 
 export default function MarketplaceScreen() {
+  const access = useFeatureAccess('MATCH_SEARCH');
+
+  if (access.isLoading) return null;
+  if (!access.hasAccess) {
+    return <Redirect href="/" />;
+  }
+
+  return <MarketplaceContent />;
+}
+
+function MarketplaceContent() {
   const marketplace = useMarketplaceScreen();
 
   return (

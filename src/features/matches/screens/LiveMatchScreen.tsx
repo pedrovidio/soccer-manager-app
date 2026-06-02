@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { BackButton } from '@ui/composites/BackButton';
 import { SponsorBanner } from '@ui/composites/SponsorBanner';
@@ -22,6 +23,14 @@ type Props = {
 };
 
 export function LiveMatchScreen({ matchId }: Props) {
+  const access = useFeatureAccess('LIVE_MATCH_SCORE');
+
+  if (access.isLoading) return null;
+
+  return <LiveMatchDataScreen matchId={matchId} showLiveScore={access.hasAccess} />;
+}
+
+function LiveMatchDataScreen({ matchId, showLiveScore }: Props & { showLiveScore: boolean }) {
   const controller = useLiveMatchController(matchId);
 
   if (controller.isLoading) {
@@ -47,6 +56,10 @@ export function LiveMatchScreen({ matchId }: Props) {
     );
   }
 
+  if (!showLiveScore) {
+    return <FinalResultContent match={controller.match} />;
+  }
+
   return (
     <LiveMatchContent
       match={controller.match}
@@ -55,6 +68,27 @@ export function LiveMatchScreen({ matchId }: Props) {
       onFinishMatch={controller.finishMatch}
       onStartMatch={controller.startMatch}
     />
+  );
+}
+
+function FinalResultContent({ match }: { match: LiveMatchData }) {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <LiveMatchHeader title="Resultado da partida" />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.finalResultCard}>
+          <Text style={styles.finalResultLabel}>Resultado da partida</Text>
+          <View style={styles.scoreRow}>
+            <Text style={styles.teamName}>{match.homeTeamName}</Text>
+            <Text style={styles.score}>{match.homeScore} x {match.awayScore}</Text>
+            <Text style={styles.teamName}>{match.awayTeamName}</Text>
+          </View>
+          <Text style={styles.finalResultMeta}>
+            {match.status === 'FINISHED' ? 'Partida encerrada' : 'Placar ao vivo indisponivel'}
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

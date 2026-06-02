@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
 import { Colors } from '@ui/tokens/theme';
 import { phaseLabel } from '@features/matchmaking/utils/matchPhase';
 import { s } from '../MatchHomeScreen.styles';
@@ -11,6 +12,7 @@ type MatchInfoCardProps = {
 };
 
 function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
+  const liveMatchAccess = useFeatureAccess('LIVE_MATCH_SCORE');
   const { data, finishMatchMutation, goToLiveMatch, isAdmin, setFinishModalVisible, summary } = controller;
   if (!data || !summary) return null;
 
@@ -46,7 +48,7 @@ function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
         </Text>
       </View>
 
-      {canOpenLiveMatch && (
+      {canOpenLiveMatch && liveMatchAccess.hasAccess && (
         <TouchableOpacity style={s.liveMatchBtn} onPress={goToLiveMatch} activeOpacity={0.8}>
           <Ionicons name="radio-outline" size={18} color={Colors.white} />
           <Text style={s.liveMatchBtnText}>Transmissao ao Vivo</Text>

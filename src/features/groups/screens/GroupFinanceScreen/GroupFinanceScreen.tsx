@@ -4,7 +4,7 @@ import { Arena, Colors } from '@ui/tokens/theme';
 import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { ExpenseModal } from './ExpenseModal';
 import { FinanceActions } from './FinanceActions';
-import { FinanceErrorState, FinanceLoadingState } from './LoadingErrorState';
+import { FinanceErrorState } from './LoadingErrorState';
 import { FinanceFilters, FinanceTabs } from './FilterTabs';
 import { FinanceHeader } from './FinanceHeader';
 import { MatchRevenueList } from './MatchRevenueList';

@@ -49,6 +49,26 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.lg,
   },
+  finalResultCard: {
+    alignItems: 'center',
+    backgroundColor: Arena.card,
+    borderColor: Arena.line,
+    borderRadius: Radius.r16,
+    borderWidth: 1,
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xl,
+  },
+  finalResultLabel: {
+    color: Arena.text,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  finalResultMeta: {
+    color: Arena.textMuted,
+    fontSize: 13,
+    fontWeight: '600',
+  },
   liveLabel: {
     color: Colors.error,
     fontSize: 11,
