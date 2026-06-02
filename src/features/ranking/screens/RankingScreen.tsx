@@ -59,9 +59,24 @@ const RankingRow = memo(function RankingRow({
           <Text style={styles.name} numberOfLines={1}>{athlete.name}</Text>
           {isCurrentAthlete && <Text style={styles.youBadge}>Voce</Text>}
         </View>
-        <Text style={styles.meta}>
-          V {athlete.wins}  E {athlete.draws}  D {athlete.losses}  Gols {athlete.goals}
-        </Text>
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <Ionicons name="checkmark" size={13} color={Arena.neon} />
+            <Text style={styles.statValue}>{athlete.wins}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statIconText}>=</Text>
+            <Text style={styles.statValue}>{athlete.draws}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Ionicons name="close" size={14} color={Arena.error} />
+            <Text style={styles.statValue}>{athlete.losses}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Ionicons name="football-outline" size={13} color={Arena.textSubtle} />
+            <Text style={styles.statValue}>{athlete.goals}</Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.pointsBox}>
