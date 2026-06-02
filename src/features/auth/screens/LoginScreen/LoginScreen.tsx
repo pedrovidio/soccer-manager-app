@@ -33,7 +33,7 @@ export default function LoginScreen() {
         <Animated.View style={[styles.dust, styles.dustB, dustBStyle]} />
       </View>
 
-      <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled"
