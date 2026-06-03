@@ -1,14 +1,18 @@
 import React, { memo } from 'react';
-import { Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '@ui/tokens/theme';
 import type { LiveMatchData, LiveMatchEvent, LiveMatchTeam } from '../../types';
 import { styles } from './styles';
 
 type Props = {
   match: LiveMatchData;
   goalEvents: LiveMatchEvent[];
+  canDeleteGoal: boolean;
+  onDeleteGoal: (eventId: string) => void;
 };
 
-function LiveTimelineComponent({ match, goalEvents }: Props) {
+function LiveTimelineComponent({ match, goalEvents, canDeleteGoal, onDeleteGoal }: Props) {
   return (
     <View style={styles.timeline}>
       <Text style={styles.sectionTitle}>Linha do tempo</Text>
@@ -26,8 +30,17 @@ function LiveTimelineComponent({ match, goalEvents }: Props) {
               <Text style={styles.eventTitle}>
                 {event.type === 'OWN_GOAL' ? 'Gol contra' : 'Gol'} - {teamNameFor(match, event.teamType)}
               </Text>
-              <Text style={styles.eventSubtitle}>{event.athleteName ?? 'Jogador não informado'}</Text>
+              <Text style={styles.eventSubtitle}>{event.athleteName ?? 'Jogador nao informado'}</Text>
             </View>
+            {canDeleteGoal && (
+              <TouchableOpacity
+                activeOpacity={0.72}
+                onPress={() => onDeleteGoal(event.id)}
+                style={styles.deleteEventButton}
+              >
+                <Ionicons name="trash-outline" size={18} color={Colors.error} />
+              </TouchableOpacity>
+            )}
           </View>
         ))
       )}

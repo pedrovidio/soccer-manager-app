@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
 import { useAuthStore } from '@features/auth/useAuthStore';
@@ -65,6 +65,8 @@ function LiveMatchDataScreen({ matchId, showLiveScore }: Props & { showLiveScore
       match={controller.match}
       isSubmitting={controller.isSubmitting}
       onAddGoal={controller.addGoal}
+      onAddOwnGoal={controller.addOwnGoal}
+      onDeleteGoal={controller.deleteGoal}
       onFinishMatch={controller.finishMatch}
       onStartMatch={controller.startMatch}
     />
@@ -96,11 +98,13 @@ type ContentProps = {
   match: LiveMatchData;
   isSubmitting: boolean;
   onAddGoal: (athleteId: string, team: LiveMatchTeam) => void;
+  onAddOwnGoal: (athleteId: string, team: LiveMatchTeam) => void;
+  onDeleteGoal: (eventId: string) => void;
   onFinishMatch: () => void;
   onStartMatch: () => void;
 };
 
-function LiveMatchContent({ match, isSubmitting, onAddGoal, onFinishMatch, onStartMatch }: ContentProps) {
+function LiveMatchContent({ match, isSubmitting, onAddGoal, onAddOwnGoal, onDeleteGoal, onFinishMatch, onStartMatch }: ContentProps) {
   const athleteId = useAuthStore((state) => state.athleteId);
   const [now, setNow] = useState(Date.now());
 
@@ -113,6 +117,7 @@ function LiveMatchContent({ match, isSubmitting, onAddGoal, onFinishMatch, onSta
 
   const isScorekeeper = !!athleteId && athleteId === match.scorekeeperId;
   const canRegisterGoal = isScorekeeper && match.status === 'IN_PROGRESS' && !isSubmitting;
+  const canDeleteGoal = isScorekeeper && match.status === 'IN_PROGRESS' && !isSubmitting;
   const goalEvents = useMemo(
     () =>
       match.events
@@ -137,6 +142,7 @@ function LiveMatchContent({ match, isSubmitting, onAddGoal, onFinishMatch, onSta
             canRegisterGoal={canRegisterGoal}
             isSubmitting={isSubmitting}
             onAddGoal={onAddGoal}
+            onAddOwnGoal={onAddOwnGoal}
           />
           <LiveTeamColumn
             players={match.awayPlayers}
@@ -145,6 +151,7 @@ function LiveMatchContent({ match, isSubmitting, onAddGoal, onFinishMatch, onSta
             canRegisterGoal={canRegisterGoal}
             isSubmitting={isSubmitting}
             onAddGoal={onAddGoal}
+            onAddOwnGoal={onAddOwnGoal}
           />
         </View>
 
@@ -173,8 +180,20 @@ function LiveMatchContent({ match, isSubmitting, onAddGoal, onFinishMatch, onSta
           </View>
         )}
 
-        <LiveTimeline match={match} goalEvents={goalEvents} />
+        <LiveTimeline
+          match={match}
+          goalEvents={goalEvents}
+          canDeleteGoal={canDeleteGoal}
+          onDeleteGoal={(eventId) => confirmDeleteGoal(eventId, onDeleteGoal)}
+        />
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function confirmDeleteGoal(eventId: string, onDeleteGoal: (eventId: string) => void) {
+  Alert.alert('Anular gol?', 'O gol sera removido da linha do tempo e o placar sera ajustado.', [
+    { text: 'Cancelar', style: 'cancel' },
+    { text: 'Anular', style: 'destructive', onPress: () => onDeleteGoal(eventId) },
+  ]);
 }

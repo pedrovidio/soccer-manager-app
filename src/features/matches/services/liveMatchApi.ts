@@ -20,6 +20,9 @@ export const liveMatchApi = {
   registerEvent: (matchId: string, payload: RegisterLiveMatchEventPayload) =>
     httpClient.post<LiveMatchEvent>(`/matches/${matchId}/live/events`, payload).then((response) => response.data),
 
+  deleteEvent: (matchId: string, eventId: string) =>
+    httpClient.delete(`/matches/${matchId}/live/events/${eventId}`).then((response) => response.data),
+
   finish: (matchId: string) =>
     httpClient.post(`/matches/${matchId}/live/finish`, {}).then((response) => response.data),
 };

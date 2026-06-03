@@ -79,6 +79,8 @@ describe('<LiveMatchScreen />', () => {
       refetch: jest.fn(),
       startMatch: jest.fn(),
       addGoal: jest.fn(),
+      addOwnGoal: jest.fn(),
+      deleteGoal: jest.fn(),
       finishMatch: jest.fn(),
     });
 
@@ -107,6 +109,8 @@ describe('<LiveMatchScreen />', () => {
       refetch: jest.fn(),
       startMatch: jest.fn(),
       addGoal: jest.fn(),
+      addOwnGoal: jest.fn(),
+      deleteGoal: jest.fn(),
       finishMatch: jest.fn(),
     });
 

@@ -185,6 +185,13 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
   },
+  playerInfo: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    minWidth: 0,
+  },
   playerCardInteractive: {
     borderColor: Arena.neon,
     borderWidth: 1.5,
@@ -198,6 +205,29 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     lineHeight: 16,
+  },
+  goalActionButton: {
+    alignItems: 'center',
+    borderRadius: Radius.r999,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
+  goalForButton: {
+    backgroundColor: Colors.successLight,
+  },
+  ownGoalButton: {
+    backgroundColor: Colors.errorLight,
+  },
+  goalForText: {
+    color: Colors.successDark,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  ownGoalText: {
+    color: Colors.error,
+    fontSize: 11,
+    fontWeight: '900',
   },
   playerAvatar: {
     backgroundColor: Arena.cardSoft,
@@ -259,6 +289,14 @@ export const styles = StyleSheet.create({
   },
   eventContent: {
     flex: 1,
+  },
+  deleteEventButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.errorLight,
+    borderRadius: Radius.r999,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
   },
   eventTitle: {
     color: Arena.text,

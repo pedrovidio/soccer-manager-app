@@ -12,6 +12,7 @@ type LivePlayerCardProps = {
   disabled: boolean;
   teamType: LiveMatchTeam;
   onAddGoal: (athleteId: string, team: LiveMatchTeam) => void;
+  onAddOwnGoal: (athleteId: string, team: LiveMatchTeam) => void;
 };
 
 const LivePlayerCard = memo(function LivePlayerCard({
@@ -20,10 +21,11 @@ const LivePlayerCard = memo(function LivePlayerCard({
   disabled,
   teamType,
   onAddGoal,
+  onAddOwnGoal,
 }: LivePlayerCardProps) {
   const photoUrl = getFullImageUrl(player.photoUrl);
   const content = (
-    <>
+    <View style={styles.playerInfo}>
       {photoUrl ? (
         <Image
           accessibilityLabel={`Foto de ${player.name}`}
@@ -38,7 +40,7 @@ const LivePlayerCard = memo(function LivePlayerCard({
         />
       )}
       <Text numberOfLines={2} style={styles.playerName}>{player.name}</Text>
-    </>
+    </View>
   );
 
   if (!enabled) {
@@ -46,14 +48,25 @@ const LivePlayerCard = memo(function LivePlayerCard({
   }
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.72}
-      disabled={disabled}
-      onPress={() => onAddGoal(player.id, teamType)}
-      style={[styles.playerCard, styles.playerCardInteractive, disabled ? styles.playerCardDisabled : null]}
-    >
+    <View style={[styles.playerCard, styles.playerCardInteractive, disabled ? styles.playerCardDisabled : null]}>
+      <TouchableOpacity
+        activeOpacity={0.72}
+        disabled={disabled}
+        onPress={() => onAddGoal(player.id, teamType)}
+        style={[styles.goalActionButton, styles.goalForButton]}
+      >
+        <Text style={styles.goalForText}>+</Text>
+      </TouchableOpacity>
       {content}
-    </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.72}
+        disabled={disabled}
+        onPress={() => onAddOwnGoal(player.id, teamType)}
+        style={[styles.goalActionButton, styles.ownGoalButton]}
+      >
+        <Text style={styles.ownGoalText}>GC</Text>
+      </TouchableOpacity>
+    </View>
   );
 });
 
@@ -64,6 +77,7 @@ type TeamColumnProps = {
   canRegisterGoal: boolean;
   isSubmitting: boolean;
   onAddGoal: (athleteId: string, team: LiveMatchTeam) => void;
+  onAddOwnGoal: (athleteId: string, team: LiveMatchTeam) => void;
 };
 
 export const LiveTeamColumn = memo(function LiveTeamColumn({
@@ -73,6 +87,7 @@ export const LiveTeamColumn = memo(function LiveTeamColumn({
   canRegisterGoal,
   isSubmitting,
   onAddGoal,
+  onAddOwnGoal,
 }: TeamColumnProps) {
   return (
     <View style={styles.teamColumn}>
@@ -97,6 +112,7 @@ export const LiveTeamColumn = memo(function LiveTeamColumn({
             disabled={isSubmitting}
             teamType={teamType}
             onAddGoal={onAddGoal}
+            onAddOwnGoal={onAddOwnGoal}
           />
         ))
       )}
