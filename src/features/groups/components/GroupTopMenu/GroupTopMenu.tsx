@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SegmentedControl } from '@ui/primitives/SegmentedControl';
 import { GroupTopMenuTab } from './types';
 import { useGroupTopMenu } from './useGroupTopMenu';
@@ -10,6 +11,7 @@ interface GroupTopMenuProps {
 }
 
 function GroupTopMenuComponent({ groupId, active, showFinance = true }: GroupTopMenuProps) {
+  const { bottom } = useSafeAreaInsets();
   const { items, navigate, prevTab } = useGroupTopMenu({ active, groupId, showFinance });
 
   const options = items.map((item) => ({
@@ -30,7 +32,7 @@ function GroupTopMenuComponent({ groupId, active, showFinance = true }: GroupTop
       value={active}
       prevValue={prevTab as any}
       onChange={handleChange}
-      style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 12 }}
+      style={{ marginHorizontal: 16, marginTop: 8, marginBottom: Math.max(bottom + 8, 12) }}
     />
   );
 }
