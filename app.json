@@ -1,9 +1,10 @@
 {
   "expo": {
-    "name": "Soccer Manager",
+    "name": "Não fico sem jogar",
     "slug": "soccer-manager-app",
     "scheme": "soccer-manager",
     "version": "1.0.0",
+    "icon": "./assets/logo.png",
     "updates": {
       "enabled": false
     },
@@ -33,7 +34,10 @@
       "barStyle": "dark-content"
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "f351a9c0-3275-43ed-82f5-5b5880fc07df"
+      }
     },
     "owner": "pedrovidio"
   }

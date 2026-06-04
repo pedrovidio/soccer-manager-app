@@ -24,7 +24,7 @@ function redactSensitiveValues(value: unknown): unknown {
 
 export const httpClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
-  timeout: 10_000,
+  timeout: 30_000,
   headers: { 'Content-Type': 'application/json' },
 });
 
