@@ -6,7 +6,12 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://xgwzffjkftazozjwtvos.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk"
+      }
     },
     "preview": {
       "distribution": "internal",
@@ -14,13 +19,17 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://xgwzffjkftazozjwtvos.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://xgwzffjkftazozjwtvos.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk"
       }
     }
   },
