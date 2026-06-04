@@ -33,10 +33,7 @@
       "barStyle": "dark-content"
     },
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "8be8d74e-d19a-4efe-822a-888ee14b83f8"
-      }
+      "router": {}
     },
     "owner": "pedrovidio"
   }
