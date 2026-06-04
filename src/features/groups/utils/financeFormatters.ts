@@ -22,6 +22,7 @@ export function typeLabel(type: GroupFinanceType) {
   const labels: Record<GroupFinanceType, string> = {
     MONTHLY: 'Mensalidade',
     SPOT: 'Avulso',
+    INITIAL_BALANCE: 'Saldo inicial',
     COURT_RENTAL: 'Aluguel da quadra',
     PURCHASE: 'Compra',
   };

@@ -32,6 +32,7 @@ function FinanceFiltersComponent({ statusFilter, typeFilter, onStatusChange, onT
           { value: 'ALL', label: 'Todos tipos' },
           { value: 'SPOT', label: 'Avulsos' },
           { value: 'MONTHLY', label: 'Mensalidades' },
+          { value: 'INITIAL_BALANCE', label: 'Saldo inicial' },
           { value: 'COURT_RENTAL', label: 'Quadra' },
           { value: 'PURCHASE', label: 'Compras' },
         ]}

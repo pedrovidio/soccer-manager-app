@@ -4,6 +4,7 @@ export interface CreateGroupPayload {
   description?: string;
   pixKey?: string;
   courtMonthlyFee?: number;
+  initialCashBalance?: number;
   monthlyFee?: number;
   monthlyFeeDueDay?: number;
   spotFee?: number;
@@ -30,6 +31,7 @@ export interface CreateGroupFormData {
   description: string;
   pixKey: string;
   courtMonthlyFee: string;
+  initialCashBalance: string;
   monthlyFee: string;
   monthlyFeeDueDay: string;
   spotFee: string;
@@ -83,7 +85,7 @@ export interface GroupBalance {
 }
 
 export type GroupFinanceStatus = 'PENDING' | 'PAID' | 'CANCELLED';
-export type GroupFinanceType = 'MONTHLY' | 'SPOT' | 'COURT_RENTAL' | 'PURCHASE';
+export type GroupFinanceType = 'MONTHLY' | 'SPOT' | 'INITIAL_BALANCE' | 'COURT_RENTAL' | 'PURCHASE';
 
 export interface GroupFinancePayment {
   id: string;

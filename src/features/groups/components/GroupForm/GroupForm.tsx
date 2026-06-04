@@ -10,10 +10,11 @@ import { styles } from './styles';
 type Props = {
   form: CreateGroupFormData;
   editable?: boolean;
+  showInitialCashBalance?: boolean;
   onChange: (field: keyof CreateGroupFormData, value: string | string[]) => void;
 };
 
-function GroupFormComponent({ form, editable = true, onChange }: Props) {
+function GroupFormComponent({ form, editable = true, showInitialCashBalance = false, onChange }: Props) {
   const teamNameItems = useMemo(
     () => [0, 1].map((index) => ({ index, value: form.teamNames[index] ?? '' })),
     [form.teamNames],
@@ -70,6 +71,19 @@ function GroupFormComponent({ form, editable = true, onChange }: Props) {
           editable={editable}
         />
       </Field>
+
+      {showInitialCashBalance ? (
+        <Field label="Valor ja em caixa">
+          <Input
+            style={inputStyle}
+            placeholder="0,00"
+            keyboardType="decimal-pad"
+            value={form.initialCashBalance}
+            onChangeText={(value) => onChange('initialCashBalance', maskCurrency(value))}
+            editable={editable}
+          />
+        </Field>
+      ) : null}
 
       <View style={styles.row}>
         <View style={styles.leftColumn}>

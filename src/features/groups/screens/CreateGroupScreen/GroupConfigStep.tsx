@@ -17,7 +17,7 @@ function GroupConfigStepComponent({ form, onChange, onNext }: Props) {
     <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
       <Text style={styles.stepTitle}>Configuracoes do grupo</Text>
       <Text style={styles.stepSub}>Deixe cobrancas e PIX claros para evitar ajuste depois</Text>
-      <GroupForm form={form} onChange={onChange} />
+      <GroupForm form={form} showInitialCashBalance onChange={onChange} />
       <TouchableOpacity style={styles.btn} onPress={onNext}>
         <Text style={styles.btnText}>Continuar</Text>
         <Ionicons name="arrow-forward" size={18} color={Colors.white} />

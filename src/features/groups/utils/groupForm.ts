@@ -6,6 +6,7 @@ export const INITIAL_GROUP_FORM: CreateGroupFormData = {
   description: '',
   pixKey: '',
   courtMonthlyFee: '',
+  initialCashBalance: '',
   monthlyFee: '',
   monthlyFeeDueDay: '10',
   spotFee: '',
@@ -27,6 +28,9 @@ export function validateGroupForm(form: CreateGroupFormData): string | null {
   if (form.courtMonthlyFee && parseCurrency(form.courtMonthlyFee) === undefined) {
     return 'Aluguel mensal da quadra deve ser um valor numerico.';
   }
+  if (form.initialCashBalance && parseCurrency(form.initialCashBalance) === undefined) {
+    return 'Valor ja em caixa deve ser um valor numerico.';
+  }
   if (form.monthlyFee && parseCurrency(form.monthlyFee) === undefined) {
     return 'Mensalidade deve ser um valor numerico.';
   }
@@ -46,12 +50,15 @@ export function validateGroupForm(form: CreateGroupFormData): string | null {
 }
 
 export function buildCreateGroupPayload(form: CreateGroupFormData, adminId: string): CreateGroupPayload {
+  const initialCashBalance = positiveCurrencyValue(form.initialCashBalance);
+
   return {
     adminId,
     name: form.name.trim(),
     description: form.description.trim() || undefined,
     pixKey: form.pixKey.trim() || undefined,
     courtMonthlyFee: parseCurrency(form.courtMonthlyFee),
+    ...(initialCashBalance !== undefined && { initialCashBalance }),
     monthlyFee: parseCurrency(form.monthlyFee),
     monthlyFeeDueDay: Number(form.monthlyFeeDueDay),
     spotFee: parseCurrency(form.spotFee),
@@ -79,6 +86,7 @@ export function groupToForm(group: GroupResponse): CreateGroupFormData {
     description: group.description ?? '',
     pixKey: group.pixKey ?? '',
     courtMonthlyFee: formatMoneyField(group.courtMonthlyFee),
+    initialCashBalance: '',
     monthlyFee: formatMoneyField(group.monthlyFee),
     monthlyFeeDueDay: String(group.monthlyFeeDueDay ?? 10),
     spotFee: formatMoneyField(group.spotFee),
@@ -92,4 +100,9 @@ function cleanTeamNames(form: CreateGroupFormData) {
 
 function formatMoneyField(value: number) {
   return value > 0 ? maskCurrency(value.toFixed(2).replace('.', '')) : '';
+}
+
+function positiveCurrencyValue(value: string) {
+  const parsed = parseCurrency(value);
+  return parsed && parsed > 0 ? parsed : undefined;
 }
