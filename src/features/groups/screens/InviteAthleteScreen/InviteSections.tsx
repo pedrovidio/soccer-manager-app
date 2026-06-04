@@ -6,6 +6,7 @@ import { PendingRow } from './PendingRow';
 import { SearchResultRow } from './SearchResultRow';
 import { SectionHeader } from './SectionHeader';
 import { InviteSection, InviteState, ResendState } from './types';
+import { styles } from './styles';
 
 type Props = {
   sections: InviteSection[];
@@ -29,6 +30,7 @@ function InviteSectionsComponent({ sections, inviteMap, resendMap, searching, on
       stickySectionHeadersEnabled={false}
       sections={sections}
       keyExtractor={keyExtractor}
+      contentContainerStyle={styles.listContent}
       ListEmptyComponent={null}
       renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
       renderItem={({ item, section }) => {

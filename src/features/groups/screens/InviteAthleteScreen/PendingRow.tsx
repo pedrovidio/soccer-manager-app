@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupInviteItem } from '@features/groups/groupTypes';
 import { positionLabel } from '@features/groups/utils/athleteLabels';
 import { ResendState } from './types';
@@ -35,16 +35,16 @@ function PendingRowComponent({ invite, resendState, onResend }: Props) {
       </View>
       {resendState === 'sending' ? (
         <View style={styles.resendBtn}>
-          <ActivityIndicator size="small" color={Colors.n500} />
+          <ActivityIndicator size="small" color={Arena.textMuted} />
         </View>
       ) : resendState === 'sent' ? (
         <View style={[styles.resendBtn, styles.resendBtnSent]}>
-          <Ionicons name="checkmark" size={13} color={Colors.success} />
+          <Ionicons name="checkmark" size={13} color={Arena.success} />
           <Text style={[styles.resendBtnText, styles.resendBtnTextSent]}>Reenviado</Text>
         </View>
       ) : (
         <TouchableOpacity style={styles.resendBtn} onPress={() => onResend(invite)}>
-          <Ionicons name="send-outline" size={13} color={Colors.n700} />
+          <Ionicons name="send-outline" size={13} color={Arena.text} />
           <Text style={styles.resendBtnText}>Reenviar</Text>
         </TouchableOpacity>
       )}
