@@ -15,6 +15,12 @@ jest.mock('@lib/supabase', () => ({
   uploadImageToSupabaseStorage: jest.fn(),
 }));
 
+jest.mock('@lib/logger', () => ({
+  appLogger: {
+    warn: jest.fn(),
+  },
+}));
+
 const mockedHttp = httpClient as jest.Mocked<typeof httpClient>;
 const mockedUploadImageToSupabaseStorage = uploadImageToSupabaseStorage as jest.MockedFunction<typeof uploadImageToSupabaseStorage>;
 
@@ -76,6 +82,19 @@ describe('athleteApi contract', () => {
     expect(mockedHttp.patch).toHaveBeenCalledWith(
       `/athletes/${athleteId}/photo-url`,
       { photoUrl: 'https://cdn.supabase.test/athlete-photo.jpg' },
+    );
+    expect(result).toBe('ok');
+  });
+
+  it('falls back to the API photo upload when Supabase Storage upload fails', async () => {
+    mockedUploadImageToSupabaseStorage.mockRejectedValueOnce(new Error('Bucket not found'));
+
+    const result = await athleteApi.uploadPhoto(athleteId, 'file:///tmp/photo.jpg');
+
+    expect(mockedHttp.patch).toHaveBeenCalledWith(
+      `/athletes/${athleteId}/photo`,
+      expect.any(FormData),
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     );
     expect(result).toBe('ok');
   });
