@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
 
 const neon = '#D7FF45';
 const field = '#121A1B';
 const fieldBorder = 'rgba(215, 255, 69, 0.16)';
+const loginText = Arena.text;
+const loginTextMuted = Arena.textMuted;
 
 export const styles = StyleSheet.create({
   safe: {
@@ -85,7 +87,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
     paddingTop: 24,
-    paddingBottom: 28,
+    paddingBottom: 56,
   },
   hero: {
     gap: 34,
@@ -122,7 +124,7 @@ export const styles = StyleSheet.create({
     backgroundColor: neon,
   },
   brandName: {
-    color: Colors.white,
+    color: loginText,
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.7,
@@ -132,7 +134,7 @@ export const styles = StyleSheet.create({
     maxWidth: 380,
   },
   headline: {
-    color: Colors.white,
+    color: loginText,
     fontSize: 36,
     fontWeight: '900',
     letterSpacing: 0,
@@ -145,7 +147,7 @@ export const styles = StyleSheet.create({
     textShadowRadius: 16,
   },
   subtitle: {
-    color: 'rgba(255, 255, 255, 0.82)',
+    color: loginTextMuted,
     fontSize: 15,
     fontWeight: '600',
     lineHeight: 23,
@@ -163,7 +165,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   label: {
-    color: Colors.white,
+    color: loginText,
     fontSize: 12,
     fontWeight: '800',
   },
@@ -191,7 +193,7 @@ export const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: Colors.white,
+    color: loginText,
     fontSize: 15,
     fontWeight: '700',
     paddingVertical: 0,
@@ -229,13 +231,14 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.12)',
   },
   dividerText: {
-    color: 'rgba(255, 255, 255, 0.68)',
+    color: loginTextMuted,
     fontSize: 12,
     fontWeight: '700',
   },
   socialRow: {
     flexDirection: 'row',
     gap: 12,
+    marginTop: 10,
   },
   socialButton: {
     alignItems: 'center',
@@ -250,7 +253,7 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   socialText: {
-    color: Colors.white,
+    color: loginText,
     fontSize: 14,
     fontWeight: '800',
   },
@@ -260,7 +263,7 @@ export const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   registerLinkText: {
-    color: 'rgba(255, 255, 255, 0.82)',
+    color: loginTextMuted,
     fontSize: 13,
     fontWeight: '700',
     textAlign: 'center',

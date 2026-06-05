@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena, Colors } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 type LoginFormProps = {
@@ -115,7 +115,7 @@ function LabeledInput({ label, icon, trailingAction, style, ...props }: LabeledI
 function SocialButton({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <TouchableOpacity activeOpacity={0.78} style={styles.socialButton}>
-      <Ionicons name={icon} size={18} color={Colors.white} />
+      <Ionicons name={icon} size={18} color={Arena.text} />
       <Text style={styles.socialText}>{label}</Text>
     </TouchableOpacity>
   );

@@ -1,4 +1,5 @@
 import { httpClient } from '@lib/httpClient';
+import { uploadImageToSupabaseStorage } from '@lib/supabase';
 import { athleteApi } from './athleteApi';
 
 jest.mock('@lib/httpClient', () => ({
@@ -10,7 +11,12 @@ jest.mock('@lib/httpClient', () => ({
   },
 }));
 
+jest.mock('@lib/supabase', () => ({
+  uploadImageToSupabaseStorage: jest.fn(),
+}));
+
 const mockedHttp = httpClient as jest.Mocked<typeof httpClient>;
+const mockedUploadImageToSupabaseStorage = uploadImageToSupabaseStorage as jest.MockedFunction<typeof uploadImageToSupabaseStorage>;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -18,6 +24,7 @@ beforeEach(() => {
   mockedHttp.post.mockResolvedValue({ data: 'ok' } as never);
   mockedHttp.patch.mockResolvedValue({ data: 'ok' } as never);
   mockedHttp.delete.mockResolvedValue({ data: 'ok' } as never);
+  mockedUploadImageToSupabaseStorage.mockResolvedValue('https://cdn.supabase.test/athlete-photo.jpg');
 });
 
 describe('athleteApi contract', () => {
@@ -56,5 +63,20 @@ describe('athleteApi contract', () => {
     await athleteApi.markAllNotificationsRead(athleteId);
 
     expect(mockedHttp.patch).toHaveBeenCalledWith(`/athletes/${athleteId}/notifications/read-all`);
+  });
+
+  it('uploads athlete photos to Supabase Storage and persists the public URL', async () => {
+    const result = await athleteApi.uploadPhoto(athleteId, 'file:///tmp/photo.jpg');
+
+    expect(mockedUploadImageToSupabaseStorage).toHaveBeenCalledWith({
+      bucket: 'athlete-photos',
+      ownerId: athleteId,
+      uri: 'file:///tmp/photo.jpg',
+    });
+    expect(mockedHttp.patch).toHaveBeenCalledWith(
+      `/athletes/${athleteId}/photo-url`,
+      { photoUrl: 'https://cdn.supabase.test/athlete-photo.jpg' },
+    );
+    expect(result).toBe('ok');
   });
 });

@@ -9,17 +9,20 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthBrandLogo } from '@features/auth/components/AuthBrandLogo';
 import { LoginForm } from './LoginForm';
 import { styles } from './styles';
 import { useLoginScreen } from './useLoginScreen';
 
 export default function LoginScreen() {
+  const { bottom } = useSafeAreaInsets();
   const loginScreen = useLoginScreen();
   const introStyle = useEntranceAnimation(0);
   const formStyle = useEntranceAnimation(160);
   const dustAStyle = useFloatingDust(0);
   const dustBStyle = useFloatingDust(900);
+  const bottomPadding = Math.max(bottom + 28, 56);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -35,7 +38,7 @@ export default function LoginScreen() {
 
       <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
-          contentContainerStyle={styles.container}
+          contentContainerStyle={[styles.container, { paddingBottom: bottomPadding }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
