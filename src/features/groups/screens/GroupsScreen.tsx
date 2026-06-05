@@ -14,7 +14,7 @@ import { GroupResponse } from '../groupTypes';
 export default function GroupsScreen() {
   const router = useRouter();
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
-  const { favoriteId, toggle } = useFavoriteGroup();
+  const { favoriteId, toggle } = useFavoriteGroup(athleteId);
 
   const { data: groups = [], isLoading, isError, refetch } = useGroups(athleteId);
 

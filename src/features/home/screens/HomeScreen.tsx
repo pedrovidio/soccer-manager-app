@@ -47,8 +47,8 @@ export default function HomeScreen() {
     respondSpotApplicationPending,
   } = useNotificationActions(athleteId, notifications);
 
-  const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup();
-  const { data: favoriteGroup } = useFavoriteGroupDetails(favoriteId, clearFavoriteGroup);
+  const { favoriteId, clear: clearFavoriteGroup } = useFavoriteGroup(athleteId);
+  const { data: favoriteGroup } = useFavoriteGroupDetails(favoriteId, athleteId, clearFavoriteGroup);
 
   const blockedByDebt = hasFinancialBlock(dashboard);
 
