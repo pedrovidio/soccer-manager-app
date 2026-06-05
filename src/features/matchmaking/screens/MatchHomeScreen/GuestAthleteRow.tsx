@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { NearbyAthlete } from '@features/matchmaking/types';
 import { posLabel } from '@features/matchmaking/utils/formatters';
 import { s } from '../MatchHomeScreen.styles';
@@ -28,7 +28,7 @@ function GuestAthleteRowComponent({
       activeOpacity={0.75}
     >
       <View style={[s.selectCircle, isSelected && s.selectCircleActive]}>
-        {isSelected && <Ionicons name="checkmark" size={14} color={Colors.white} />}
+        {isSelected && <Ionicons name="checkmark" size={14} color={Arena.buttonLabelPrimary} />}
       </View>
       <View style={s.guestAvatar}>
         <Text style={s.guestAvatarText}>{(athlete.name ?? '??').slice(0, 2).toUpperCase()}</Text>
@@ -54,7 +54,7 @@ function GuestAthleteRowComponent({
         <Ionicons
           name={athlete.isFavorite ? 'star' : 'star-outline'}
           size={18}
-          color={athlete.isFavorite ? Colors.warningDark : Colors.n400}
+          color={athlete.isFavorite ? Arena.warning : Arena.textSubtle}
         />
       </TouchableOpacity>
     </TouchableOpacity>

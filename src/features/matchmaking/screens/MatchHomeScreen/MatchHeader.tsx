@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Arena, Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { BackButton } from '@ui/composites/BackButton';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';

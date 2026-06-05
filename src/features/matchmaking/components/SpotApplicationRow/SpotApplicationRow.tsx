@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { SpotApplication } from '@features/matchmaking/types';
 import { posLabel } from '@features/matchmaking/utils/formatters';
 import { s } from '@features/matchmaking/screens/MatchHomeScreen.styles';
@@ -34,7 +34,7 @@ export const SpotApplicationRow = memo(function SpotApplicationRow({
           onPress={onDecline}
           disabled={isPending}
         >
-          <Ionicons name="close" size={14} color={Colors.errorDark} />
+          <Ionicons name="close" size={14} color={Arena.error} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[s.applicationBtn, s.applicationAccept, (!item.isEligibleNow || isPending) && s.inviteBtnDisabled]}
@@ -42,8 +42,8 @@ export const SpotApplicationRow = memo(function SpotApplicationRow({
           disabled={!item.isEligibleNow || isPending}
         >
           {isPending
-            ? <ActivityIndicator color={Colors.successDark} size="small" />
-            : <Ionicons name="checkmark" size={14} color={Colors.successDark} />
+            ? <ActivityIndicator color={Arena.success} size="small" />
+            : <Ionicons name="checkmark" size={14} color={Arena.success} />
           }
         </TouchableOpacity>
       </View>

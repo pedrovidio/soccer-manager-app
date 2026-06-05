@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 
@@ -37,7 +37,7 @@ function SpotPaymentSectionComponent({ controller }: SpotPaymentSectionProps) {
             activeOpacity={0.7}
           >
             {reportSpotPaymentMutation.isPending ? (
-              <ActivityIndicator color={Colors.white} size="small" />
+              <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" />
             ) : (
               <Text style={s.paymentBtnText}>Informar pagamento</Text>
             )}

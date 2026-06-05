@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Radius, Spacing } from '@ui/tokens/theme';
 
 export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Arena.bg },

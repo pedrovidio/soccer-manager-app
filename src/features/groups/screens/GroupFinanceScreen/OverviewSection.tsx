@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupFinanceByType } from '@features/groups/groupTypes';
 import { formatCurrency, isExpenseType, typeLabel } from '@features/groups/utils/financeFormatters';
 import { styles } from './styles';
@@ -51,7 +51,7 @@ function OverviewSectionComponent({ byType, overdueCount, reportedCount, totalEx
 }
 
 function AlertLine({ icon, label, value, tone }: { icon: any; label: string; value: string; tone: 'warning' | 'error' | 'neutral' }) {
-  const color = tone === 'warning' ? Colors.warningDark : tone === 'error' ? Colors.errorDark : Colors.n700;
+  const color = tone === 'warning' ? Arena.warning : tone === 'error' ? Arena.error : Arena.textMuted;
   return (
     <View style={styles.alertLine}>
       <Ionicons name={icon} size={18} color={color} />

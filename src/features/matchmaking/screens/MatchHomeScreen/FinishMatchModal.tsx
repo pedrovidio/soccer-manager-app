@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 
@@ -28,7 +28,7 @@ function FinishMatchModalComponent({ controller }: FinishMatchModalProps) {
         <TextInput
           style={s.modalInput}
           placeholder="Observacao (max. 500 caracteres)"
-          placeholderTextColor={Colors.n400}
+          placeholderTextColor={Arena.textSubtle}
           value={finishComment}
           onChangeText={setFinishComment}
           multiline
@@ -56,7 +56,7 @@ function FinishMatchModalComponent({ controller }: FinishMatchModalProps) {
             disabled={finishComment.length > 500 || finishMatchMutation.isPending}
           >
             {finishMatchMutation.isPending ? (
-              <ActivityIndicator color={Colors.white} size="small" />
+              <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" />
             ) : (
               <Text style={s.modalBtnTextPrimary}>Finalizar</Text>
             )}

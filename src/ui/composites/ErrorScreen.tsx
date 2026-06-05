@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Arena, Colors, Radius, Spacing } from '@ui/tokens/theme';
+import { Arena, Radius, Spacing } from '@ui/tokens/theme';
 
 type Props = {
   message?: string;
@@ -15,7 +15,7 @@ export function ErrorScreen({
   return (
     <View style={styles.container}>
       <View style={styles.icon}>
-        <Ionicons name="alert-circle-outline" size={34} color={Colors.error} />
+        <Ionicons name="alert-circle-outline" size={34} color={Arena.error} />
       </View>
       <Text style={styles.title}>Algo deu errado</Text>
       <Text style={styles.message}>{message}</Text>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.r999,
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
+    backgroundColor: Arena.errorBg,
     marginBottom: Spacing.xs,
   },
   title: {

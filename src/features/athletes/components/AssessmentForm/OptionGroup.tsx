@@ -18,7 +18,7 @@ type Props<T extends FieldValues> = {
 function OptionGroupComponent<T extends FieldValues>({ control, name, options, title }: Props<T>) {
   return (
     <>
-      <Text className="text-sm font-bold text-neutral-700 mb-2">{title}</Text>
+      <Text style={styles.optionTitle}>{title}</Text>
       <Controller
         control={control}
         name={name}
@@ -46,9 +46,9 @@ function OptionChip({ option, selected, onPress }: { option: Option; selected: b
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className={`px-4 py-2 rounded-full border ${selected ? 'bg-emerald-500 border-emerald-500' : 'bg-white border-neutral-200'}`}
+      style={[styles.optionChip, selected && styles.optionChipSelected]}
     >
-      <Text className={selected ? 'text-white font-bold text-sm' : 'text-neutral-600 text-sm'}>{option.label}</Text>
+      <Text style={[styles.optionText, selected && styles.optionTextSelected]}>{option.label}</Text>
     </TouchableOpacity>
   );
 }

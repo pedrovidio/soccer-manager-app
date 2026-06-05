@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, SafeAreaView, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { MatchesErrorState, MatchesLoadingState } from './LoadingErrorState';
 import { MatchesHeader } from './MatchesHeader';
@@ -32,7 +32,7 @@ export function GroupMatchesScreen() {
 
       {controller.isLoading || !data ? (
         <View style={[styles.center, { flex: 1 }]}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+          <ActivityIndicator size="large" color={Arena.neon} />
         </View>
       ) : (
         <MatchesList

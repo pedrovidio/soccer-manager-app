@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { s } from './MatchHomeScreen.styles';
 import { useMatchHomeController } from '../hooks/useMatchHomeController';
 import { ConfirmationSection } from './MatchHomeScreen/ConfirmationSection';
@@ -22,7 +22,7 @@ export default function MatchHomeScreen() {
   if (controller.isLoading) {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Arena.neon} />
       </SafeAreaView>
     );
   }
@@ -30,7 +30,7 @@ export default function MatchHomeScreen() {
   if (controller.isError || !controller.data || !controller.summary) {
     return (
       <SafeAreaView style={[s.safe, s.center]}>
-        <Ionicons name="alert-circle-outline" size={40} color={Colors.error} />
+        <Ionicons name="alert-circle-outline" size={40} color={Arena.error} />
         <Text style={s.errorText}>Erro ao carregar a partida</Text>
         <TouchableOpacity style={s.retryBtn} onPress={() => controller.refetch()}>
           <Text style={s.retryText}>Tentar novamente</Text>

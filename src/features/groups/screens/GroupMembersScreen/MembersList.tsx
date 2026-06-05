@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl, Text } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupMember } from '@features/groups/groupTypes';
 import { MemberRow } from './MemberRow';
 import { MemberListItem } from './types';
@@ -35,7 +35,7 @@ function MembersListComponent({ items, isAdmin, currentAthleteId, refreshing, on
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       contentContainerStyle={styles.listContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors.primary]} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Arena.neon]} />}
       initialNumToRender={12}
       maxToRenderPerBatch={12}
       windowSize={9}

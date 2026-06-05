@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { FavoriteSpotAthlete } from '@features/groups/groupTypes';
 import { positionLabel } from '@features/groups/utils/athleteLabels';
 import { styles } from './styles';
@@ -23,7 +23,7 @@ function FavoriteSpotAthleteRowComponent({ item, disabled, onRemove }: Props) {
         <Text style={styles.favoriteMeta}>{positionLabel(item.position)} - {item.age} anos - OVR {item.overall}</Text>
       </View>
       <TouchableOpacity style={styles.favoriteRemoveBtn} onPress={() => onRemove(item.athleteId)} disabled={disabled} activeOpacity={0.7}>
-        <Ionicons name="star" size={18} color={Colors.warningDark} />
+        <Ionicons name="star" size={18} color={Arena.warning} />
       </TouchableOpacity>
     </View>
   );

@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFeatureAccess } from '@features/app-config/hooks/useFeatureAccess';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { phaseLabel } from '@features/matchmaking/utils/matchPhase';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
@@ -24,33 +24,33 @@ function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
     <View style={s.infoCard}>
       <View style={s.infoRow}>
         <View style={s.infoItem}>
-          <Ionicons name="time-outline" size={18} color={Colors.primary} />
+          <Ionicons name="time-outline" size={18} color={Arena.neon} />
           <Text style={s.infoValue}>{summary.time}</Text>
           <Text style={s.infoLabel}>Horario</Text>
         </View>
         <View style={s.infoDivider} />
         <View style={s.infoItem}>
-          <Ionicons name="football-outline" size={18} color={Colors.primary} />
+          <Ionicons name="football-outline" size={18} color={Arena.neon} />
           <Text style={s.infoValue}>{data.type}</Text>
           <Text style={s.infoLabel}>Modalidade</Text>
         </View>
         <View style={s.infoDivider} />
         <View style={s.infoItem}>
-          <Ionicons name="people-outline" size={18} color={Colors.primary} />
+          <Ionicons name="people-outline" size={18} color={Arena.neon} />
           <Text style={s.infoValue}>{data.totalVacancies}</Text>
           <Text style={s.infoLabel}>Vagas</Text>
         </View>
       </View>
 
-      <View style={[s.statusBadge, { backgroundColor: waiting ? Colors.warningLight : Colors.primaryLight }]}>
-        <Text style={[s.statusBadgeText, { color: waiting ? Colors.warningDark : Colors.primary }]}>
+      <View style={[s.statusBadge, { backgroundColor: waiting ? Arena.warningBg : Arena.neonSoft }]}>
+        <Text style={[s.statusBadgeText, { color: waiting ? Arena.warning : Arena.neon }]}>
           {phaseLabel(summary.phase)}
         </Text>
       </View>
 
       {canOpenLiveMatch && liveMatchAccess.hasAccess && (
         <TouchableOpacity style={s.liveMatchBtn} onPress={goToLiveMatch} activeOpacity={0.8}>
-          <Ionicons name="radio-outline" size={18} color={Colors.white} />
+          <Ionicons name="radio-outline" size={18} color={Arena.buttonLabelPrimary} />
           <Text style={s.liveMatchBtnText}>Transmissao ao Vivo</Text>
         </TouchableOpacity>
       )}
@@ -64,10 +64,10 @@ function MatchInfoCardComponent({ controller }: MatchInfoCardProps) {
             activeOpacity={0.7}
           >
             {finishMatchMutation.isPending ? (
-              <ActivityIndicator color={Colors.successDark} size="small" />
+              <ActivityIndicator color={Arena.success} size="small" />
             ) : (
               <>
-                <Ionicons name="checkmark-circle" size={16} color={Colors.successDark} />
+                <Ionicons name="checkmark-circle" size={16} color={Arena.success} />
                 <Text style={s.actionBtnTextFinish}>Finalizar</Text>
               </>
             )}

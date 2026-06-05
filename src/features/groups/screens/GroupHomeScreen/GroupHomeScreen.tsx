@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
-import { Arena, Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { HomeHeader } from './HomeHeader';
 import { HomeErrorState, HomeLoadingState } from './LoadingErrorState';
@@ -37,7 +37,7 @@ export function GroupHomeScreen() {
 
       {controller.isLoading || !data ? (
         <View style={[styles.center, { flex: 1 }]}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+          <ActivityIndicator size="large" color={Arena.neon} />
         </View>
       ) : (
         <ScrollView

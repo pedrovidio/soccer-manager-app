@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Arena, Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 interface AthleteRatingRowProps {
@@ -25,12 +25,12 @@ function AthleteRatingRowComponent({ name, position, overall, value = 0, disable
       activeOpacity={0.7}
     >
       {isSubmitting && value === stars ? (
-        <ActivityIndicator size="small" color={Colors.warningDark} />
+        <ActivityIndicator size="small" color={Arena.warning} />
       ) : (
         <Ionicons
           name={stars <= value ? 'star' : 'star-outline'}
           size={22}
-          color={stars <= value ? Colors.warning : Arena.textSubtle}
+          color={stars <= value ? Arena.warning : Arena.textSubtle}
         />
       )}
     </TouchableOpacity>

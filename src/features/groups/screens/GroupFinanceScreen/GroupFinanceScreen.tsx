@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
-import { Arena, Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupTopMenu } from '@features/groups/components/GroupTopMenu';
 import { ExpenseModal } from './ExpenseModal';
 import { FinanceActions } from './FinanceActions';
@@ -35,7 +35,7 @@ export function GroupFinanceScreen() {
 
       {controller.isLoading || !data ? (
         <View style={[styles.center, { flex: 1 }]}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+          <ActivityIndicator size="large" color={Arena.neon} />
         </View>
       ) : (
         <ScrollView

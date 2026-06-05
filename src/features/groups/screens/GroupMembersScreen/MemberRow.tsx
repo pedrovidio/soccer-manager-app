@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupMember } from '@features/groups/groupTypes';
 import { positionLabel } from '@features/groups/utils/athleteLabels';
 import { StatusTag } from './StatusTag';
@@ -36,7 +36,7 @@ function MemberRowComponent({ member, onPress, onOptions }: Props) {
       </View>
       {onOptions && (
         <TouchableOpacity onPress={() => onOptions(member)} hitSlop={12} activeOpacity={0.7}>
-          <Ionicons name="ellipsis-vertical" size={16} color={Colors.n400} />
+          <Ionicons name="ellipsis-vertical" size={16} color={Arena.textSubtle} />
         </TouchableOpacity>
       )}
     </TouchableOpacity>

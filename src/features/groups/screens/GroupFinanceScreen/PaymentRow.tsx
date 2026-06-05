@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupFinancePayment } from '@features/groups/groupTypes';
 import { formatCurrency, formatDate, isExpenseType, statusLabel, typeLabel } from '@features/groups/utils/financeFormatters';
 import { styles } from './styles';
@@ -13,7 +13,7 @@ type Props = {
 
 function PaymentRowComponent({ payment, isConfirming, onConfirm }: Props) {
   const isExpense = isExpenseType(payment.type);
-  const statusTone = payment.status === 'PAID' ? Colors.successDark : payment.isOverdue ? Colors.errorDark : Colors.warningDark;
+  const statusTone = payment.status === 'PAID' ? Arena.success : payment.isOverdue ? Arena.error : Arena.warning;
   const canConfirm = !isExpense && payment.status === 'PENDING' && !!payment.paymentReportedAt;
 
   return (
@@ -47,7 +47,7 @@ function PaymentRowComponent({ payment, isConfirming, onConfirm }: Props) {
             disabled={isConfirming}
             activeOpacity={0.7}
           >
-            {isConfirming ? <ActivityIndicator color={Colors.white} size="small" /> : <Text style={styles.confirmBtnText}>Confirmar</Text>}
+            {isConfirming ? <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" /> : <Text style={styles.confirmBtnText}>Confirmar</Text>}
           </TouchableOpacity>
         )}
       </View>

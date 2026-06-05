@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupUpcomingMatch } from '@features/groups/groupTypes';
 import { formatMatchDate, formatMatchTime } from '@features/groups/utils/matchFormatters';
 import { styles } from './styles';
@@ -24,7 +24,7 @@ function MatchRowComponent({ match, onPress }: Props) {
         <Text style={styles.matchTime}>{formatMatchTime(match.date)}</Text>
       </View>
       <View style={styles.matchSpots}>
-        <Text style={[styles.matchSpotsNum, { color: spotsLeft === 0 ? Colors.error : Colors.success }]}>
+        <Text style={[styles.matchSpotsNum, { color: spotsLeft === 0 ? Arena.error : Arena.success }]}>
           {match.confirmedCount}/{match.totalVacancies}
         </Text>
         <Text style={styles.matchSpotsLabel}>confirmados</Text>

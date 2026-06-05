@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupUpcomingMatch } from '@features/groups/groupTypes';
 import { formatMatchDate, formatMatchTime } from '@features/groups/utils/matchFormatters';
 import { styles } from './styles';
@@ -27,7 +27,7 @@ function NextMatchSectionComponent({ match, isAdmin, onCreateMatch, onOpenMatch,
         <MatchCompactCard match={match} onPress={() => onOpenMatch(match.id)} />
       ) : (
         <View style={styles.emptyCard}>
-          <Ionicons name="football-outline" size={30} color={Colors.n300} />
+          <Ionicons name="football-outline" size={30} color={Arena.textSubtle} />
           <Text style={styles.emptyText}>Nenhuma partida agendada</Text>
           {isAdmin && (
             <TouchableOpacity style={styles.emptyAction} onPress={onCreateMatch}>

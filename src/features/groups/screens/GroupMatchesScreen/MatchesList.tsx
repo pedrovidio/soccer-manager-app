@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { GroupUpcomingMatch } from '@features/groups/groupTypes';
 import { EmptyMatches } from './EmptyMatches';
 import { MatchRow } from './MatchRow';
@@ -26,7 +26,7 @@ function MatchesListComponent({ matches, isAdmin, onCreateMatch, onOpenMatch, re
       keyExtractor={(item) => item.id}
       renderItem={renderMatch}
       contentContainerStyle={styles.listContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors.primary]} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Arena.neon]} />}
       ItemSeparatorComponent={ListSeparator}
       ListEmptyComponent={<EmptyMatches isAdmin={isAdmin} onCreateMatch={onCreateMatch} />}
       initialNumToRender={8}

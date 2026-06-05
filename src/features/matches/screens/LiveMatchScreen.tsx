@@ -6,7 +6,7 @@ import { useAuthStore } from '@features/auth/useAuthStore';
 import { BackButton } from '@ui/composites/BackButton';
 import { SponsorBanner } from '@ui/composites/SponsorBanner';
 import { Button } from '@ui/primitives';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { useLiveMatchController } from '../hooks/useLiveMatchController';
 import type { LiveMatchData, LiveMatchTeam } from '../types';
 import {
@@ -39,7 +39,7 @@ function LiveMatchDataScreen({ matchId, showLiveScore }: Props & { showLiveScore
         <View style={styles.loadingHeader}>
           <BackButton />
         </View>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Arena.neon} />
       </SafeAreaView>
     );
   }

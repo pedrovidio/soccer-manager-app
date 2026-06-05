@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { posLabel } from '@features/matchmaking/utils/formatters';
 import { AthleteRatingRow } from '@features/matchmaking/components/AthleteRatingRow';
 import { s } from '../MatchHomeScreen.styles';
@@ -89,10 +89,10 @@ function PostGameSectionComponent({ controller }: PostGameSectionProps) {
               activeOpacity={0.8}
             >
               {ratingMutation.isPending ? (
-                <ActivityIndicator color={Colors.white} size="small" />
+                <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" />
               ) : (
                 <>
-                  <Ionicons name="star" size={16} color={Colors.white} />
+                  <Ionicons name="star" size={16} color={Arena.buttonLabelPrimary} />
                   <Text style={s.inviteBtnText}>
                     {pendingRatingsCount === 0 ? 'Notas salvas' : `Salvar notas (${pendingRatingsCount})`}
                   </Text>

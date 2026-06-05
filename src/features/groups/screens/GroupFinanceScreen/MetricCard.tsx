@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { Tone } from './types';
 import { styles } from './styles';
 
@@ -12,8 +12,8 @@ type Props = {
 
 function MetricCardComponent({ label, value, tone }: Props) {
   const colors = useMemo(() => ({
-    color: tone === 'success' ? Colors.successDark : tone === 'warning' ? Colors.warningDark : tone === 'error' ? Colors.errorDark : Colors.n900,
-    backgroundColor: tone === 'success' ? Colors.successLight : tone === 'warning' ? Colors.warningLight : tone === 'error' ? Colors.errorLight : Colors.white,
+    color: tone === 'success' ? Arena.success : tone === 'warning' ? Arena.warning : tone === 'error' ? Arena.error : Arena.text,
+    backgroundColor: tone === 'success' ? Arena.successBg : tone === 'warning' ? Arena.warningBg : tone === 'error' ? Arena.errorBg : Arena.card,
   }), [tone]);
 
   return (

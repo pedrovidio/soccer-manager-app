@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { FavoriteSpotAthlete } from '@features/groups/groupTypes';
 import { FavoriteSpotAthleteRow } from './FavoriteSpotAthleteRow';
 import { styles } from './styles';
@@ -25,7 +25,7 @@ function FavoriteSpotListComponent({ items, disabled, refreshing, onRefresh, onR
       keyExtractor={(item) => item.athleteId}
       renderItem={renderItem}
       contentContainerStyle={styles.listContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors.primary]} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Arena.neon]} />}
       ListEmptyComponent={<EmptySpotList />}
       initialNumToRender={12}
       maxToRenderPerBatch={12}
@@ -38,7 +38,7 @@ function FavoriteSpotListComponent({ items, disabled, refreshing, onRefresh, onR
 function EmptySpotList() {
   return (
     <View style={styles.emptyCard}>
-      <Ionicons name="star-outline" size={34} color={Colors.n300} />
+      <Ionicons name="star-outline" size={34} color={Arena.textSubtle} />
       <Text style={styles.emptyText}>Nenhum avulso favorito ainda</Text>
     </View>
   );

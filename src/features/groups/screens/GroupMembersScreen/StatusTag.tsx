@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { styles } from './styles';
 
 type Props = {
@@ -10,8 +10,8 @@ type Props = {
 
 function StatusTagComponent({ label, tone }: Props) {
   const colors = useMemo(() => ({
-    backgroundColor: tone === 'warning' ? Colors.warningLight : tone === 'error' ? Colors.errorLight : Colors.n200,
-    color: tone === 'warning' ? Colors.warningDark : tone === 'error' ? Colors.errorDark : Colors.n700,
+    backgroundColor: tone === 'warning' ? Arena.warningBg : tone === 'error' ? Arena.errorBg : Arena.cardSoft,
+    color: tone === 'warning' ? Arena.warning : tone === 'error' ? Arena.error : Arena.textMuted,
   }), [tone]);
 
   return (

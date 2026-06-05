@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { s } from '@features/matchmaking/screens/MatchHomeScreen.styles';
 
 interface CounterBadgeProps {
@@ -14,7 +14,7 @@ interface CounterBadgeProps {
 export const CounterBadge = memo(function CounterBadge({ value, label, color, active, onPress }: CounterBadgeProps) {
   return (
     <TouchableOpacity
-      style={[s.counterItem, active && { backgroundColor: Colors.primaryLight }]}
+      style={[s.counterItem, active && { backgroundColor: Arena.neonSoft }]}
       onPress={onPress}
       disabled={!onPress}
       activeOpacity={0.75}

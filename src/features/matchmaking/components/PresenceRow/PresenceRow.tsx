@@ -1,16 +1,16 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { MatchPresence, PresenceStatus } from '@features/matchmaking/types';
 import { posLabel } from '@features/matchmaking/utils/formatters';
 import { s } from '@features/matchmaking/screens/MatchHomeScreen.styles';
 
 const STATUS_CONFIG: Record<PresenceStatus, { label: string; bg: string; color: string; icon: string }> = {
-  CONFIRMED: { label: 'Confirmado', bg: Colors.successLight, color: Colors.successDark, icon: 'checkmark-circle' },
-  WAITLISTED: { label: 'Na fila de espera', bg: Colors.primaryLight, color: Colors.primary, icon: 'hourglass-outline' },
-  DECLINED: { label: 'Recusou', bg: Colors.errorLight, color: Colors.errorDark, icon: 'close-circle' },
-  PENDING: { label: 'Aguardando confirmacao', bg: Colors.warningLight, color: Colors.warningDark, icon: 'time-outline' },
+  get CONFIRMED() { return { label: 'Confirmado', bg: Arena.successBg, color: Arena.success, icon: 'checkmark-circle' }; },
+  get WAITLISTED() { return { label: 'Na fila de espera', bg: Arena.neonSoft, color: Arena.neon, icon: 'hourglass-outline' }; },
+  get DECLINED() { return { label: 'Recusou', bg: Arena.errorBg, color: Arena.error, icon: 'close-circle' }; },
+  get PENDING() { return { label: 'Aguardando confirmacao', bg: Arena.warningBg, color: Arena.warning, icon: 'time-outline' }; },
 };
 
 export const PresenceRow = memo(function PresenceRow({ item }: { item: MatchPresence }) {

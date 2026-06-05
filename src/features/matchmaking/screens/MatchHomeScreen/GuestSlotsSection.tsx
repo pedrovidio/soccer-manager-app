@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { ActivityIndicator, FlatList, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { NearbyAthlete } from '@features/matchmaking/types';
 import { s } from '../MatchHomeScreen.styles';
 import { GENDER_OPTIONS } from './options';
@@ -76,8 +76,8 @@ function GuestSlotsSectionComponent({ controller }: GuestSlotsSectionProps) {
             setGuestOpen(value);
             if (!value && data.guestConfig) closeGuestMutation.mutate();
           }}
-          trackColor={{ true: Colors.primary }}
-          thumbColor={Colors.white}
+          trackColor={{ false: Arena.line, true: Arena.neon }}
+          thumbColor={Arena.buttonLabelPrimary}
         />
       </View>
 
@@ -147,25 +147,25 @@ function GuestSlotsSectionComponent({ controller }: GuestSlotsSectionProps) {
           </View>
 
           <View style={s.searchWrap}>
-            <Ionicons name="search-outline" size={16} color={Colors.n400} style={s.searchIcon} />
+            <Ionicons name="search-outline" size={16} color={Arena.textSubtle} style={s.searchIcon} />
             <TextInput
               style={s.searchInput}
               placeholder="Buscar por nome..."
-              placeholderTextColor={Colors.n400}
+              placeholderTextColor={Arena.textSubtle}
               value={nameSearch}
               onChangeText={setNameSearch}
               returnKeyType="search"
             />
             {nameSearch.length > 0 && (
               <TouchableOpacity onPress={() => setNameSearch('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <Ionicons name="close-circle" size={16} color={Colors.n400} />
+                <Ionicons name="close-circle" size={16} color={Arena.textSubtle} />
               </TouchableOpacity>
             )}
           </View>
 
           <View style={s.athleteCounter}>
             <View style={s.athleteCounterLeft}>
-              <Ionicons name="people" size={18} color={Colors.primary} />
+              <Ionicons name="people" size={18} color={Arena.neon} />
               <Text style={s.athleteCounterNum}>{nearby.length}</Text>
               <Text style={s.athleteCounterLabel}>
                 atleta{nearby.length !== 1 ? 's' : ''} encontrado{nearby.length !== 1 ? 's' : ''}
@@ -179,7 +179,7 @@ function GuestSlotsSectionComponent({ controller }: GuestSlotsSectionProps) {
 
           {nearby.length === 0 ? (
             <View style={s.emptyCard}>
-              <Ionicons name="person-outline" size={32} color={Colors.n300} />
+              <Ionicons name="person-outline" size={32} color={Arena.textSubtle} />
               <Text style={s.emptyText}>Nenhum atleta encontrado com esses filtros</Text>
             </View>
           ) : (
@@ -198,10 +198,10 @@ function GuestSlotsSectionComponent({ controller }: GuestSlotsSectionProps) {
             activeOpacity={0.8}
           >
             {openGuestMutation.isPending ? (
-              <ActivityIndicator color={Colors.white} size="small" />
+              <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" />
             ) : (
               <>
-                <Ionicons name="send-outline" size={16} color={Colors.white} />
+                <Ionicons name="send-outline" size={16} color={Arena.buttonLabelPrimary} />
                 <Text style={s.inviteBtnText}>
                   Convidar {selectedSpotAthletesCount} selecionado{selectedSpotAthletesCount !== 1 ? 's' : ''}
                 </Text>

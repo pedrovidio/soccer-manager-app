@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { s } from '../MatchHomeScreen.styles';
 import { MatchHomeController } from './types';
 
@@ -44,8 +44,8 @@ function MatchActionsSectionComponent({ controller }: MatchActionsSectionProps) 
               disabled={cancelPresenceMutation.isPending}
               activeOpacity={0.7}
             >
-              <Ionicons name="exit-outline" size={16} color={Colors.errorDark} />
-              <Text style={[s.secondaryActionText, { color: Colors.errorDark }]}>
+              <Ionicons name="exit-outline" size={16} color={Arena.error} />
+              <Text style={[s.secondaryActionText, { color: Arena.error }]}>
                 {cancelPresenceMutation.isPending ? 'Cancelando...' : 'Cancelar check-in'}
               </Text>
             </TouchableOpacity>
@@ -56,8 +56,8 @@ function MatchActionsSectionComponent({ controller }: MatchActionsSectionProps) 
               disabled={confirmPresenceMutation.isPending}
               activeOpacity={0.7}
             >
-              <Ionicons name="checkmark-circle-outline" size={16} color={Colors.success} />
-              <Text style={[s.secondaryActionText, { color: Colors.success }]}>
+              <Ionicons name="checkmark-circle-outline" size={16} color={Arena.success} />
+              <Text style={[s.secondaryActionText, { color: Arena.success }]}>
                 {confirmPresenceMutation.isPending ? 'Confirmando...' : 'Confirmar check-in'}
               </Text>
             </TouchableOpacity>
@@ -72,7 +72,7 @@ function MatchActionsSectionComponent({ controller }: MatchActionsSectionProps) 
               disabled={matchmakingMutation.isPending}
               activeOpacity={0.7}
             >
-              <Ionicons name="shuffle-outline" size={16} color={Colors.primary} />
+              <Ionicons name="shuffle-outline" size={16} color={Arena.neon} />
               <Text style={s.secondaryActionText}>
                 {matchmakingMutation.isPending ? 'Sorteando...' : 'Sortear times'}
               </Text>

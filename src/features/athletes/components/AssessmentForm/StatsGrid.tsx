@@ -16,17 +16,17 @@ function StatsGridComponent({ control, errors }: Props) {
       control={control}
       name={item.key}
       render={({ field: { onChange, value } }) => (
-        <View className="w-[48%] mb-4">
-          <Text className="text-sm text-neutral-600 font-medium mb-1">{item.label}</Text>
+        <View style={styles.statCell}>
+          <Text style={styles.statLabel}>{item.label}</Text>
           <TextInput
-            className="bg-white border border-neutral-200 rounded-xl px-4 py-3 text-neutral-800 font-semibold"
+            style={styles.statInput}
             keyboardType="numeric"
             maxLength={3}
             value={String(value)}
             onChangeText={(val) => onChange(Number(val.replace(/[^0-9]/g, '')))}
           />
           {errors[item.key] && (
-            <Text className="text-red-500 text-xs mt-1">{errors[item.key]?.message as string}</Text>
+            <Text style={styles.statError}>{errors[item.key]?.message as string}</Text>
           )}
         </View>
       )}

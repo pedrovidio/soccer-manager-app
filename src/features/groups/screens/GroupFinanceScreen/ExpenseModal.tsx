@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ActivityIndicator, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Colors } from '@ui/tokens/theme';
+import { Arena } from '@ui/tokens/theme';
 import { ExpenseKind } from './types';
 import { styles } from './styles';
 
@@ -41,7 +41,7 @@ function ExpenseModalComponent({
             onChangeText={onAmountChange}
             keyboardType="decimal-pad"
             placeholder="0,00"
-            placeholderTextColor={Colors.n400}
+            placeholderTextColor={Arena.textSubtle}
           />
           <Text style={styles.inputLabel}>Descricao</Text>
           <TextInput
@@ -49,11 +49,11 @@ function ExpenseModalComponent({
             value={description}
             onChangeText={onDescriptionChange}
             placeholder={isPurchase ? 'Ex: bola nova, uniformes...' : 'Ex: aluguel da quadra de maio'}
-            placeholderTextColor={Colors.n400}
+            placeholderTextColor={Arena.textSubtle}
             multiline
           />
           <TouchableOpacity style={[styles.saveBtn, isSaving && styles.saveBtnDisabled]} onPress={onSave} disabled={isSaving} activeOpacity={0.7}>
-            {isSaving ? <ActivityIndicator color={Colors.white} size="small" /> : <Text style={styles.saveBtnText}>Registrar saida</Text>}
+            {isSaving ? <ActivityIndicator color={Arena.buttonLabelPrimary} size="small" /> : <Text style={styles.saveBtnText}>Registrar saida</Text>}
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelBtn} onPress={onClose} activeOpacity={0.7}>
             <Text style={styles.cancelBtnText}>Cancelar</Text>
