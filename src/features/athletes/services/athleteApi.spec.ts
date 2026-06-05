@@ -76,7 +76,6 @@ describe('athleteApi contract', () => {
 
     expect(mockedUploadImageToSupabaseStorage).toHaveBeenCalledWith({
       bucket: 'athlete-photos',
-      ownerId: athleteId,
       uri: 'file:///tmp/photo.jpg',
     });
     expect(mockedHttp.patch).toHaveBeenCalledWith(

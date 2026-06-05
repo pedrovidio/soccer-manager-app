@@ -86,7 +86,6 @@ export const athleteApi = {
     try {
       const photoUrl = await uploadImageToSupabaseStorage({
         bucket: 'athlete-photos',
-        ownerId: athleteId,
         uri,
       });
 
