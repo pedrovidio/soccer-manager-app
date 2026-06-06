@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { groupApi } from '@features/groups/services/groupApi';
+import { queryKeys } from '@lib/queryKeys';
 import { deriveMatchPhase, minimumConfirmedFor } from '../utils/matchPhase';
 import { formatDateTime } from '../utils/formatters';
 import { matchApi } from '../services/matchApi';
@@ -192,7 +193,8 @@ export function useMatchHomeController() {
     mutationFn: () => matchApi.cancelPresence(matchId!),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
+      qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       Alert.alert('Check-in cancelado', 'Sua vaga foi aberta e o administrador foi avisado.');
     },
     onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel cancelar sua presenca.'),
@@ -202,7 +204,8 @@ export function useMatchHomeController() {
     mutationFn: () => matchApi.updatePresence(matchId!, athleteId, 'CONFIRMED'),
     onSuccess: (result: any) => {
       qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
+      qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       if (result?.status === 'WAITLISTED') {
         Alert.alert('Fila de espera', 'O jogo está cheio. Você foi colocado na fila de espera.');
       } else {
@@ -228,7 +231,8 @@ export function useMatchHomeController() {
     onSuccess: async () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       await qc.refetchQueries({ queryKey: ['match-detail', matchId], type: 'active' });
-      qc.invalidateQueries({ queryKey: ['dashboard', athleteId] });
+      qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
     },
     onError: (error: any) => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -240,6 +244,8 @@ export function useMatchHomeController() {
     mutationFn: () => matchApi.registerScore(matchId!, Number(scoreA) || 0, Number(scoreB) || 0),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['match-detail', matchId] });
+      qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       Alert.alert('Placar registrado', 'O resultado foi salvo no historico.');
     },
     onError: (error: any) => Alert.alert('Erro', error?.response?.data?.error || 'Nao foi possivel registrar o placar.'),

@@ -14,6 +14,7 @@ export function useGroupRealtime(athleteId: string | null) {
       queryClient.invalidateQueries({ queryKey: ['group'] });
       queryClient.invalidateQueries({ queryKey: ['group-home'] });
       queryClient.invalidateQueries({ queryKey: ['favorite-spot-athletes'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
     };
 
@@ -22,6 +23,7 @@ export function useGroupRealtime(athleteId: string | null) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, invalidateGroups)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'group_invites' }, () => {
         invalidateGroups();
+        queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.invites(athleteId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.notifications(athleteId) });
       })

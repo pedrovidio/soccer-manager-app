@@ -5,7 +5,7 @@ import {
   RequestPasswordResetPayload,
   ResetPasswordPayload,
 } from '../authTypes';
-import { supabase } from '@lib/supabase';
+import { clearSupabaseAuthSession, supabase } from '@lib/supabase';
 
 export const authApi = {
   login: async (payload: LoginPayload): Promise<LoginResponse> => {
@@ -43,7 +43,9 @@ export const authApi = {
   },
 
   logout: async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error && !/invalid refresh token|refresh token not found/i.test(error.message)) throw error;
+    if (error) await clearSupabaseAuthSession();
     return null;
   },
 

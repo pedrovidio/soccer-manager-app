@@ -10,7 +10,10 @@ export function useNotificationActions(athleteId: string, notifications: Notific
   const qc = useQueryClient();
   const key = queryKeys.notifications(athleteId);
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: key });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+    qc.invalidateQueries({ queryKey: key });
+  };
 
   const setLocal = (updater: (prev: Notification[]) => Notification[]) =>
     qc.setQueryData<Notification[]>(key, (prev) => updater(prev ?? []));
@@ -50,6 +53,7 @@ export function useNotificationActions(athleteId: string, notifications: Notific
     onSuccess: (_data, { notificationId, inviteId }) => {
       setLocal((prev) => prev.filter((n) => n.id !== notificationId && n.referenceId !== inviteId));
       athleteApi.deleteNotification(athleteId, notificationId).catch(() => null);
+      qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       qc.invalidateQueries({ queryKey: queryKeys.invites(athleteId) });
       qc.invalidateQueries({ queryKey: ['groups', athleteId] });
@@ -71,6 +75,7 @@ export function useNotificationActions(athleteId: string, notifications: Notific
       relatedNotificationIds.forEach((notificationId) => {
         athleteApi.deleteNotification(athleteId, notificationId).catch(() => null);
       });
+      qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       qc.invalidateQueries({ queryKey: ['spot-applications'] });
       qc.invalidateQueries({ queryKey: ['match-detail'] });

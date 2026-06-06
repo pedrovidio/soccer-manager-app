@@ -111,6 +111,7 @@ export function useEditProfileForm() {
 
   // ── Mutations ─────────────────────────────────────────────────────
   const invalidate = () => {
+    qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
     qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
     qc.invalidateQueries({ queryKey: queryKeys.assessment(athleteId) });
     qc.invalidateQueries({ queryKey: queryKeys.availability(athleteId) });

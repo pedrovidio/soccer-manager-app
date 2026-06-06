@@ -4,7 +4,7 @@ import { setMemoryToken, setUnauthorizedHandler } from '@lib/httpClient';
 import { AthletePlan, AuthState } from './authTypes';
 import { authApi } from './services/authApi';
 import { queryClient } from '@lib/queryClient';
-import { supabase } from '@lib/supabase';
+import { clearSupabaseAuthSession, getSupabaseSessionSafe } from '@lib/supabase';
 
 interface AuthStore extends AuthState {
   login: (email: string, password: string) => Promise<void>;
@@ -27,13 +27,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   hydrate: async () => {
     try {
-      const [{ data }, name, assessment] = await Promise.all([
-        supabase.auth.getSession(),
+      const [session, name, assessment] = await Promise.all([
+        getSupabaseSessionSafe(),
         SecureStore.getItemAsync('athlete_name'),
         SecureStore.getItemAsync('has_assessment'),
       ]);
-      const token = data.session?.access_token ?? null;
-      const athleteId = data.session?.user.id ?? null;
+      const token = session?.access_token ?? null;
+      const athleteId = session?.user.id ?? null;
       if (!token) {
         set({ isHydrated: true });
         return;
@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({
         token,
         athleteId,
-        name: data.session?.user.user_metadata?.['name'] ?? name,
+        name: session?.user.user_metadata?.['name'] ?? name,
         plan: 'FREE',
         planExpiresAt: null,
         hasCompletedAssessment: assessment === 'true',
@@ -117,7 +117,7 @@ setUnauthorizedHandler(() => {
     // ignore
   }
   setMemoryToken(null);
-  void supabase.auth.signOut();
+  void clearSupabaseAuthSession();
   void Promise.all([
     SecureStore.deleteItemAsync('athlete_id'),
     SecureStore.deleteItemAsync('athlete_name'),

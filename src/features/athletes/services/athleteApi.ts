@@ -24,7 +24,28 @@ interface NotificationsResponse {
   unreadCount: number;
 }
 
+export interface AthleteHomeResponse {
+  dashboard: AthleteDashboard;
+  notifications: NotificationsResponse;
+  invites: Invite[];
+}
+
+function normalizeNotifications(notifications: Notification[]): Notification[] {
+  return notifications.map((n: any) => ({
+    ...n,
+    read: n.isRead ?? n.read ?? false,
+    avatarInitials: n.avatarInitials ?? n.title?.slice(0, 2).toUpperCase() ?? '??',
+  })) as Notification[];
+}
+
 export const athleteApi = {
+  home: (athleteId: string) =>
+    httpClient.get<AthleteHomeResponse>(`/athletes/${athleteId}/home`).then((r) => ({
+      dashboard: r.data.dashboard,
+      notifications: normalizeNotifications(r.data.notifications.notifications),
+      invites: r.data.invites,
+    })),
+
   dashboard: (athleteId: string) =>
     httpClient.get<AthleteDashboard>(`/athletes/${athleteId}/dashboard`).then((r) => r.data),
 
@@ -44,13 +65,7 @@ export const athleteApi = {
   notifications: (athleteId: string) =>
     httpClient
       .get<NotificationsResponse>(`/athletes/${athleteId}/notifications`)
-      .then((r) =>
-        r.data.notifications.map((n: any) => ({
-          ...n,
-          read: n.isRead ?? n.read ?? false,
-          avatarInitials: n.avatarInitials ?? n.title?.slice(0, 2).toUpperCase() ?? '??',
-        })) as Notification[]
-      ),
+      .then((r) => normalizeNotifications(r.data.notifications)),
 
   invites: (athleteId: string) =>
     httpClient.get<Invite[]>(`/athletes/${athleteId}/invites`).then((r) => r.data),

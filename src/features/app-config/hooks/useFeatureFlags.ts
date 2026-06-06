@@ -8,9 +8,10 @@ export function useFeatureFlags() {
   const query = useQuery({
     queryKey: queryKeys.featureFlags(),
     queryFn: featureFlagsApi.list,
-    staleTime: 0,
-    refetchInterval: 5_000,
-    refetchOnMount: 'always',
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const byKey = useMemo(() => {

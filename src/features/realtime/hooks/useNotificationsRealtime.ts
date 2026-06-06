@@ -14,7 +14,10 @@ export function useNotificationsRealtime(athleteId: string | null) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notifications', filter: `athlete_id=eq.${athleteId}` },
-        () => queryClient.invalidateQueries({ queryKey: queryKeys.notifications(athleteId) }),
+        () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+          queryClient.invalidateQueries({ queryKey: queryKeys.notifications(athleteId) });
+        },
       )
       .subscribe();
 

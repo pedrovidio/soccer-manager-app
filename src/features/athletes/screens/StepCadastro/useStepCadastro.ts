@@ -13,7 +13,10 @@ export function useStepCadastro(props: StepCadastroProps) {
 
   const photoMutation = useMutation({
     mutationFn: (uri: string) => athleteApi.uploadPhoto(props.athleteId, uri),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(props.athleteId) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.home(props.athleteId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(props.athleteId) });
+    },
     onError: () => Alert.alert('Erro', 'Nao foi possivel enviar a foto.'),
   });
 

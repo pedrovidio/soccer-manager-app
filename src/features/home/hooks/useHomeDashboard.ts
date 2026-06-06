@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { athleteApi } from '@features/athletes/services/athleteApi';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { queryKeys } from '@lib/queryKeys';
@@ -17,44 +17,40 @@ interface HomeDashboardResult {
 }
 
 export function useHomeDashboard(athleteId: string): HomeDashboardResult {
+  const queryClient = useQueryClient();
   const setPlan = useAuthStore((state) => state.setPlan);
-  const dashboardQuery = useQuery({
-    queryKey: queryKeys.dashboard(athleteId),
-    queryFn: () => athleteApi.dashboard(athleteId),
+  const homeQuery = useQuery({
+    queryKey: queryKeys.home(athleteId),
+    queryFn: () => athleteApi.home(athleteId),
     enabled: !!athleteId,
+    staleTime: 60_000,
   });
 
   useEffect(() => {
-    if (!dashboardQuery.data?.plan) return;
-    setPlan(dashboardQuery.data.plan, dashboardQuery.data.planExpiresAt ?? null);
-  }, [dashboardQuery.data?.plan, dashboardQuery.data?.planExpiresAt, setPlan]);
+    const home = homeQuery.data;
+    if (!home || !athleteId) return;
 
-  const notificationsQuery = useQuery({
-    queryKey: queryKeys.notifications(athleteId),
-    queryFn: () => athleteApi.notifications(athleteId),
-    enabled: !!athleteId,
-  });
+    queryClient.setQueryData(queryKeys.dashboard(athleteId), home.dashboard);
+    queryClient.setQueryData(queryKeys.notifications(athleteId), home.notifications);
+    queryClient.setQueryData(queryKeys.invites(athleteId), home.invites);
 
-  const invitesQuery = useQuery({
-    queryKey: queryKeys.invites(athleteId),
-    queryFn: () => athleteApi.invites(athleteId),
-    enabled: !!athleteId,
-  });
+    if (home.dashboard.plan) {
+      setPlan(home.dashboard.plan, home.dashboard.planExpiresAt ?? null);
+    }
+  }, [athleteId, homeQuery.data, queryClient, setPlan]);
 
-  const isLoading = dashboardQuery.isLoading || notificationsQuery.isLoading || invitesQuery.isLoading;
-  const isError   = dashboardQuery.isError   || notificationsQuery.isError   || invitesQuery.isError;
+  const isLoading = homeQuery.isLoading;
+  const isError   = homeQuery.isError;
 
   function refetch() {
-    dashboardQuery.refetch();
-    notificationsQuery.refetch();
-    invitesQuery.refetch();
+    homeQuery.refetch();
   }
 
   return {
-    dashboard:        dashboardQuery.data,
-    notifications:    notificationsQuery.data ?? [],
-    invites:          invitesQuery.data ?? [],
-    confirmedMatches: dashboardQuery.data?.confirmedMatches ?? [],
+    dashboard:        homeQuery.data?.dashboard,
+    notifications:    homeQuery.data?.notifications ?? [],
+    invites:          homeQuery.data?.invites ?? [],
+    confirmedMatches: homeQuery.data?.dashboard.confirmedMatches ?? [],
     isLoading,
     isError,
     refetch,

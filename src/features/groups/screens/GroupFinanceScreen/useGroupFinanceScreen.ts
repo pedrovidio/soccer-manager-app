@@ -6,6 +6,7 @@ import { useAuthStore } from '@features/auth/useAuthStore';
 import { GroupFinancePayment } from '@features/groups/groupTypes';
 import { groupApi } from '@features/groups/services/groupApi';
 import { parseMoneyInput } from '@features/groups/utils/financeFormatters';
+import { queryKeys } from '@lib/queryKeys';
 import { ExpenseKind, FinanceTab, StatusFilter, TypeFilter } from './types';
 
 export function useGroupFinanceScreen() {
@@ -38,7 +39,8 @@ export function useGroupFinanceScreen() {
     queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
     if (payment) {
       queryClient.invalidateQueries({ queryKey: ['athlete-finance-report', payment.athleteId] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard', payment.athleteId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.home(payment.athleteId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(payment.athleteId) });
     }
   }, [groupId, queryClient]);
 

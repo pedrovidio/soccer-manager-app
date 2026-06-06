@@ -30,6 +30,7 @@ function BottomNavComponent({ active, onPress }: BottomNavProps) {
     queryKey: queryKeys.dashboard(athleteId),
     queryFn: () => athleteApi.dashboard(athleteId),
     enabled: !!athleteId,
+    staleTime: 60_000,
   });
   const visibleItems = NAV_ITEMS.filter((item) => {
     if (item.key === 'marketplace') return marketplaceAccess.hasAccess;

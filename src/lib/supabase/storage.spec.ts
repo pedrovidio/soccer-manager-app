@@ -13,10 +13,8 @@ jest.mock('expo-file-system', () => ({
 }));
 
 jest.mock('./client', () => ({
+  getSupabaseSessionSafe: jest.fn(),
   supabase: {
-    auth: {
-      getSession: jest.fn(),
-    },
     storage: {
       from: jest.fn(),
     },
@@ -34,9 +32,8 @@ beforeEach(() => {
   jest.clearAllMocks();
   uploadMock.mockResolvedValue({ error: null });
   getPublicUrlMock.mockReturnValue({ data: { publicUrl: 'https://storage.test/photo.jpg' } });
-  (supabase.auth.getSession as jest.Mock).mockResolvedValue({
-    data: { session: { user: { id: 'auth-user-1' } } },
-  });
+  const { getSupabaseSessionSafe } = require('./client');
+  getSupabaseSessionSafe.mockResolvedValue({ user: { id: 'auth-user-1' } });
   (supabase.storage.from as jest.Mock).mockReturnValue({
     upload: uploadMock,
     getPublicUrl: getPublicUrlMock,
@@ -51,7 +48,8 @@ describe('uploadImageToSupabaseStorage', () => {
       uri: 'file:///cache/photo.jpg',
     });
 
-    expect(supabase.auth.getSession).toHaveBeenCalled();
+    const { getSupabaseSessionSafe } = require('./client');
+    expect(getSupabaseSessionSafe).toHaveBeenCalled();
     expect(supabase.storage.from).toHaveBeenCalledWith('athlete-photos');
     expect(uploadMock).toHaveBeenCalledWith(
       expect.stringMatching(/^auth-user-1\/\d+\.jpg$/),

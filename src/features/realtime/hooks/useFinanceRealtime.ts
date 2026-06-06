@@ -15,6 +15,7 @@ export function useFinanceRealtime(athleteId: string | null) {
         queryClient.invalidateQueries({ queryKey: ['group-finance-report'] });
         queryClient.invalidateQueries({ queryKey: ['athlete-finance-report'] });
         queryClient.invalidateQueries({ queryKey: ['group-home'] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       })
       .subscribe();

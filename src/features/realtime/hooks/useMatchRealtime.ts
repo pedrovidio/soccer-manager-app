@@ -12,6 +12,7 @@ export function useMatchRealtime(athleteId: string | null) {
     const invalidateMatches = () => {
       queryClient.invalidateQueries({ queryKey: ['match-detail'] });
       queryClient.invalidateQueries({ queryKey: ['group-home'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.marketplace(athleteId) });
     };
@@ -21,6 +22,7 @@ export function useMatchRealtime(athleteId: string | null) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, invalidateMatches)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_invites' }, () => {
         invalidateMatches();
+        queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.invites(athleteId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.notifications(athleteId) });
       })

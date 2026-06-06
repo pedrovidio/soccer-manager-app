@@ -1,4 +1,5 @@
 export const queryKeys = {
+  home:          (athleteId: string) => ['home', athleteId] as const,
   dashboard:     (athleteId: string) => ['dashboard', athleteId] as const,
   notifications: (athleteId: string) => ['notifications', athleteId] as const,
   invites:       (athleteId: string) => ['invites', athleteId] as const,

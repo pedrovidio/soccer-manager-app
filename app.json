@@ -4,7 +4,7 @@
     "slug": "soccer-manager-app",
     "scheme": "soccer-manager",
     "version": "1.0.0",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/icon.png",
     "updates": {
       "enabled": false
     },
@@ -19,7 +19,8 @@
           "locationWhenInUsePermission": "Usamos sua localizacao para encontrar vagas avulsas perto de voce."
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ],
     "android": {
       "softwareKeyboardLayoutMode": "pan",

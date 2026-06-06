@@ -1,6 +1,6 @@
 import { decode } from 'base64-arraybuffer';
 import { File } from 'expo-file-system';
-import { supabase } from './client';
+import { getSupabaseSessionSafe, supabase } from './client';
 import { appLogger } from '../logger';
 
 type UploadImageOptions = {
@@ -23,8 +23,8 @@ export async function uploadImageToSupabaseStorage({ bucket, ownerId, uri }: Upl
   let authUserId: string | undefined;
 
   try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    authUserId = sessionData.session?.user.id;
+    const session = await getSupabaseSessionSafe();
+    authUserId = session?.user.id;
     if (!authUserId) throw new Error('Supabase session is required to upload images');
 
     const storageOwnerId = ownerId && ownerId === authUserId ? ownerId : authUserId;
