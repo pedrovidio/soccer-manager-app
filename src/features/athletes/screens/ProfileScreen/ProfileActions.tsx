@@ -4,7 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Arena, Colors, useThemeStore } from '@ui/tokens/theme';
 import { styles } from './styles';
 
-function ProfileActionsComponent({ onGroups, onLogout }: { onGroups: () => void; onLogout: () => void }) {
+interface ProfileActionsProps {
+  onGroups: () => void;
+  onLogout: () => void;
+  onDeleteAccount: () => void;
+}
+
+function ProfileActionsComponent({ onGroups, onLogout, onDeleteAccount }: ProfileActionsProps) {
   const { theme, setTheme } = useThemeStore();
   const isLight = theme === 'light';
 
@@ -34,6 +40,13 @@ function ProfileActionsComponent({ onGroups, onLogout }: { onGroups: () => void;
       <TouchableOpacity style={styles.actionRow} onPress={onLogout}>
         <Ionicons name="log-out-outline" size={20} color={Colors.error} />
         <Text style={[styles.actionLabel, styles.actionLabelDanger]}>Sair</Text>
+      </TouchableOpacity>
+
+      <View style={styles.divider} />
+
+      <TouchableOpacity style={styles.actionRow} onPress={onDeleteAccount}>
+        <Ionicons name="trash-outline" size={20} color={Colors.error} />
+        <Text style={[styles.actionLabel, styles.actionLabelDanger]}>Excluir minha conta</Text>
       </TouchableOpacity>
     </View>
   );

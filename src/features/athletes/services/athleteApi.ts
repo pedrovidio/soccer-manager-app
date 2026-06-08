@@ -97,6 +97,9 @@ export const athleteApi = {
   }) =>
     httpClient.patch(`/athletes/${athleteId}`, data).then((r) => r.data),
 
+  deleteAccount: () =>
+    httpClient.delete('/athletes/me').then((r) => r.data),
+
   uploadPhoto: async (athleteId: string, uri: string) => {
     try {
       const photoUrl = await uploadImageToSupabaseStorage({

@@ -15,6 +15,16 @@ interface AuthStore extends AuthState {
   isHydrated: boolean;
 }
 
+const clearedAuthState = {
+  token: null,
+  athleteId: null,
+  name: null,
+  plan: 'FREE' as AthletePlan,
+  planExpiresAt: null,
+  hasCompletedAssessment: false,
+  isAuthenticated: false,
+};
+
 export const useAuthStore = create<AuthStore>((set) => ({
   token: null,
   athleteId: null,
@@ -89,23 +99,18 @@ export const useAuthStore = create<AuthStore>((set) => ({
     } catch (e) {
       // ignore
     }
-    await authApi.logout();
-    setMemoryToken(null);
-    await Promise.all([
-      SecureStore.deleteItemAsync('athlete_id'),
-      SecureStore.deleteItemAsync('athlete_name'),
-      SecureStore.deleteItemAsync('has_assessment'),
-    ]);
-    queryClient.clear();
-    set({
-      token: null,
-      athleteId: null,
-      name: null,
-      plan: 'FREE',
-      planExpiresAt: null,
-      hasCompletedAssessment: false,
-      isAuthenticated: false,
-    });
+    try {
+      await authApi.logout();
+    } finally {
+      setMemoryToken(null);
+      await Promise.all([
+        SecureStore.deleteItemAsync('athlete_id'),
+        SecureStore.deleteItemAsync('athlete_name'),
+        SecureStore.deleteItemAsync('has_assessment'),
+      ]);
+      queryClient.clear();
+      set(clearedAuthState);
+    }
   },
 }));
 
@@ -124,13 +129,5 @@ setUnauthorizedHandler(() => {
     SecureStore.deleteItemAsync('has_assessment'),
   ]);
   queryClient.clear();
-  useAuthStore.setState({
-    token: null,
-    athleteId: null,
-    name: null,
-    plan: 'FREE',
-    planExpiresAt: null,
-    hasCompletedAssessment: false,
-    isAuthenticated: false,
-  });
+  useAuthStore.setState(clearedAuthState);
 });

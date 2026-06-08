@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Arena } from '@ui/tokens/theme';
 import { AttributesCard } from './AttributesCard';
@@ -42,9 +42,89 @@ export function ProfileScreen() {
           isLoading={controller.isRankingLoading}
         />
         <AttributesCard stats={profile.stats} />
-        <ProfileActions onGroups={controller.goGroups} onLogout={controller.confirmLogout} />
+        <ProfileActions
+          onGroups={controller.goGroups}
+          onLogout={controller.confirmLogout}
+          onDeleteAccount={controller.openDeleteAccountModal}
+        />
       </ScrollView>
+      <DeleteAccountModal
+        confirmationText={controller.deleteAccountState.confirmationText}
+        typedConfirmation={controller.deleteAccountState.typedConfirmation}
+        isVisible={controller.deleteAccountState.isModalVisible}
+        canConfirm={controller.deleteAccountState.canConfirm}
+        isDeleting={controller.deleteAccountState.isDeleting}
+        onChangeConfirmation={controller.setDeleteConfirmation}
+        onCancel={controller.closeDeleteAccountModal}
+        onConfirm={controller.deleteAccount}
+      />
     </View>
+  );
+}
+
+function DeleteAccountModal({
+  confirmationText,
+  typedConfirmation,
+  isVisible,
+  canConfirm,
+  isDeleting,
+  onChangeConfirmation,
+  onCancel,
+  onConfirm,
+}: {
+  confirmationText: string;
+  typedConfirmation: string;
+  isVisible: boolean;
+  canConfirm: boolean;
+  isDeleting: boolean;
+  onChangeConfirmation: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onCancel}>
+      <View style={styles.modalBackdrop}>
+        <View style={styles.modalCard}>
+          <View style={styles.modalIcon}>
+            <Ionicons name="warning-outline" size={24} color={Arena.buttonLabelPrimary} />
+          </View>
+          <Text style={styles.modalTitle}>Excluir minha conta</Text>
+          <Text style={styles.modalDescription}>
+            Esta acao e irreversivel. Seus dados pessoais serao apagados e seu historico esportivo ficara anonimizado.
+          </Text>
+          <Text style={styles.modalHint}>Digite {confirmationText} para confirmar.</Text>
+          <TextInput
+            value={typedConfirmation}
+            onChangeText={onChangeConfirmation}
+            autoCapitalize="characters"
+            editable={!isDeleting}
+            placeholder={confirmationText}
+            placeholderTextColor={Arena.textSubtle}
+            style={styles.modalInput}
+          />
+          <View style={styles.modalActions}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.modalCancelButton]}
+              onPress={onCancel}
+              disabled={isDeleting}
+            >
+              <Text style={styles.modalCancelText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.modalDeleteButton, !canConfirm && styles.modalButtonDisabled]}
+              onPress={onConfirm}
+              disabled={!canConfirm || isDeleting}
+            >
+              {isDeleting ? (
+                <ActivityIndicator size="small" color={Arena.buttonLabelPrimary} />
+              ) : (
+                <Text style={styles.modalDeleteText}>Excluir</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
