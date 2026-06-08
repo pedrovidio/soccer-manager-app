@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
@@ -8,6 +8,9 @@ import { groupApi } from '@features/groups/services/groupApi';
 import { parseMoneyInput } from '@features/groups/utils/financeFormatters';
 import { queryKeys } from '@lib/queryKeys';
 import { ExpenseKind, FinanceTab, StatusFilter, TypeFilter } from './types';
+
+const INITIAL_PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 50;
 
 export function useGroupFinanceScreen() {
   const { groupId, tab: initialTab } = useLocalSearchParams<{ groupId: string; tab?: string }>();
@@ -21,21 +24,26 @@ export function useGroupFinanceScreen() {
   const [expenseKind, setExpenseKind] = useState<ExpenseKind | null>(null);
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
+  const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE);
 
   const filters = useMemo(() => ({
     ...(statusFilter !== 'ALL' && { status: statusFilter }),
     ...(typeFilter !== 'ALL' && { type: typeFilter }),
   }), [statusFilter, typeFilter]);
 
+  useEffect(() => {
+    setPageSize(INITIAL_PAGE_SIZE);
+  }, [filters]);
+
   const reportQuery = useQuery({
-    queryKey: ['group-finance-report', groupId, athleteId, filters],
-    queryFn: () => groupApi.financeReport(groupId!, athleteId, filters),
+    queryKey: groupId ? queryKeys.groupFinanceReport(groupId, athleteId, filters, pageSize) : ['group-finance-report', 'missing-group'],
+    queryFn: () => groupApi.financeReport(groupId!, athleteId, { ...filters, page: 1, pageSize }),
     enabled: !!groupId && !!athleteId,
     placeholderData: keepPreviousData,
   });
 
   const invalidateFinance = useCallback((payment?: GroupFinancePayment) => {
-    queryClient.invalidateQueries({ queryKey: ['group-finance-report', groupId] });
+    if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupFinanceReports(groupId) });
     queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
     if (payment) {
       queryClient.invalidateQueries({ queryKey: ['athlete-finance-report', payment.athleteId] });
@@ -102,6 +110,20 @@ export function useGroupFinanceScreen() {
     }) ?? false;
   }, [reportQuery.data?.expenses]);
 
+  const loadMore = useCallback(() => {
+    setPageSize((current) => Math.min(current + INITIAL_PAGE_SIZE, MAX_PAGE_SIZE));
+  }, []);
+
+  const paginationForTab = useMemo(() => {
+    if (!reportQuery.data?.pagination) return null;
+    if (tab === 'expenses') return reportQuery.data.pagination.expenses;
+    if (tab === 'defaulters') return reportQuery.data.pagination.defaulters;
+    if (tab === 'payments' || tab === 'review') return reportQuery.data.pagination.payments;
+    return null;
+  }, [reportQuery.data?.pagination, tab]);
+
+  const canLoadMore = !!paginationForTab && pageSize < Math.min(paginationForTab.total, MAX_PAGE_SIZE);
+
   return {
     athleteId,
     confirmPayment: confirmPaymentMutation.mutate,
@@ -117,7 +139,10 @@ export function useGroupFinanceScreen() {
     isFetching: reportQuery.isFetching,
     isCourtRentalPaid,
     isRegisteringExpense: registerExpenseMutation.isPending,
+    canLoadMore,
+    loadMore,
     overduePayments,
+    paginationForTab,
     refetch: reportQuery.refetch,
     registerExpense: registerExpenseMutation.mutate,
     reportedPayments,

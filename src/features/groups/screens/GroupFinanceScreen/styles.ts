@@ -46,6 +46,7 @@ export const styles = StyleSheet.create({
   section: { paddingHorizontal: Spacing.lg, gap: 8 },
   listSeparator: { height: 8 },
   sectionTitle: { fontSize: 14, fontWeight: '900', color: Arena.text, marginBottom: 2 },
+  listMeta: { fontSize: 11, color: Arena.textMuted, marginBottom: 2 },
   sectionTitleSpaced: { marginTop: 18 },
   rowCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: Arena.card, borderRadius: Radius.r12, borderWidth: 1, borderColor: Arena.line, padding: 12, gap: 10 },
   rowBody: { flex: 1 },
@@ -82,4 +83,6 @@ export const styles = StyleSheet.create({
   saveBtnText: { color: Arena.bgDeep, fontWeight: '900' },
   cancelBtn: { backgroundColor: Arena.cardSoft, borderWidth: 1, borderColor: Arena.line, borderRadius: Radius.r12, paddingVertical: 13, alignItems: 'center' },
   cancelBtnText: { color: Arena.text, fontWeight: '800' },
+  loadMoreBtn: { alignItems: 'center', borderRadius: Radius.r12, borderWidth: 1, borderColor: Arena.neonBorder, backgroundColor: Arena.card, paddingVertical: 12 },
+  loadMoreText: { color: Arena.neon, fontSize: 12, fontWeight: '900' },
 });

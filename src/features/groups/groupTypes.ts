@@ -127,6 +127,13 @@ export interface GroupFinanceByMatch {
   pendingCount: number;
 }
 
+export interface GroupFinancePagination {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface GroupFinanceReport {
   group: {
     id: string;
@@ -154,6 +161,11 @@ export interface GroupFinanceReport {
   expenses: GroupFinancePayment[];
   defaulters: GroupFinancePayment[];
   payments: GroupFinancePayment[];
+  pagination?: {
+    payments: GroupFinancePagination;
+    expenses: GroupFinancePagination;
+    defaulters: GroupFinancePagination;
+  };
 }
 
 export interface GroupFinanceFilters {
@@ -161,6 +173,8 @@ export interface GroupFinanceFilters {
   to?: string;
   status?: GroupFinanceStatus;
   type?: GroupFinanceType;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface GroupExpensePayload {

@@ -64,6 +64,8 @@ export function GroupFinanceScreen() {
                 payments={controller.reportedPayments}
                 onConfirm={controller.confirmPayment}
                 confirmingId={controller.confirmingId}
+                canLoadMore={controller.canLoadMore}
+                onLoadMore={controller.loadMore}
               />
             )}
 
@@ -86,6 +88,9 @@ export function GroupFinanceScreen() {
                 payments={data.defaulters}
                 onConfirm={controller.confirmPayment}
                 confirmingId={controller.confirmingId}
+                canLoadMore={controller.canLoadMore}
+                onLoadMore={controller.loadMore}
+                total={controller.paginationForTab?.total}
               />
             )}
 
@@ -96,6 +101,9 @@ export function GroupFinanceScreen() {
                 payments={data.expenses}
                 onConfirm={controller.confirmPayment}
                 confirmingId={controller.confirmingId}
+                canLoadMore={controller.canLoadMore}
+                onLoadMore={controller.loadMore}
+                total={controller.paginationForTab?.total}
               />
             )}
 
@@ -106,6 +114,9 @@ export function GroupFinanceScreen() {
                 payments={data.payments}
                 onConfirm={controller.confirmPayment}
                 confirmingId={controller.confirmingId}
+                canLoadMore={controller.canLoadMore}
+                onLoadMore={controller.loadMore}
+                total={controller.paginationForTab?.total}
               />
             )}
           </View>
