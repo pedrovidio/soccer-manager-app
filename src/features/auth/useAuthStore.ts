@@ -45,7 +45,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const token = session?.access_token ?? null;
       const athleteId = session?.user.id ?? null;
       if (!token) {
-        set({ isHydrated: true });
+        setMemoryToken(null);
+        await Promise.all([
+          SecureStore.deleteItemAsync('athlete_id'),
+          SecureStore.deleteItemAsync('athlete_name'),
+          SecureStore.deleteItemAsync('has_assessment'),
+        ]);
+        queryClient.clear();
+        set({ ...clearedAuthState, isHydrated: true });
         return;
       }
       setMemoryToken(token);
@@ -60,7 +67,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
         isHydrated: true,
       });
     } catch (e) {
-      set({ isHydrated: true });
+      setMemoryToken(null);
+      await Promise.all([
+        SecureStore.deleteItemAsync('athlete_id'),
+        SecureStore.deleteItemAsync('athlete_name'),
+        SecureStore.deleteItemAsync('has_assessment'),
+      ]);
+      queryClient.clear();
+      set({ ...clearedAuthState, isHydrated: true });
     }
   },
 

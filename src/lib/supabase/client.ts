@@ -10,6 +10,7 @@ if (!supabaseUrl || !supabasePublishableKey) {
 
 const supabaseProjectRef = supabaseUrl ? new URL(supabaseUrl).hostname.split('.')[0] : 'missing';
 export const SUPABASE_AUTH_STORAGE_KEY = `sb-${supabaseProjectRef}-auth-token`;
+const LEGACY_SUPABASE_AUTH_STORAGE_KEY = 'supabase.auth.token';
 
 export const supabase = createClient(
   supabaseUrl ?? 'https://missing-supabase-url.supabase.co',
@@ -31,7 +32,9 @@ function isInvalidRefreshTokenError(error: unknown): boolean {
 }
 
 export async function clearSupabaseAuthSession(): Promise<void> {
-  await AsyncStorage.removeItem(SUPABASE_AUTH_STORAGE_KEY);
+  const keys = await AsyncStorage.getAllKeys();
+  const authKeys = keys.filter((key) => /^sb-.+-auth-token$/.test(key) || key === LEGACY_SUPABASE_AUTH_STORAGE_KEY);
+  await AsyncStorage.multiRemove(Array.from(new Set([SUPABASE_AUTH_STORAGE_KEY, ...authKeys])));
   await supabase.auth.signOut({ scope: 'local' }).catch(() => null);
 }
 
