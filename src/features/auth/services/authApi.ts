@@ -28,7 +28,12 @@ export const authApi = {
       password: payload.password,
       options: { data: { name: payload.name } },
     });
-    if (error) throw error;
+    if (error) {
+      if (isAlreadyRegisteredError(error)) {
+        return authApi.login({ email: payload.email, password: payload.password });
+      }
+      throw error;
+    }
     if (!data.session || !data.user) {
       throw new Error('Confirme seu e-mail antes de concluir o cadastro.');
     }
@@ -71,3 +76,8 @@ export const authApi = {
     return { success: true };
   },
 };
+
+function isAlreadyRegisteredError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return /already registered|already exists|user exists|email.*registered/i.test(message);
+}
