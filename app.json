@@ -4,7 +4,7 @@
     "slug": "soccer-manager-app",
     "scheme": "soccer-manager",
     "version": "1.0.0",
-    "icon": "./assets/login.png",
+    "icon": "./assets/logo.png",
     "updates": {
       "enabled": false
     },
@@ -31,7 +31,6 @@
       ]
     },
     "androidNavigationBar": {
-      "visible": "leanback",
       "barStyle": "dark-content"
     },
     "extra": {
