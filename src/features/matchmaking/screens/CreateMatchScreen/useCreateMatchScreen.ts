@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PlaceResult } from '@ui/composites/PlacesAutocomplete';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { matchApi } from '@features/matchmaking/services/matchApi';
+import { queryKeys } from '@lib/queryKeys';
 import { MATCH_TYPES } from './options';
 import { CancelMode, MatchCoords, MatchType, MatchTypeOption } from './types';
 
@@ -52,7 +53,7 @@ export function useCreateMatchScreen() {
   const createMutation = useMutation({
     mutationFn: matchApi.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
+      if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupHome(groupId) });
       router.back();
     },
     onError: () => Alert.alert('Erro', 'Não foi possível criar a partida.'),
@@ -62,7 +63,7 @@ export function useCreateMatchScreen() {
     mutationFn: (payload: Parameters<typeof matchApi.update>[1]) => matchApi.update(matchId!, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
+      if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupHome(groupId) });
       router.back();
     },
     onError: () => Alert.alert('Erro', 'Não foi possível atualizar a partida.'),
@@ -77,7 +78,7 @@ export function useCreateMatchScreen() {
       setCancelMode(null);
       setCancelReason('');
       queryClient.invalidateQueries({ queryKey: ['match-detail', matchId] });
-      queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
+      if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupHome(groupId) });
 
       const message = variables.mode === 'series'
         ? `${result?.cancelledCount ?? 0} partida(s) recorrente(s) cancelada(s).`

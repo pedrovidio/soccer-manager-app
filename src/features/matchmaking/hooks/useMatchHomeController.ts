@@ -133,7 +133,7 @@ export function useMatchHomeController() {
         : groupApi.favoriteSpotAthlete(groupId!, athleteId, athlete.id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['nearby-athletes-all', matchId] });
-      qc.invalidateQueries({ queryKey: ['favorite-spot-athletes', groupId] });
+      if (groupId) qc.invalidateQueries({ queryKey: queryKeys.favoriteSpotAthletes(groupId) });
     },
     onError: () => Alert.alert('Erro', 'Nao foi possivel atualizar o favorito.'),
   });

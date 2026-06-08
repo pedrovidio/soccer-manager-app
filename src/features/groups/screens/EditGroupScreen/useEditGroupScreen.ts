@@ -12,6 +12,7 @@ import {
   parseApiError,
   validateGroupForm,
 } from '@features/groups/utils/groupForm';
+import { queryKeys } from '@lib/queryKeys';
 
 export function useEditGroupScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
@@ -21,7 +22,7 @@ export function useEditGroupScreen() {
 
   const [form, setForm] = useState<CreateGroupFormData>(INITIAL_GROUP_FORM);
   const groupQuery = useQuery({
-    queryKey: ['group', groupId],
+    queryKey: queryKeys.favoriteGroup(groupId ?? null),
     queryFn: () => groupApi.findById(groupId!),
     enabled: !!groupId,
     retry: false,
@@ -51,8 +52,8 @@ export function useEditGroupScreen() {
   const updateMutation = useMutation({
     mutationFn: () => groupApi.update(groupId!, buildUpdateGroupPayload(form, athleteId)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
-      queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.favoriteGroup(groupId ?? null) });
+      if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupHome(groupId) });
       Alert.alert('Salvo!', 'As alteracoes foram salvas com sucesso.', [
         { text: 'OK', onPress: () => router.back() },
       ]);

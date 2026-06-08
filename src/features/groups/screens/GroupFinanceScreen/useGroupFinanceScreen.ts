@@ -36,7 +36,7 @@ export function useGroupFinanceScreen() {
   }, [filters]);
 
   const reportQuery = useQuery({
-    queryKey: groupId ? queryKeys.groupFinanceReport(groupId, athleteId, filters, pageSize) : ['group-finance-report', 'missing-group'],
+    queryKey: groupId ? queryKeys.groupFinanceReport(groupId, athleteId, filters, pageSize) : queryKeys.groupFinanceReportsAll(),
     queryFn: () => groupApi.financeReport(groupId!, athleteId, { ...filters, page: 1, pageSize }),
     enabled: !!groupId && !!athleteId,
     placeholderData: keepPreviousData,
@@ -44,9 +44,9 @@ export function useGroupFinanceScreen() {
 
   const invalidateFinance = useCallback((payment?: GroupFinancePayment) => {
     if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupFinanceReports(groupId) });
-    queryClient.invalidateQueries({ queryKey: ['group-home', groupId] });
+    if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.groupHome(groupId) });
     if (payment) {
-      queryClient.invalidateQueries({ queryKey: ['athlete-finance-report', payment.athleteId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.athleteFinanceReports(payment.athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.home(payment.athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(payment.athleteId) });
     }

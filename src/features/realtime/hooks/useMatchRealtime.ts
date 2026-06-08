@@ -11,7 +11,7 @@ export function useMatchRealtime(athleteId: string | null) {
 
     const invalidateMatches = () => {
       queryClient.invalidateQueries({ queryKey: ['match-detail'] });
-      queryClient.invalidateQueries({ queryKey: ['group-home'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.groupHomes() });
       queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.marketplace(athleteId) });

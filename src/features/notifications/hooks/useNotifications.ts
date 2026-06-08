@@ -56,8 +56,8 @@ export function useNotificationActions(athleteId: string, notifications: Notific
       qc.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
       qc.invalidateQueries({ queryKey: queryKeys.invites(athleteId) });
-      qc.invalidateQueries({ queryKey: ['groups', athleteId] });
-      qc.invalidateQueries({ queryKey: ['group-home'] });
+      qc.invalidateQueries({ queryKey: queryKeys.groups(athleteId) });
+      qc.invalidateQueries({ queryKey: queryKeys.groupHomes() });
       qc.invalidateQueries({ queryKey: ['match-detail'] });
     },
     onError: invalidate,

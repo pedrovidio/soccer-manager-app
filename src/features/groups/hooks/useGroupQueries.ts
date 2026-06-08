@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { groupApi } from '@features/groups/services/groupApi';
 import { GroupResponse } from '@features/groups/groupTypes';
+import { queryKeys } from '@lib/queryKeys';
 
 export function useGroups(athleteId: string) {
   return useQuery({
-    queryKey: ['groups', athleteId],
+    queryKey: queryKeys.groups(athleteId),
     queryFn: () => groupApi.listByAthlete(athleteId),
     enabled: !!athleteId,
   });
@@ -17,12 +18,12 @@ export function useFavoriteGroupDetails(
 ) {
   const queryClient = useQueryClient();
   const findCachedFavoriteGroup = () => {
-    const cachedGroups = queryClient.getQueryData<GroupResponse[]>(['groups', athleteId]) ?? [];
+    const cachedGroups = queryClient.getQueryData<GroupResponse[]>(queryKeys.groups(athleteId)) ?? [];
     return cachedGroups.find((group) => group.id === favoriteId);
   };
 
   return useQuery({
-    queryKey: ['group', favoriteId],
+    queryKey: queryKeys.favoriteGroup(favoriteId),
     queryFn: async () => {
       try {
         const cachedGroup = findCachedFavoriteGroup();

@@ -7,10 +7,22 @@ export const queryKeys = {
   ranking:       () => ['ranking'] as const,
   rankingMe:     (athleteId: string) => ['ranking', 'me', athleteId] as const,
   featureFlags:  () => ['app-config', 'feature-flags'] as const,
+  groups:        (athleteId: string) => ['groups', athleteId] as const,
+  favoriteGroup: (groupId: string | null) => ['group', groupId] as const,
+  favoriteGroups: () => ['group'] as const,
+  groupHome:     (groupId: string) => ['group-home', groupId] as const,
+  groupHomes:    () => ['group-home'] as const,
+  favoriteSpotAthletes: (groupId: string) => ['favorite-spot-athletes', groupId] as const,
+  favoriteSpotAthletesAll: () => ['favorite-spot-athletes'] as const,
   groupMatches:  (groupId: string)   => ['groupMatches', groupId] as const,
+  athleteFinanceReport: (athleteId: string, filters: unknown) => ['athlete-finance-report', athleteId, filters] as const,
+  athleteFinanceReports: (athleteId?: string) =>
+    (athleteId ? ['athlete-finance-report', athleteId] : ['athlete-finance-report']) as readonly unknown[],
   groupFinanceReport: (groupId: string, athleteId: string, filters: unknown, pageSize: number) =>
     ['group-finance-report', groupId, athleteId, filters, pageSize] as const,
   groupFinanceReports: (groupId: string) => ['group-finance-report', groupId] as const,
+  groupFinanceReportsAll: () => ['group-finance-report'] as const,
+  nearbyAthletesAll: () => ['nearby-athletes-all'] as const,
   assessment:    (athleteId: string) => ['assessment', athleteId] as const,
   availability:  (athleteId: string) => ['availability', athleteId] as const,
 };

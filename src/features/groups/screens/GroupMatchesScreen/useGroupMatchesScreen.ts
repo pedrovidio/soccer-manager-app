@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { groupApi } from '@features/groups/services/groupApi';
+import { queryKeys } from '@lib/queryKeys';
 
 export function useGroupMatchesScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
@@ -10,7 +11,7 @@ export function useGroupMatchesScreen() {
   const athleteId = useAuthStore((state) => state.athleteId) ?? '';
 
   const query = useQuery({
-    queryKey: ['group-home', groupId],
+    queryKey: groupId ? queryKeys.groupHome(groupId) : queryKeys.groupHomes(),
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
   });

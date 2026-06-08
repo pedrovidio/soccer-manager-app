@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { GroupMember } from '@features/groups/groupTypes';
 import { groupApi } from '@features/groups/services/groupApi';
+import { queryKeys } from '@lib/queryKeys';
 import { MemberListItem, MembersTab } from './types';
 
 export function useGroupMembersScreen() {
@@ -18,13 +19,13 @@ export function useGroupMembersScreen() {
   const [profileMember, setProfileMember] = useState<GroupMember | null>(null);
 
   const groupQuery = useQuery({
-    queryKey: ['group-home', groupId],
+    queryKey: groupId ? queryKeys.groupHome(groupId) : queryKeys.groupHomes(),
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
   });
 
   const favoriteQuery = useQuery({
-    queryKey: ['favorite-spot-athletes', groupId],
+    queryKey: groupId ? queryKeys.favoriteSpotAthletes(groupId) : queryKeys.favoriteSpotAthletesAll(),
     queryFn: () => groupApi.listFavoriteSpotAthletes(groupId!, athleteId),
     enabled: !!groupId && !!athleteId && groupQuery.data?.isAdmin === true,
   });
@@ -32,8 +33,8 @@ export function useGroupMembersScreen() {
   const removeFavoriteMutation = useMutation({
     mutationFn: (targetAthleteId: string) => groupApi.unfavoriteSpotAthlete(groupId!, athleteId, targetAthleteId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favorite-spot-athletes', groupId] });
-      queryClient.invalidateQueries({ queryKey: ['nearby-athletes-all'] });
+      if (groupId) queryClient.invalidateQueries({ queryKey: queryKeys.favoriteSpotAthletes(groupId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.nearbyAthletesAll() });
     },
     onError: () => Alert.alert('Erro', 'Nao foi possivel remover o favorito.'),
   });

@@ -6,6 +6,7 @@ import { useAuthStore } from '@features/auth/useAuthStore';
 import { athleteApi } from '@features/athletes/services/athleteApi';
 import { matchApi } from '@features/matchmaking/services/matchApi';
 import { AthleteFinancePayment, AthleteFinanceType } from '@features/athletes/athleteTypes';
+import { queryKeys } from '@lib/queryKeys';
 import { AthleteFinanceTab, StatusFilter, TypeFilter } from './types';
 
 export function useAthleteFinanceScreen() {
@@ -24,7 +25,7 @@ export function useAthleteFinanceScreen() {
   }), [statusFilter, typeFilter]);
 
   const reportQuery = useQuery({
-    queryKey: ['athlete-finance-report', athleteId, filters],
+    queryKey: queryKeys.athleteFinanceReport(athleteId, filters),
     queryFn: () => athleteApi.financeReport(athleteId, filters),
     enabled: !!athleteId,
     placeholderData: keepPreviousData,
@@ -39,7 +40,7 @@ export function useAthleteFinanceScreen() {
     },
     onSuccess: () => {
       setSelectedPayment(null);
-      queryClient.invalidateQueries({ queryKey: ['athlete-finance-report', athleteId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.athleteFinanceReports(athleteId) });
       Alert.alert('Pagamento informado', 'O administrador foi avisado para conferir o Pix.');
     },
     onError: () => Alert.alert('Erro', 'Nao foi possivel informar o pagamento.'),

@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { groupApi } from '@features/groups/services/groupApi';
+import { queryKeys } from '@lib/queryKeys';
 
 export function useGroupHomeScreen() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
@@ -10,20 +11,20 @@ export function useGroupHomeScreen() {
   const athleteId = useAuthStore((state) => state.athleteId) ?? '';
 
   const groupQuery = useQuery({
-    queryKey: ['group-home', groupId],
+    queryKey: groupId ? queryKeys.groupHome(groupId) : queryKeys.groupHomes(),
     queryFn: () => groupApi.getHome(groupId!, athleteId),
     enabled: !!groupId && !!athleteId,
   });
 
   const favoriteQuery = useQuery({
-    queryKey: ['favorite-spot-athletes', groupId],
+    queryKey: groupId ? queryKeys.favoriteSpotAthletes(groupId) : queryKeys.favoriteSpotAthletesAll(),
     queryFn: () => groupApi.listFavoriteSpotAthletes(groupId!, athleteId),
     enabled: !!groupId && !!athleteId && groupQuery.data?.isAdmin === true,
   });
 
   const financeQuery = useQuery({
-    queryKey: ['group-finance-report', groupId, athleteId, 'home-review'],
-    queryFn: () => groupApi.financeReport(groupId!, athleteId),
+    queryKey: groupId ? queryKeys.groupFinanceReport(groupId, athleteId, 'home-review', 20) : queryKeys.groupFinanceReportsAll(),
+    queryFn: () => groupApi.financeReport(groupId!, athleteId, { page: 1, pageSize: 20 }),
     enabled: !!groupId && !!athleteId && groupQuery.data?.isAdmin === true,
   });
 

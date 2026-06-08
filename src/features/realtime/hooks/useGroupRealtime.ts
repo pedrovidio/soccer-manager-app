@@ -10,10 +10,10 @@ export function useGroupRealtime(athleteId: string | null) {
     if (!athleteId) return;
 
     const invalidateGroups = () => {
-      queryClient.invalidateQueries({ queryKey: ['groups', athleteId] });
-      queryClient.invalidateQueries({ queryKey: ['group'] });
-      queryClient.invalidateQueries({ queryKey: ['group-home'] });
-      queryClient.invalidateQueries({ queryKey: ['favorite-spot-athletes'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.groups(athleteId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.favoriteGroups() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.groupHomes() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.favoriteSpotAthletesAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard(athleteId) });
     };
