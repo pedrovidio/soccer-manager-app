@@ -15,13 +15,7 @@ import { useAuthStore } from '@features/auth/useAuthStore';
 import { INITIAL_REGISTER_FORM, TOTAL_STEPS } from './options';
 import { parseApiError, validatePersonalStep, validateProfileStep } from './registerUtils';
 
-type ViaCepResponse = {
-  erro?: boolean;
-  logradouro?: string;
-  bairro?: string;
-  localidade?: string;
-  uf?: string;
-};
+
 
 export function useRegisterScreen() {
   const [step, setStep] = useState(1);
@@ -33,24 +27,6 @@ export function useRegisterScreen() {
 
   const setField = useCallback((field: keyof RegisterFormData, value: RegisterFormData[keyof RegisterFormData]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-  }, []);
-
-  const resolveCep = useCallback(async (cepDigits: string) => {
-    try {
-      const res = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`);
-      const data = (await res.json()) as ViaCepResponse;
-      if (data.erro) return;
-
-      setForm((prev) => ({
-        ...prev,
-        street: data.logradouro ?? '',
-        neighborhood: data.bairro ?? '',
-        city: data.localidade ?? '',
-        state: data.uf ?? '',
-      }));
-    } catch {
-      Alert.alert('Erro', 'Não foi possível buscar o CEP.');
-    }
   }, []);
 
   const goBack = useCallback(() => {
@@ -82,23 +58,16 @@ export function useRegisterScreen() {
         name: form.name.trim(),
       });
 
+      // Parse birthDate DD/MM/AAAA into YYYY-MM-DD
+      const dateParts = form.birthDate.split('/');
+      const formattedBirthDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+
       const registerPayload = {
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
         password: form.password,
-        cpf: form.cpf.replace(/\D/g, ''),
-        phone: form.phone.replace(/\D/g, ''),
-        age: Number(form.age),
+        birthDate: formattedBirthDate,
         gender: form.gender as Gender,
-        address: {
-          cep: form.cep.trim(),
-          street: form.street.trim(),
-          number: Number(form.number),
-          complement: form.complement.trim() || undefined,
-          neighborhood: form.neighborhood.trim(),
-          city: form.city.trim(),
-          state: form.state.trim().toUpperCase(),
-        },
       };
 
       const athlete = await registerApi.register(registerPayload);
@@ -158,7 +127,6 @@ export function useRegisterScreen() {
     loading,
     scrollRef,
     setField,
-    resolveCep,
     step,
     totalSteps: TOTAL_STEPS,
     goBack,

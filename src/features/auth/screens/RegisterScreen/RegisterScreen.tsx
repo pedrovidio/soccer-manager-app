@@ -32,7 +32,6 @@ export default function RegisterScreen() {
             <RegisterPersonalStep
               form={register.form}
               setField={register.setField}
-              onCepComplete={register.resolveCep}
             />
           )}
           {register.step === 2 && <RegisterProfileStep form={register.form} setField={register.setField} />}

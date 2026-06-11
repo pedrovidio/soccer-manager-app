@@ -23,6 +23,14 @@ export function maskCep(value: string): string {
   return `${d.slice(0, 5)}-${d.slice(5)}`;
 }
 
+/** Aplica máscara de Data: DD/MM/AAAA */
+export function maskDate(value: string): string {
+  const d = value.replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 2) return d;
+  if (d.length <= 4) return `${d.slice(0, 2)}/${d.slice(2)}`;
+  return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+}
+
 /** Remove todos os caracteres não numéricos */
 export function digitsOnly(value: string): string {
   return value.replace(/\D/g, '');

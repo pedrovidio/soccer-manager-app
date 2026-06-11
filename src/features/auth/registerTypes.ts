@@ -6,19 +6,8 @@ export type WeeklyFrequency = 'RARELY' | '1_TO_2' | '3_OR_MORE';
 export interface RegisterPayload {
   name: string;
   email: string;
-  cpf: string;
-  phone: string;
-  age: number;
+  birthDate: string;
   gender: Gender;
-  address: {
-    cep: string;
-    street: string;
-    number: number;
-    complement?: string;
-    neighborhood: string;
-    city: string;
-    state: string;
-  };
   password?: string;
 }
 
@@ -48,18 +37,8 @@ export interface RegisterFormData {
   email: string;
   password: string;
   confirmPassword: string;
-  cpf: string;
-  phone: string;
-  age: string;
+  birthDate: string;
   gender: Gender | '';
-  // Step 1b — endereço
-  cep: string;
-  street: string;
-  number: string;
-  complement: string;
-  neighborhood: string;
-  city: string;
-  state: string;
   // Step 2 — questionário
   preferredPosition: string;
   highestLevel: FootballLevel | '';
