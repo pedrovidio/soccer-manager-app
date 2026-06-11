@@ -68,7 +68,8 @@ export function useMarketplaceScreen() {
   });
 
   const applyMutation = useMutation({
-    mutationFn: (matchId: string) => matchApi.applyToSpotMatch(matchId),
+    mutationFn: (opportunity: { sourceType: 'GROUP_MATCH' | 'VENUE_IDLE_SLOT'; sourceId: string }) =>
+      matchApi.applyToMarketplaceOpportunity(opportunity.sourceType, opportunity.sourceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.marketplace(athleteId) });
       Alert.alert('Candidatura enviada', 'O administrador foi avisado para aprovar ou recusar sua entrada.');
@@ -98,8 +99,8 @@ export function useMarketplaceScreen() {
     respondMutation.mutate({ invite, accept: false });
   }, [respondMutation]);
 
-  const applyToMatch = useCallback((matchId: string) => {
-    applyMutation.mutate(matchId);
+  const applyToMatch = useCallback((opportunity: { sourceType: 'GROUP_MATCH' | 'VENUE_IDLE_SLOT'; sourceId: string }) => {
+    applyMutation.mutate(opportunity);
   }, [applyMutation]);
 
   const listData = useMemo<MarketplaceListItem[]>(() => {

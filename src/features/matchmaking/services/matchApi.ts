@@ -101,6 +101,11 @@ export const matchApi = {
   applyToSpotMatch: (matchId: string) =>
     httpClient.post(`/matches/${matchId}/spot-applications`).then((r) => r.data as { id: string; status: 'PENDING' | 'ACCEPTED' | 'WAITLISTED' | 'DECLINED' }),
 
+  applyToMarketplaceOpportunity: (sourceType: 'GROUP_MATCH' | 'VENUE_IDLE_SLOT', sourceId: string) =>
+    httpClient
+      .post(`/marketplace/opportunities/${sourceType}/${sourceId}/applications`)
+      .then((r) => r.data as { id: string; status: 'PENDING' | 'ACCEPTED' | 'WAITLISTED' | 'DECLINED' }),
+
   respondSpotApplication: (applicationId: string, accept: boolean) =>
     httpClient.patch(`/spot-applications/${applicationId}/respond`, { accept }).then((r) => r.data),
 };

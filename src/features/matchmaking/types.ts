@@ -140,15 +140,22 @@ export interface NearbyAthlete {
 
 export interface SpotMarketplaceMatch {
   id: string;
+  sourceType: 'GROUP_MATCH' | 'VENUE_IDLE_SLOT';
+  sourceId: string;
   groupId: string;
   groupName: string;
+  title: string;
   type: MatchType;
   date: string;
+  startTime: string;
   location: string;
   distanceKm: number;
   vacanciesLeft: number;
   totalVacancies: number;
   confirmedCount: number;
+  averageOverall: number | null;
+  courtPrice: number | null;
+  pricePerPerson: number;
   spotFee: number;
   minOverall: number;
   minAge: number;

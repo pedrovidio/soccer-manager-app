@@ -18,13 +18,13 @@ type MarketplaceListProps = {
   };
   applyMutation: {
     isPending: boolean;
-    variables?: string;
+    variables?: { sourceType: 'GROUP_MATCH' | 'VENUE_IDLE_SLOT'; sourceId: string };
   };
   onRefresh: () => void;
   onFinance: () => void;
   onAcceptInvite: (invite: Invite) => void;
   onDeclineInvite: (invite: Invite) => void;
-  onApply: (matchId: string) => void;
+  onApply: (opportunity: { sourceType: 'GROUP_MATCH' | 'VENUE_IDLE_SLOT'; sourceId: string }) => void;
 };
 
 function MarketplaceListComponent({
@@ -70,7 +70,7 @@ function MarketplaceListComponent({
     return (
       <SpotMatchCard
         match={item.match}
-        isPending={applyMutation.isPending && applyMutation.variables === item.match.id}
+        isPending={applyMutation.isPending && applyMutation.variables?.sourceId === item.match.sourceId}
         onApply={onApply}
       />
     );
