@@ -10,6 +10,13 @@ export function setMemoryToken(t: string | null) { _memoryToken = t; }
 export function getMemoryToken() { return _memoryToken; }
 export function setUnauthorizedHandler(handler: (() => void) | null) { _onUnauthorized = handler; }
 
+function isCurrentAthleteMissing(error: any): boolean {
+  const status = error.response?.status;
+  const code = error.response?.data?.code;
+  const url = String(error.config?.url ?? '');
+  return status === 404 && code === 'ENTITY_NOT_FOUND' && /^\/athletes\/[^/]+(?:\/|$)/.test(url);
+}
+
 function redactSensitiveValues(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
   if (Array.isArray(value)) return value.map(redactSensitiveValues);
@@ -74,7 +81,7 @@ httpClient.interceptors.response.use(
     } else {
       appLogger.error('[HTTP] <- error', error, logData);
     }
-    if (status === 401) {
+    if (status === 401 || isCurrentAthleteMissing(error)) {
       _memoryToken = null;
       _onUnauthorized?.();
     }
