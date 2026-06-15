@@ -9,6 +9,7 @@ import { queryClient } from '@lib/queryClient';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { useRealtimeSubscriptions } from '@features/realtime/hooks';
 import { ErrorScreen } from '@ui/composites/ErrorScreen';
+import mobileAds from 'react-native-google-mobile-ads';
 
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return <ErrorScreen onRetry={retry} />;
@@ -19,6 +20,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     hydrate();
+    void mobileAds()
+      .initialize()
+      .catch((err) => console.warn('Erro ao inicializar AdMob SDK:', err));
   }, [hydrate]);
 
   return (

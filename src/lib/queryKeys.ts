@@ -25,4 +25,5 @@ export const queryKeys = {
   nearbyAthletesAll: () => ['nearby-athletes-all'] as const,
   assessment:    (athleteId: string) => ['assessment', athleteId] as const,
   availability:  (athleteId: string) => ['availability', athleteId] as const,
+  sponsor:       (placement: string) => ['sponsor', placement] as const,
 };

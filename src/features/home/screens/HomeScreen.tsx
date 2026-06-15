@@ -22,6 +22,8 @@ import { useNotificationActions } from '@features/notifications/hooks/useNotific
 import { QuickActionsCard } from '../components/QuickActionsCard';
 import { MatchCard } from '../components/MatchCard';
 import { useHomeDashboard } from '../hooks/useHomeDashboard';
+import { useSponsorQuery } from '../hooks/useSponsorQuery';
+import { SponsorBanner } from '@ui/composites/SponsorBanner';
 import { styles } from '../HomeScreen.styles';
 
 export default function HomeScreen() {
@@ -33,6 +35,7 @@ export default function HomeScreen() {
 
   const { dashboard, notifications, confirmedMatches, isLoading, isError, refetch } =
     useHomeDashboard(athleteId);
+  const { data: sponsor } = useSponsorQuery('HOME_FOOTER');
   useAthleteLocationSync(athleteId, !!athleteId);
 
   const {
@@ -174,6 +177,10 @@ export default function HomeScreen() {
           {matches.map((match) => (
             <MatchCard key={match.id} match={match} athleteId={athleteId} />
           ))}
+        </View>
+
+        <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+          <SponsorBanner sponsorData={sponsor} />
         </View>
       </ScrollView>
 
