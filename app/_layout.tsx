@@ -19,16 +19,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     hydrate();
-    
-    // Inicialização dinâmica do AdMob para evitar crash em Expo Go
-    try {
-      const mobileAds = require('react-native-google-mobile-ads').default;
-      void mobileAds()
-        .initialize()
-        .catch((err: any) => console.warn('Erro ao inicializar AdMob SDK:', err));
-    } catch (e) {
-      console.warn('Google Mobile Ads native module not available for initialization.');
-    }
   }, [hydrate]);
 
   return (

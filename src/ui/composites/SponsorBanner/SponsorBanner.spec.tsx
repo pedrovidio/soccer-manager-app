@@ -23,11 +23,11 @@ describe('<SponsorBanner />', () => {
     mockUsePremium.mockReturnValue({ isPremium: false });
   });
 
-  it('renders Google AdMob banner when sponsor image is not available', () => {
-    const { getByTestId, queryByLabelText } = render(<SponsorBanner sponsorData={null} />);
+  it('hides the banner when sponsor image is not available', () => {
+    const { queryByLabelText, queryByTestId } = render(<SponsorBanner sponsorData={null} />);
 
     expect(queryByLabelText('Banner do patrocinador')).toBeNull();
-    expect(getByTestId('admob-banner-container')).toBeTruthy();
+    expect(queryByTestId('admob-banner-container')).toBeNull();
   });
 
   it('opens the target URL when a sponsored banner is pressed', () => {
