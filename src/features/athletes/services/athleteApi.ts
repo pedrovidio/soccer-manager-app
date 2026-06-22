@@ -62,6 +62,9 @@ export const athleteApi = {
   updateLocation: (athleteId: string, latitude: number, longitude: number) =>
     httpClient.patch(`/athletes/${athleteId}/location`, { latitude, longitude }).then((r) => r.data),
 
+  updatePushToken: (athleteId: string, pushToken: string | null) =>
+    httpClient.patch(`/athletes/${athleteId}/push-token`, { pushToken }).then((r) => r.data),
+
   notifications: (athleteId: string) =>
     httpClient
       .get<NotificationsResponse>(`/athletes/${athleteId}/notifications`)

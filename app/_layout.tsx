@@ -4,11 +4,22 @@ import { Slot, type ErrorBoundaryProps } from 'expo-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import * as Notifications from 'expo-notifications';
 import { Arena, useThemeStore } from '@ui/tokens/theme';
 import { queryClient } from '@lib/queryClient';
 import { useAuthStore } from '@features/auth/useAuthStore';
 import { useRealtimeSubscriptions } from '@features/realtime/hooks';
 import { ErrorScreen } from '@ui/composites/ErrorScreen';
+import { registerForPushNotificationsAsync } from '@features/notifications/services/pushNotifications';
+import { athleteApi } from '@features/athletes/services/athleteApi';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return <ErrorScreen onRetry={retry} />;
@@ -45,6 +56,18 @@ function AppContent() {
   const theme = useThemeStore((state) => state.theme);
 
   useRealtimeSubscriptions(athleteId, isAuthenticated && isHydrated);
+
+  useEffect(() => {
+    if (isAuthenticated && isHydrated && athleteId) {
+      registerForPushNotificationsAsync().then((token) => {
+        if (token) {
+          athleteApi.updatePushToken(athleteId, token).catch((err) => {
+            console.error('[PushNotifications] Failed to sync push token to server:', err);
+          });
+        }
+      });
+    }
+  }, [isAuthenticated, isHydrated, athleteId]);
 
   return (
     <SafeAreaView key={theme} style={{ flex: 1, backgroundColor: Arena.bg }} edges={['top', 'left', 'right']}>
