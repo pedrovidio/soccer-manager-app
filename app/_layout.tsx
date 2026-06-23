@@ -4,7 +4,7 @@ import { Slot, type ErrorBoundaryProps } from 'expo-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { Arena, useThemeStore } from '@ui/tokens/theme';
 import { queryClient } from '@lib/queryClient';
 import { useAuthStore } from '@features/auth/useAuthStore';
@@ -13,13 +13,6 @@ import { ErrorScreen } from '@ui/composites/ErrorScreen';
 import { registerForPushNotificationsAsync } from '@features/notifications/services/pushNotifications';
 import { athleteApi } from '@features/athletes/services/athleteApi';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
 
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return <ErrorScreen onRetry={retry} />;
@@ -30,7 +23,20 @@ export default function RootLayout() {
 
   useEffect(() => {
     hydrate();
-    
+
+    // expo-notifications: push remotos removidos do Expo Go no SDK 53+.
+    // Carregamos o módulo dinamicamente para evitar o erro na importação.
+    if (Constants.appOwnership !== 'expo') {
+      const Notifications = require('expo-notifications');
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+        }),
+      });
+    }
+
     // Inicialização dinâmica do AdMob para evitar crash em Expo Go
     try {
       const mobileAds = require('react-native-google-mobile-ads').default;
