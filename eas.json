@@ -10,7 +10,9 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com",
         "EXPO_PUBLIC_SUPABASE_URL": "https://xgwzffjkftazozjwtvos.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk"
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk",
+        "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_ANDROID": "ca-app-pub-3940256099942544/6300978111",
+        "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_IOS": "ca-app-pub-3940256099942544/2934735716"
       }
     },
     "preview": {
@@ -21,7 +23,9 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com",
         "EXPO_PUBLIC_SUPABASE_URL": "https://xgwzffjkftazozjwtvos.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk"
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk",
+        "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_ANDROID": "ca-app-pub-3940256099942544/6300978111",
+        "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_IOS": "ca-app-pub-3940256099942544/2934735716"
       }
     },
     "production": {
@@ -29,7 +33,9 @@
       "env": {
         "EXPO_PUBLIC_API_URL": "https://soccer-manager-server-6j50.onrender.com",
         "EXPO_PUBLIC_SUPABASE_URL": "https://xgwzffjkftazozjwtvos.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk"
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_x4Be-nvOYQu-5KeFd4pgwQ_2DUJH2yk",
+        "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_ANDROID": "ca-app-pub-3940256099942544/6300978111",
+        "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID_IOS": "ca-app-pub-3940256099942544/2934735716"
       }
     }
   },
