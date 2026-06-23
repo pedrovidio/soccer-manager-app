@@ -7,10 +7,30 @@ import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
 import { athleteApi } from '../services/athleteApi';
 import { httpClient } from '@lib/httpClient';
 import { queryKeys } from '@lib/queryKeys';
-import { maskCpf, maskPhone, maskCep, digitsOnly } from '@ui/utils/masks';
+import { maskDate } from '@ui/utils/masks';
 import type { FootballLevel, YearsPlaying, WeeklyFrequency, AvailabilitySlot } from '@features/auth/registerTypes';
 
 export type Step = 0 | 1 | 2;
+
+/** Converte uma data ISO (YYYY-MM-DD ou timestamp) para DD/MM/AAAA */
+function isoToBrazilian(iso: string | undefined): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return '';
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+/** Converte DD/MM/AAAA para YYYY-MM-DD (ISO) */
+function brazilianToIso(value: string): string | undefined {
+  const parts = value.split('/');
+  if (parts.length !== 3) return undefined;
+  const [day, month, year] = parts;
+  if (!day || !month || !year || year.length !== 4) return undefined;
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
 
 export function useEditProfileForm() {
   const router = useRouter();
@@ -20,43 +40,16 @@ export function useEditProfileForm() {
 
   const [step, setStep] = useState<Step>(0);
 
-  // ── Step 1: Cadastro ──────────────────────────────────────────────
+  // ── Step 1: Dados Pessoais ────────────────────────────────────────
   const [name, setName] = useState(dashboard?.name ?? '');
-  const [cpf, setCpf] = useState(maskCpf(dashboard?.cpf ?? ''));
   const [gender, setGender] = useState<'M' | 'F'>(dashboard?.gender ?? 'M');
-  const [phone, setPhone] = useState(maskPhone(dashboard?.phone ?? ''));
-  const [age, setAge] = useState(String(dashboard?.age ?? ''));
+  const [birthDate, setBirthDate] = useState(isoToBrazilian(dashboard?.birthDate));
   const [position, setPosition] = useState(dashboard?.position ?? '');
   const [pixKey, setPixKey] = useState(dashboard?.pixKey ?? '');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [cep, setCep] = useState(maskCep(dashboard?.address?.cep ?? ''));
-  const [street, setStreet] = useState(dashboard?.address?.street ?? '');
-  const [addrNum, setAddrNum] = useState(String(dashboard?.address?.number ?? ''));
-  const [complement, setComplement] = useState(dashboard?.address?.complement ?? '');
-  const [neighborhood, setNeighborhood] = useState(dashboard?.address?.neighborhood ?? '');
-  const [city, setCity] = useState(dashboard?.address?.city ?? '');
-  const [addrState, setAddrState] = useState(dashboard?.address?.state ?? '');
-  const [cepLoading, setCepLoading] = useState(false);
 
-  async function handleCepChange(value: string) {
-    const masked = maskCep(value);
-    setCep(masked);
-    const digits = digitsOnly(masked);
-    if (digits.length !== 8) return;
-    try {
-      setCepLoading(true);
-      const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-      const data = await res.json();
-      if (data.erro) { Alert.alert('CEP não encontrado'); return; }
-      setStreet(data.logradouro ?? '');
-      setNeighborhood(data.bairro ?? '');
-      setCity(data.localidade ?? '');
-      setAddrState(data.uf ?? '');
-    } catch {
-      Alert.alert('Erro', 'Não foi possível buscar o CEP.');
-    } finally {
-      setCepLoading(false);
-    }
+  function handleBirthDateChange(value: string) {
+    setBirthDate(maskDate(value));
   }
 
   // ── Step 2: Questionário ──────────────────────────────────────────
@@ -118,27 +111,16 @@ export function useEditProfileForm() {
   };
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      athleteApi.update(athleteId, {
+    mutationFn: () => {
+      const isoDate = brazilianToIso(birthDate);
+      return athleteApi.update(athleteId, {
         name: name.trim(),
-        cpf: cpf.replace(/\D/g, ''),
         gender,
-        phone: phone.replace(/\D/g, ''),
-        age: Number(age),
+        ...(isoDate && { birthDate: isoDate }),
         position,
         pixKey: pixKey.trim() || null,
-        ...(cep.trim() && {
-          address: {
-            cep: cep.replace(/\D/g, ''),
-            street: street.trim(),
-            number: Number(addrNum),
-            complement: complement.trim() || undefined,
-            neighborhood: neighborhood.trim(),
-            city: city.trim(),
-            state: addrState.trim().toUpperCase(),
-          },
-        }),
-      }),
+      });
+    },
     onError: () => Alert.alert('Erro', 'Não foi possível salvar o cadastro.'),
   });
 
@@ -190,12 +172,12 @@ export function useEditProfileForm() {
   return {
     step, setStep,
     // step 1
-    name, setName, cpf, setCpf, gender, setGender, phone, setPhone, age, setAge,
-    position, setPosition, pixKey, setPixKey,
+    name, setName,
+    gender, setGender,
+    birthDate, setBirthDate: handleBirthDateChange,
+    position, setPosition,
+    pixKey, setPixKey,
     photoUri, setPhotoUri,
-    cep, setCep: handleCepChange, cepLoading, street, setStreet, addrNum, setAddrNum,
-    complement, setComplement, neighborhood, setNeighborhood,
-    city, setCity, addrState, setAddrState,
     // step 2
     playedProfessionally, setPlayedProfessionally,
     highestLevel, setHighestLevel,

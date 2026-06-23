@@ -29,8 +29,9 @@ export interface RecentMatch {
 
 export interface AthleteDashboard {
   name?: string;
-  cpf?: string;
   gender?: 'M' | 'F';
+  birthDate?: string; // ISO string, derivado de birthDate no servidor
+  age?: number;       // calculado pelo servidor (athlete.age getter)
   overall?: number;
   position?: string;
   status?: string;
@@ -39,21 +40,10 @@ export interface AthleteDashboard {
   paymentStatus?: 'PAID' | 'PENDING' | 'DECLINED';
   financialDebt?: number;
   photoUrl?: string;
-  phone?: string;
-  age?: number;
   pixKey?: string | null;
   plan?: 'FREE' | 'PREMIUM';
   planExpiresAt?: string | null;
   lastFeaturedAt?: string | null;
-  address?: {
-    cep: string;
-    street: string;
-    number: number;
-    complement?: string;
-    neighborhood: string;
-    city: string;
-    state: string;
-  };
   confirmedMatches: ConfirmedMatch[];
   // legacy fields (unused but kept for compat)
   totalMatches?: number;

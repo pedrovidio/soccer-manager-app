@@ -87,16 +87,10 @@ export const athleteApi = {
 
   update: (athleteId: string, data: {
     name?: string;
-    cpf?: string;
     gender?: 'M' | 'F';
-    phone?: string;
-    age?: number;
+    birthDate?: string; // ISO string (YYYY-MM-DD)
     position?: string;
     pixKey?: string | null;
-    address?: {
-      cep: string; street: string; number: number;
-      complement?: string; neighborhood: string; city: string; state: string;
-    };
   }) =>
     httpClient.patch(`/athletes/${athleteId}`, data).then((r) => r.data),
 

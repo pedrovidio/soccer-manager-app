@@ -12,11 +12,7 @@ export function useEditProfileScreen() {
 
   const handleNext = useCallback(() => {
     Keyboard.dismiss();
-    if (form.step < TOTAL_STEPS - 1) {
-      form.setStep((form.step + 1) as 0 | 1 | 2);
-      scrollRef.current?.scrollTo({ y: 0, animated: false });
-      return;
-    }
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
     form.saveAndNext();
   }, [form]);
 
