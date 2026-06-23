@@ -136,6 +136,7 @@ export interface NearbyAthlete {
   position: string;
   distanceKm?: number;
   isFavorite: boolean;
+  isPremium?: boolean;
 }
 
 export interface SpotMarketplaceMatch {
@@ -174,4 +175,5 @@ export interface SpotApplication {
   age: number;
   overall: number;
   isEligibleNow: boolean;
+  isPremium?: boolean;
 }

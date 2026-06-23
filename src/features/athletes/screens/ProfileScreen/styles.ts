@@ -54,4 +54,25 @@ export const styles = StyleSheet.create({
   modalButtonDisabled: { opacity: 0.45 },
   modalCancelText: { fontSize: 14, fontWeight: '900', color: Arena.text },
   modalDeleteText: { fontSize: 14, fontWeight: '900', color: Arena.buttonLabelPrimary },
+  
+  // Promotion card styles
+  promotionCard: { backgroundColor: Arena.card, borderRadius: Radius.r16, borderWidth: 1, borderColor: Arena.line, padding: Spacing.lg, gap: 8 },
+  promotionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  promotionTitle: { fontSize: 15, fontWeight: '900', color: Arena.text, flex: 1 },
+  promotionDescription: { fontSize: 13, color: Arena.textMuted, lineHeight: 18, marginBottom: 8 },
+  promotionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 46, borderRadius: Radius.r12, backgroundColor: Arena.neon, padding: 12 },
+  promotionBtnText: { fontSize: 14, fontWeight: '900', color: Arena.buttonLabelPrimary },
+  promotionBtnDisabled: { backgroundColor: Arena.cardSoft, borderColor: Arena.line, borderWidth: 1 },
+  promotionBtnTextDisabled: { color: Arena.textSubtle },
+  promotionStatusBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Arena.neonSoft, paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.r8, marginTop: 4 },
+  promotionStatusText: { fontSize: 12, fontWeight: '800', color: Arena.neon },
+  promotionLockedBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Arena.cardSoft, paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.r8, marginTop: 4 },
+  promotionLockedText: { fontSize: 12, fontWeight: '800', color: Arena.textSubtle },
+  
+  // Ad simulator styles
+  adBackdrop: { flex: 1, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center', gap: 20 },
+  adTitle: { fontSize: 18, color: Colors.white, fontWeight: '800', textAlign: 'center' },
+  adCountdownCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: Arena.neon },
+  adCountdownText: { fontSize: 36, fontWeight: '900', color: Arena.neon },
+  adHint: { fontSize: 12, color: 'rgba(255,255,255,0.4)', textAlign: 'center' }
 });

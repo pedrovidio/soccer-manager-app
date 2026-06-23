@@ -41,6 +41,13 @@ export function ProfileScreen() {
           goals={controller.rankingSummary.goals}
           isLoading={controller.isRankingLoading}
         />
+        <PromotionCard
+          canPromote={controller.promotionInfo.canPromote}
+          isCurrentlyFeatured={controller.promotionInfo.isCurrentlyFeatured}
+          isPromoting={controller.promotionInfo.isPromoting}
+          daysUntilNextPromotion={controller.promotionInfo.daysUntilNextPromotion}
+          onPromote={controller.promoteProfile}
+        />
         <AttributesCard stats={profile.stats} />
         <ProfileActions
           onGroups={controller.goGroups}
@@ -58,6 +65,16 @@ export function ProfileScreen() {
         onCancel={controller.closeDeleteAccountModal}
         onConfirm={controller.deleteAccount}
       />
+      <Modal visible={controller.promotionInfo.showSimulatedAd} transparent animationType="fade">
+        <View style={styles.adBackdrop}>
+          <Ionicons name="tv-outline" size={48} color={Arena.neon} style={{ marginBottom: 10 }} />
+          <Text style={styles.adTitle}>Assistindo anúncio premiado...</Text>
+          <View style={styles.adCountdownCircle}>
+            <Text style={styles.adCountdownText}>{controller.promotionInfo.adCountdown}</Text>
+          </View>
+          <Text style={styles.adHint}>Seu perfil será destacado após o término do vídeo.</Text>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -155,6 +172,58 @@ function RankingBadge({
       <View style={styles.rankingGlow}>
         <Ionicons name="stats-chart" size={18} color={Arena.neon} />
       </View>
+    </View>
+  );
+}
+
+function PromotionCard({
+  canPromote,
+  isCurrentlyFeatured,
+  isPromoting,
+  daysUntilNextPromotion,
+  onPromote,
+}: {
+  canPromote: boolean;
+  isCurrentlyFeatured: boolean;
+  isPromoting: boolean;
+  daysUntilNextPromotion: number;
+  onPromote: () => void;
+}) {
+  return (
+    <View style={styles.promotionCard}>
+      <View style={styles.promotionHeader}>
+        <Ionicons name="rocket-outline" size={20} color={Arena.neon} />
+        <Text style={styles.promotionTitle}>Destaque Semanal</Text>
+      </View>
+      <Text style={styles.promotionDescription}>
+        Atletas em destaque aparecem primeiro nos convites dos grupos e ganham prioridade nas filas de espera de vagas.
+      </Text>
+
+      {isCurrentlyFeatured ? (
+        <View style={styles.promotionStatusBadge}>
+          <Ionicons name="sparkles" size={14} color={Arena.neon} style={{ marginRight: 4 }} />
+          <Text style={styles.promotionStatusText}>Destaque Ativo (Premium por 24h!)</Text>
+        </View>
+      ) : canPromote ? (
+        <TouchableOpacity
+          style={[styles.promotionBtn, isPromoting && styles.promotionBtnDisabled]}
+          onPress={onPromote}
+          disabled={isPromoting}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="play-circle-outline" size={18} color={Arena.buttonLabelPrimary} style={{ marginRight: 4 }} />
+          <Text style={styles.promotionBtnText}>
+            {isPromoting ? 'Carregando vídeo...' : 'Destacar meu perfil hoje'}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.promotionLockedBadge}>
+          <Ionicons name="lock-closed" size={14} color={Arena.textSubtle} style={{ marginRight: 4 }} />
+          <Text style={styles.promotionLockedText}>
+            Próximo destaque em {daysUntilNextPromotion} {daysUntilNextPromotion === 1 ? 'dia' : 'dias'}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

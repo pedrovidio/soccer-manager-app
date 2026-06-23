@@ -103,6 +103,9 @@ export const athleteApi = {
   deleteAccount: () =>
     httpClient.delete('/athletes/me').then((r) => r.data),
 
+  promoteFeatured: (athleteId: string) =>
+    httpClient.post<{ success: boolean; planExpiresAt: string; lastFeaturedAt: string }>(`/athletes/${athleteId}/promote-featured`).then((r) => r.data),
+
   uploadPhoto: async (athleteId: string, uri: string) => {
     try {
       const photoUrl = await uploadImageToSupabaseStorage({

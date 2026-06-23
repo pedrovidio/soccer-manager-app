@@ -44,6 +44,7 @@ export interface AthleteDashboard {
   pixKey?: string | null;
   plan?: 'FREE' | 'PREMIUM';
   planExpiresAt?: string | null;
+  lastFeaturedAt?: string | null;
   address?: {
     cep: string;
     street: string;

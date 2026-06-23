@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { getFullImageUrl } from '@lib/imageUrl';
 import { queryKeys } from '@lib/queryKeys';
@@ -9,6 +9,7 @@ import { useHomeDashboard } from '@features/home/hooks/useHomeDashboard';
 import { rankingApi } from '@features/ranking/services/rankingApi';
 import { getInitials } from '@ui/utils/avatar';
 import { athleteApi } from '../../services/athleteApi';
+import { adService } from '../../services/adService';
 import { STATUS_STYLE, overallColor } from './profileData';
 
 const DELETE_CONFIRMATION_TEXT = 'EXCLUIR';
@@ -18,9 +19,13 @@ export function useProfileScreen() {
   const athleteId = useAuthStore((state) => state.athleteId) ?? '';
   const authName = useAuthStore((state) => state.name);
   const logout = useAuthStore((state) => state.logout);
+  const queryClient = useQueryClient();
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isDeletingAccount, setDeletingAccount] = useState(false);
+  const [isPromoting, setIsPromoting] = useState(false);
+  const [showSimulatedAd, setShowSimulatedAd] = useState(false);
+  const [adCountdown, setAdCountdown] = useState(3);
   const { dashboard, isLoading } = useHomeDashboard(athleteId);
   const rankingSummaryQuery = useQuery({
     queryKey: queryKeys.rankingMe(athleteId),
@@ -81,6 +86,79 @@ export function useProfileScreen() {
     }
   }, [canDeleteAccount, isDeletingAccount, logout, router]);
 
+  const lastFeaturedAt = dashboard?.lastFeaturedAt ?? null;
+  const plan = dashboard?.plan ?? 'FREE';
+  const planExpiresAt = dashboard?.planExpiresAt ?? null;
+
+  const now = new Date();
+  const isCurrentlyFeatured = plan === 'PREMIUM' && planExpiresAt && new Date(planExpiresAt) > now;
+
+  let canPromote = plan === 'FREE';
+  let daysUntilNextPromotion = 0;
+  let nextPromotionDate: Date | null = null;
+
+  if (lastFeaturedAt) {
+    const lastDate = new Date(lastFeaturedAt);
+    nextPromotionDate = new Date(lastDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    if (now < nextPromotionDate) {
+      canPromote = false;
+      const diffMs = nextPromotionDate.getTime() - now.getTime();
+      daysUntilNextPromotion = Math.ceil(diffMs / (24 * 60 * 60 * 1000));
+    }
+  }
+
+  const promoteProfile = useCallback(async () => {
+    if (!canPromote || isPromoting) return;
+    setIsPromoting(true);
+
+    try {
+      const adResult = await adService.showRewardedAd({
+        onEarnReward: async () => {
+          try {
+            const result = await athleteApi.promoteFeatured(athleteId);
+            if (result.success) {
+              queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+              Alert.alert('Sucesso!', 'Seu perfil foi destacado por 24 horas! 🚀');
+            }
+          } catch (error: any) {
+            Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível impulsionar seu perfil.');
+          } finally {
+            setIsPromoting(false);
+          }
+        },
+        onError: () => {
+          Alert.alert('Erro', 'Não foi possível carregar o anúncio.');
+          setIsPromoting(false);
+        }
+      });
+
+      if (adResult?.isSimulated) {
+        setShowSimulatedAd(true);
+        setAdCountdown(3);
+        const timer = setInterval(() => {
+          setAdCountdown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              setShowSimulatedAd(false);
+              athleteApi.promoteFeatured(athleteId).then(() => {
+                queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
+                Alert.alert('Sucesso!', 'Seu perfil foi destacado por 24 horas! 🚀');
+              }).catch((error) => {
+                Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível destacar seu perfil.');
+              }).finally(() => {
+                setIsPromoting(false);
+              });
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    } catch (e) {
+      setIsPromoting(false);
+    }
+  }, [canPromote, isPromoting, athleteId, queryClient]);
+
   const confirmLogout = useCallback(() => {
     Alert.alert('Sair', 'Deseja encerrar sua sessao?', [
       { text: 'Cancelar', style: 'cancel' },
@@ -114,5 +192,15 @@ export function useProfileScreen() {
     closeDeleteAccountModal,
     setDeleteConfirmation,
     deleteAccount,
+    promoteProfile,
+    promotionInfo: {
+      isPromoting,
+      showSimulatedAd,
+      adCountdown,
+      canPromote,
+      isCurrentlyFeatured,
+      daysUntilNextPromotion,
+      nextPromotionDate,
+    },
   };
 }

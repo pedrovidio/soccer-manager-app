@@ -34,7 +34,10 @@ function GuestAthleteRowComponent({
         <Text style={s.guestAvatarText}>{(athlete.name ?? '??').slice(0, 2).toUpperCase()}</Text>
       </View>
       <View style={s.rowContent}>
-        <Text style={s.guestName}>{athlete.name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Text style={s.guestName}>{athlete.name}</Text>
+          {athlete.isPremium && <Ionicons name="rocket" size={14} color={Arena.neon} />}
+        </View>
         <Text style={s.guestSub}>
           {posLabel(athlete.position ?? '')} - {athlete.age} anos - {athlete.gender === 'M' ? 'Masc.' : 'Fem.'}
         </Text>

@@ -22,7 +22,10 @@ export const SpotApplicationRow = memo(function SpotApplicationRow({
         <Text style={s.guestAvatarText}>{item.athleteName.slice(0, 2).toUpperCase()}</Text>
       </View>
       <View style={s.rowContent}>
-        <Text style={s.guestName} numberOfLines={1}>{item.athleteName}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Text style={s.guestName} numberOfLines={1}>{item.athleteName}</Text>
+          {item.isPremium && <Ionicons name="rocket" size={14} color={Arena.neon} />}
+        </View>
         <Text style={s.guestSub}>
           {posLabel(item.position)} - OVR {item.overall} - {item.age} anos
         </Text>
