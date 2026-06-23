@@ -38,15 +38,34 @@ export function useEditProfileForm() {
   const athleteId = useAuthStore((s) => s.athleteId) ?? '';
   const { dashboard } = useHomeDashboard(athleteId);
 
+  const [hasInitialized, setHasInitialized] = useState(!!dashboard);
   const [step, setStep] = useState<Step>(0);
 
   // ── Step 1: Dados Pessoais ────────────────────────────────────────
   const [name, setName] = useState(dashboard?.name ?? '');
   const [gender, setGender] = useState<'M' | 'F'>(dashboard?.gender ?? 'M');
   const [birthDate, setBirthDate] = useState(isoToBrazilian(dashboard?.birthDate));
-  const [position, setPosition] = useState(dashboard?.position ?? '');
+  const [position, setPosition] = useState(() => {
+    const pos = dashboard?.position ?? '';
+    return pos ? pos.charAt(0).toUpperCase() + pos.slice(1).toLowerCase() : '';
+  });
   const [pixKey, setPixKey] = useState(dashboard?.pixKey ?? '');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (dashboard && !hasInitialized) {
+      if (dashboard.name) setName(dashboard.name);
+      if (dashboard.gender) setGender(dashboard.gender);
+      if (dashboard.birthDate) setBirthDate(isoToBrazilian(dashboard.birthDate));
+      if (dashboard.position) {
+        const pos = dashboard.position;
+        const normalizedPos = pos.charAt(0).toUpperCase() + pos.slice(1).toLowerCase();
+        setPosition(normalizedPos);
+      }
+      if (dashboard.pixKey) setPixKey(dashboard.pixKey);
+      setHasInitialized(true);
+    }
+  }, [dashboard, hasInitialized]);
 
   function handleBirthDateChange(value: string) {
     setBirthDate(maskDate(value));

@@ -91,7 +91,7 @@ export function useProfileScreen() {
   const planExpiresAt = dashboard?.planExpiresAt ?? null;
 
   const now = new Date();
-  const isCurrentlyFeatured = plan === 'PREMIUM' && planExpiresAt && new Date(planExpiresAt) > now;
+  const isCurrentlyFeatured = plan === 'PREMIUM' && !!planExpiresAt && new Date(planExpiresAt) > now;
 
   let canPromote = plan === 'FREE';
   let daysUntilNextPromotion = 0;
