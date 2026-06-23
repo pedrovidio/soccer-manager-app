@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
@@ -9,6 +10,16 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   }
 
   try {
+    // Cria o canal Android ANTES de solicitar o token (ordem exigida pela API)
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
@@ -22,17 +33,14 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
       return null;
     }
 
-    // Expo reads the projectId directly from app.json/expo.extra.eas.projectId when undefined
-    const tokenData = await Notifications.getExpoPushTokenAsync();
-
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
+    // Passa o projectId explicitamente para evitar deprecation warning no SDK 54+
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+    if (!projectId) {
+      console.warn('[PushNotifications] projectId não encontrado em app.json -> extra.eas.projectId');
+      return null;
     }
+
+    const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
 
     return tokenData.data;
   } catch (error) {

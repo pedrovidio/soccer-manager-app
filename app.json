@@ -19,6 +19,15 @@
           "locationWhenInUsePermission": "Usamos sua localizacao para encontrar vagas avulsas perto de voce."
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/logo.png",
+          "color": "#0A0F1E",
+          "defaultChannel": "default",
+          "sounds": []
+        }
+      ],
       "@react-native-community/datetimepicker",
       "expo-font"
     ],
