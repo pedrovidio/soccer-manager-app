@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Arena } from '@ui/tokens/theme';
@@ -189,6 +189,10 @@ function PromotionCard({
   daysUntilNextPromotion: number;
   onPromote: () => void;
 }) {
+  useEffect(() => {
+    console.log('[PromotionCard] Render - canPromote:', canPromote, '| isCurrentlyFeatured:', isCurrentlyFeatured, '| isPromoting:', isPromoting, '| daysUntilNext:', daysUntilNextPromotion);
+  });
+
   return (
     <View style={styles.promotionCard}>
       <View style={styles.promotionHeader}>
@@ -207,7 +211,10 @@ function PromotionCard({
       ) : canPromote ? (
         <TouchableOpacity
           style={[styles.promotionBtn, isPromoting && styles.promotionBtnDisabled]}
-          onPress={onPromote}
+          onPress={() => {
+            console.log('[PromotionCard] Botão pressionado! Chamando onPromote...');
+            onPromote();
+          }}
           disabled={isPromoting}
           activeOpacity={0.8}
         >
@@ -217,12 +224,16 @@ function PromotionCard({
           </Text>
         </TouchableOpacity>
       ) : (
-        <View style={styles.promotionLockedBadge}>
+        <TouchableOpacity
+          style={styles.promotionLockedBadge}
+          onPress={() => console.log('[PromotionCard] Badge BLOQUEADO pressionado — canPromote=false, daysUntilNext:', daysUntilNextPromotion)}
+          activeOpacity={0.7}
+        >
           <Ionicons name="lock-closed" size={14} color={Arena.textSubtle} style={{ marginRight: 4 }} />
           <Text style={styles.promotionLockedText}>
             Próximo destaque em {daysUntilNextPromotion} {daysUntilNextPromotion === 1 ? 'dia' : 'dias'}
           </Text>
-        </View>
+        </TouchableOpacity>
       )}
     </View>
   );

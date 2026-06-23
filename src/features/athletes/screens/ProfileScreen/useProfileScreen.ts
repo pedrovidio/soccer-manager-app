@@ -108,42 +108,58 @@ export function useProfileScreen() {
   }
 
   const promoteProfile = useCallback(async () => {
-    if (!canPromote || isPromoting) return;
+    console.log('[ProfileScreen] promoteProfile acionado. canPromote:', canPromote, 'isPromoting:', isPromoting, 'athleteId:', athleteId);
+    if (!canPromote || isPromoting) {
+      console.log('[ProfileScreen] promoteProfile ignorado ou bloqueado.');
+      return;
+    }
     setIsPromoting(true);
 
     try {
+      console.log('[ProfileScreen] Chamando adService.showRewardedAd...');
       const adResult = await adService.showRewardedAd({
         onEarnReward: async () => {
+          console.log('[ProfileScreen] onEarnReward disparado');
           try {
             const result = await athleteApi.promoteFeatured(athleteId);
+            console.log('[ProfileScreen] API promoteFeatured retorno:', result);
             if (result.success) {
               queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
               Alert.alert('Sucesso!', 'Seu perfil foi destacado por 24 horas! 🚀');
             }
           } catch (error: any) {
+            console.error('[ProfileScreen] Erro na API promoteFeatured:', error);
             Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível impulsionar seu perfil.');
           } finally {
             setIsPromoting(false);
           }
         },
-        onError: () => {
+        onError: (err) => {
+          console.error('[ProfileScreen] Erro no adService:', err);
           Alert.alert('Erro', 'Não foi possível carregar o anúncio.');
           setIsPromoting(false);
         }
       });
 
+      console.log('[ProfileScreen] adResult recebido:', adResult);
+
       if (adResult?.isSimulated) {
+        console.log('[ProfileScreen] O anúncio é simulado. Exibindo modal do simulador...');
         setShowSimulatedAd(true);
         setAdCountdown(3);
         const timer = setInterval(() => {
           setAdCountdown((prev) => {
+            console.log('[ProfileScreen] Contador do anúncio simulado:', prev - 1);
             if (prev <= 1) {
               clearInterval(timer);
               setShowSimulatedAd(false);
-              athleteApi.promoteFeatured(athleteId).then(() => {
+              console.log('[ProfileScreen] Tempo esgotado do simulador. Chamando endpoint do backend...');
+              athleteApi.promoteFeatured(athleteId).then((res) => {
+                console.log('[ProfileScreen] Sucesso na promoção simulada:', res);
                 queryClient.invalidateQueries({ queryKey: queryKeys.home(athleteId) });
                 Alert.alert('Sucesso!', 'Seu perfil foi destacado por 24 horas! 🚀');
               }).catch((error) => {
+                console.error('[ProfileScreen] Erro na promoção simulada:', error);
                 Alert.alert('Erro', error?.response?.data?.error || 'Não foi possível destacar seu perfil.');
               }).finally(() => {
                 setIsPromoting(false);
@@ -154,7 +170,9 @@ export function useProfileScreen() {
           });
         }, 1000);
       }
-    } catch (e) {
+    } catch (e: any) {
+      console.error('[ProfileScreen] Exceção capturada no fluxo principal do promoteProfile:', e);
+      Alert.alert('Erro inesperado', e?.message || 'Ocorreu um erro ao processar o anúncio.');
       setIsPromoting(false);
     }
   }, [canPromote, isPromoting, athleteId, queryClient]);
