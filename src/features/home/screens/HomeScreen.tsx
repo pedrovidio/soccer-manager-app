@@ -178,11 +178,11 @@ export default function HomeScreen() {
             <MatchCard key={match.id} match={match} athleteId={athleteId} />
           ))}
         </View>
-
-        <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
-          <SponsorBanner sponsorData={sponsor} />
-        </View>
       </ScrollView>
+
+      <View style={{ paddingHorizontal: 16, paddingBottom: 16, backgroundColor: Arena.bg }}>
+        <SponsorBanner sponsorData={sponsor} />
+      </View>
 
       <NotificationsSheet
         visible={showNotifications}

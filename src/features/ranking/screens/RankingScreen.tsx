@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -17,6 +17,8 @@ import { useAuthStore } from '@features/auth/useAuthStore';
 import { RankingAthlete } from '../services/rankingApi';
 import { useRanking } from '../hooks/useRanking';
 import { styles } from './styles';
+import { useSponsorQuery } from '@features/home/hooks/useSponsorQuery';
+import { SponsorBanner } from '@ui/composites/SponsorBanner';
 
 interface RankingRowProps {
   athlete: RankingAthlete;
@@ -102,6 +104,7 @@ export default function RankingScreen() {
 function RankingContent() {
   const athleteId = useAuthStore((state) => state.athleteId);
   const ranking = useRanking();
+  const { data: rankingSponsor } = useSponsorQuery('RANKING_FEED');
 
   const loadMore = useCallback(() => {
     if (!ranking.isFetchingNextPage && ranking.hasNextPage) {
@@ -109,13 +112,30 @@ function RankingContent() {
     }
   }, [ranking]);
 
-  const renderItem = useCallback(({ item, index }: { item: RankingAthlete; index: number }) => (
-    <RankingRow
-      athlete={item}
-      position={index + 1}
-      isCurrentAthlete={item.athleteId === athleteId}
-    />
-  ), [athleteId]);
+  const listData = useMemo(() => {
+    if (!ranking.athletes || ranking.athletes.length === 0) return [];
+    const data = [...ranking.athletes];
+    if (data.length >= 3) {
+      data.splice(3, 0, { athleteId: 'ranking-ad-item', isAd: true } as any);
+    }
+    return data;
+  }, [ranking.athletes]);
+
+  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
+    if (item.isAd) {
+      return <SponsorBanner sponsorData={rankingSponsor} />;
+    }
+
+    const displayPosition = index >= 3 ? index : index + 1;
+
+    return (
+      <RankingRow
+        athlete={item}
+        position={displayPosition}
+        isCurrentAthlete={item.athleteId === athleteId}
+      />
+    );
+  }, [athleteId, rankingSponsor]);
 
   const footer = ranking.isFetchingNextPage ? (
     <View style={styles.footerLoader}>
@@ -149,7 +169,7 @@ function RankingContent() {
         </View>
       ) : (
         <FlatList
-          data={ranking.athletes}
+          data={listData}
           keyExtractor={(item) => item.athleteId}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
