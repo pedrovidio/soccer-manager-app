@@ -13,16 +13,12 @@ export function useEditProfileScreen() {
   const handleNext = useCallback(() => {
     Keyboard.dismiss();
     scrollRef.current?.scrollTo({ y: 0, animated: false });
-    form.saveAndNext();
+    form.saveCurrentTab();
   }, [form]);
 
   const handleBack = useCallback(() => {
-    if (form.step > 0) {
-      form.setStep((form.step - 1) as 0 | 1 | 2);
-      return;
-    }
     router.back();
-  }, [form, router]);
+  }, [router]);
 
   return {
     form,

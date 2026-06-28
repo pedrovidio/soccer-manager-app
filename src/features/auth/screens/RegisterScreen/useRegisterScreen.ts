@@ -23,7 +23,6 @@ export function useRegisterScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
-  const { setAssessmentCompleted } = useAuthStore();
 
   const setField = useCallback((field: keyof RegisterFormData, value: RegisterFormData[keyof RegisterFormData]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -72,30 +71,11 @@ export function useRegisterScreen() {
 
       const athlete = await registerApi.register(registerPayload);
 
-      await registerApi.submitAssessment(athlete.id, {
-        playedProfessionally: form.playedProfessionally,
-        highestLevel: form.highestLevel as FootballLevel,
-        yearsPlaying: form.yearsPlaying as YearsPlaying,
-        weeklyFrequency: form.weeklyFrequency as WeeklyFrequency,
-        selfRatedPace: form.selfRatedPace,
-        selfRatedShooting: form.selfRatedShooting,
-        selfRatedPassing: form.selfRatedPassing,
-        selfRatedDribbling: form.selfRatedDribbling,
-        selfRatedDefense: form.selfRatedDefense,
-        selfRatedPhysical: form.selfRatedPhysical,
-        preferredPosition: form.preferredPosition,
-      });
-
-      if (form.wantsAvailability && form.availabilitySlots.length > 0) {
-        await registerApi.saveAvailability(athlete.id, form.availabilitySlots);
-      }
-
-      setAssessmentCompleted();
       setMemoryToken(authSession.token);
       await Promise.all([
         SecureStore.setItemAsync('athlete_id', athlete.id),
         SecureStore.setItemAsync('athlete_name', authSession.name),
-        SecureStore.setItemAsync('has_assessment', 'true'),
+        SecureStore.setItemAsync('has_assessment', 'false'),
       ]);
       useAuthStore.setState({
         token: authSession.token,
@@ -103,6 +83,7 @@ export function useRegisterScreen() {
         name: authSession.name,
         plan: authSession.plan,
         planExpiresAt: authSession.planExpiresAt,
+        hasCompletedAssessment: false,
         isAuthenticated: true,
       });
       router.replace('/');
@@ -111,7 +92,8 @@ export function useRegisterScreen() {
     } finally {
       setLoading(false);
     }
-  }, [form, router, setAssessmentCompleted]);
+  }, [form, router]);
+
 
   const handlePrimaryAction = useCallback(() => {
     if (step < TOTAL_STEPS) {

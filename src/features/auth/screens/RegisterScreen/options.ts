@@ -1,6 +1,7 @@
 import { FootballLevel, Gender, RegisterFormData, WeeklyFrequency, YearsPlaying } from '@features/auth/registerTypes';
 
-export const TOTAL_STEPS = 4;
+export const TOTAL_STEPS = 1;
+
 
 export const INITIAL_REGISTER_FORM: RegisterFormData = {
   name: '',

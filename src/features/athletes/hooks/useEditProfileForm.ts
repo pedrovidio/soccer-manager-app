@@ -140,6 +140,12 @@ export function useEditProfileForm() {
         pixKey: pixKey.trim() || null,
       });
     },
+    onSuccess: () => {
+      invalidate();
+      Alert.alert('Sucesso', 'Dados pessoais salvos com sucesso!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    },
     onError: () => Alert.alert('Erro', 'Não foi possível salvar o cadastro.'),
   });
 
@@ -160,25 +166,34 @@ export function useEditProfileForm() {
       };
       return httpClient.patch(`/athletes/${athleteId}/assessment`, payload).then((r) => r.data);
     },
+    onSuccess: () => {
+      invalidate();
+      Alert.alert('Sucesso', 'Perfil e autoavaliação salvos com sucesso!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    },
     onError: () => Alert.alert('Erro', 'Não foi possível salvar o questionário.'),
   });
 
   const availabilityMutation = useMutation({
     mutationFn: () => athleteApi.saveAvailability(athleteId, wantsAvailability ? slots : []),
-    onSuccess: () => { invalidate(); router.back(); },
+    onSuccess: () => {
+      invalidate();
+      Alert.alert('Sucesso', 'Disponibilidade salva com sucesso!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    },
     onError: () => Alert.alert('Erro', 'Não foi possível salvar a disponibilidade.'),
   });
 
-  async function saveAndNext() {
+  async function saveCurrentTab() {
     try {
       if (step === 0) {
         await updateMutation.mutateAsync();
-        setStep(1);
       } else if (step === 1) {
         await assessmentMutation.mutateAsync();
-        setStep(2);
       } else {
-        availabilityMutation.mutate();
+        await availabilityMutation.mutateAsync();
       }
     } catch {
       // errors handled in onError callbacks
@@ -207,6 +222,6 @@ export function useEditProfileForm() {
     // step 3
     wantsAvailability, setWantsAvailability, slots, setSlots,
     // shared
-    saveAndNext, isPending, athleteId, dashboard,
+    saveCurrentTab, isPending, athleteId, dashboard,
   };
 }
