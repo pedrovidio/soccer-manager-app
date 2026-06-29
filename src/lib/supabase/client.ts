@@ -26,6 +26,23 @@ export const supabase = createClient(
   },
 );
 
+// Escuta mudanças de autenticação para limpar o storage caso o token esteja inválido/expirado
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
+    try {
+      const stored = await AsyncStorage.getItem(SUPABASE_AUTH_STORAGE_KEY);
+      if (stored) {
+        const keys = await AsyncStorage.getAllKeys();
+        const authKeys = keys.filter((key) => /^sb-.+-auth-token$/.test(key) || key === LEGACY_SUPABASE_AUTH_STORAGE_KEY);
+        await AsyncStorage.multiRemove(Array.from(new Set([SUPABASE_AUTH_STORAGE_KEY, ...authKeys])));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+});
+
+
 function isInvalidRefreshTokenError(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
   return /invalid refresh token|refresh token not found/i.test(message);
