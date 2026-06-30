@@ -39,7 +39,7 @@
     ],
     "android": {
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.anonymous.soccermanagerapp",
+      "package": "com.pedrovidio.naoficosemjogar",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
